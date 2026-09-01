@@ -1,0 +1,113 @@
+---
+import { trustBarItems } from '../data/content';
+---
+
+<section class="trust-bar site-container" aria-label="Informations pratiques">
+	<ul class="sr-only">
+		{trustBarItems.map((item) => <li>{item}</li>)}
+	</ul>
+
+	<div class="trust-bar__viewport" aria-hidden="true">
+		<div class="trust-bar__track">
+			{[0, 1].map((groupIndex) => (
+				<div class="trust-bar__group" data-duplicate={groupIndex === 1 ? 'true' : undefined}>
+					{[0, 1].map((sequenceIndex) => (
+						<div class="trust-bar__sequence" data-filler={sequenceIndex === 1 ? 'true' : undefined}>
+							{trustBarItems.map((item) => (
+								<>
+									<span class="trust-bar__item">{item}</span>
+									<span class="trust-bar__separator">✦</span>
+								</>
+							))}
+						</div>
+					))}
+				</div>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.trust-bar {
+		margin-top: 1.5rem;
+		margin-bottom: 2rem;
+		overflow: hidden;
+		border-top: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--color-border);
+		background: var(--color-background);
+	}
+
+	.trust-bar__viewport {
+		overflow: hidden;
+		-webkit-mask-image: linear-gradient(
+			to right,
+			transparent 0,
+			#000 6%,
+			#000 94%,
+			transparent 100%
+		);
+		mask-image: linear-gradient(
+			to right,
+			transparent 0,
+			#000 6%,
+			#000 94%,
+			transparent 100%
+		);
+		padding-block: 1.35rem;
+	}
+
+	.trust-bar__track {
+		display: flex;
+		width: max-content;
+		animation: trust-bar-marquee 30s linear infinite;
+		will-change: transform;
+	}
+
+	.trust-bar__group {
+		display: flex;
+		flex: none;
+		align-items: center;
+	}
+
+	.trust-bar__sequence {
+		display: flex;
+		flex: none;
+		align-items: center;
+		gap: clamp(1.5rem, 3vw, 3rem);
+		padding-right: clamp(1.5rem, 3vw, 3rem);
+	}
+
+	.trust-bar__item {
+		font-size: clamp(1rem, 1.5vw, 1.125rem);
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.trust-bar__separator {
+		color: var(--color-accent);
+		font-size: 0.9rem;
+	}
+
+	@keyframes trust-bar-marquee {
+		to { transform: translateX(-50%); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.trust-bar__track {
+			width: auto;
+			animation: none;
+		}
+
+		.trust-bar__sequence {
+			flex-wrap: wrap;
+			justify-content: center;
+			row-gap: 0.7rem;
+			padding-right: 0;
+		}
+
+		.trust-bar__group[data-duplicate='true'],
+		.trust-bar__sequence[data-filler='true'] {
+			display: none;
+		}
+	}
+</style>

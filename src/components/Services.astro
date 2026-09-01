@@ -1,0 +1,173 @@
+---
+import { Image } from 'astro:assets';
+import { services, servicesContent } from '../data/content';
+---
+
+<section class="services" id="soins" aria-labelledby="services-title">
+	<div class="site-container">
+		<header class="services__header">
+			<p class="services__eyebrow">{servicesContent.eyebrow}</p>
+			<h2 id="services-title">{servicesContent.title}</h2>
+			<p class="services__intro">{servicesContent.intro}</p>
+		</header>
+
+		<div class="services__grid">
+			{services.map((service) => (
+				<article class="service">
+					<div class="service__image-wrapper">
+						<Image
+							class="service__image"
+							src={service.image}
+							width={720}
+							height={540}
+							sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc((100vw - 80px) / 2), 405px"
+							alt={service.alt}
+							loading="lazy"
+							decoding="async"
+							data-parallax
+						/>
+					</div>
+					<div class="service__content">
+						<h3>{service.title}</h3>
+						<p>{service.description}</p>
+					</div>
+				</article>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.services {
+		padding-block: clamp(7.5rem, 9vw, 8.75rem);
+		background: var(--color-background);
+	}
+
+	.services__header {
+		max-width: 760px;
+	}
+
+	.services__eyebrow {
+		margin-bottom: 0.9rem;
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.services__header h2 {
+		max-width: 680px;
+		font-size: clamp(3rem, 4vw, 3.75rem);
+	}
+
+	.services__intro {
+		max-width: 620px;
+		margin-top: 1.35rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.55;
+	}
+
+	.services__grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(3rem, 4vw, 4rem) clamp(1.5rem, 3vw, 2.5rem);
+		margin-top: clamp(3rem, 4vw, 3.75rem);
+	}
+
+	.service__image-wrapper {
+		aspect-ratio: 3 / 2;
+		overflow: hidden;
+		border-radius: var(--radius-md);
+		background: var(--color-secondary);
+	}
+
+	.service__image-wrapper :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transform: scale(1.08);
+		transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+
+	.service__content {
+		padding-top: 1.5rem;
+	}
+
+	.service__content h3 {
+		font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+		font-weight: 600;
+		letter-spacing: -0.025em;
+	}
+
+	.service__content p {
+		max-width: 38ch;
+		margin-top: 0.7rem;
+		color: var(--color-text-muted);
+		line-height: 1.55;
+	}
+
+	@media (hover: hover) and (pointer: fine) and (min-width: 64rem) {
+		.service:hover .service__image-wrapper :global(img) {
+			transform: scale(1.11);
+		}
+	}
+
+	@media (max-width: 63.999rem) {
+		.services {
+			padding-block: 4.5rem;
+		}
+
+		.services__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.services {
+			padding-block: 4rem;
+		}
+
+		.services__grid {
+			grid-template-columns: 1fr;
+			gap: 3.25rem;
+			margin-top: 2.75rem;
+		}
+
+		.service__image-wrapper {
+			border-radius: 20px;
+		}
+	}
+
+	@media (max-height: 56.25rem) and (min-width: 64rem) {
+		.services {
+			padding-block: 5rem;
+		}
+
+		.services__header h2 {
+			font-size: clamp(3.25rem, 4vw, 3.75rem);
+		}
+
+		.services__intro {
+			margin-top: 1rem;
+		}
+
+		.services__grid {
+			row-gap: 3rem;
+			margin-top: 2.75rem;
+		}
+
+		.service__content {
+			padding-top: 1.15rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.service__image-wrapper :global(img) {
+			transition: none;
+		}
+	}
+</style>

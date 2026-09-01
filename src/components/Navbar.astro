@@ -1,0 +1,275 @@
+---
+import { siteConfig } from '../config/site';
+import { heroContent, navigation } from '../data/content';
+---
+
+<header class="site-header">
+	<div class="site-container site-header__inner">
+		<a class="brand" href="#accueil" aria-label={`${siteConfig.fullName}, accueil`}>
+			<span class="brand__name">{siteConfig.fullName}</span>
+			<span class="brand__profession">{siteConfig.profession}</span>
+		</a>
+
+		<nav class="desktop-navigation" aria-label="Navigation principale">
+			<ul>
+				{navigation.map((item) => (
+					<li>
+						<a href={item.href} aria-current={item.href === '#accueil' ? 'page' : undefined}>
+							{item.label}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+
+		<a class="navbar-cta" href={heroContent.actions.primary.href}>
+			{heroContent.actions.primary.label}
+		</a>
+
+		<button
+			class="menu-toggle"
+			type="button"
+			aria-label="Ouvrir le menu"
+			aria-expanded="false"
+			aria-controls="mobile-navigation"
+			data-menu-toggle
+		>
+			<span aria-hidden="true"></span>
+			<span aria-hidden="true"></span>
+		</button>
+	</div>
+
+	<div class="mobile-menu" id="mobile-navigation" data-mobile-menu hidden>
+		<nav class="site-container" aria-label="Navigation mobile">
+			<ul>
+				{navigation.map((item) => (
+					<li><a href={item.href}>{item.label}</a></li>
+				))}
+			</ul>
+			<a class="mobile-menu__cta" href={heroContent.actions.primary.href}>
+				{heroContent.actions.primary.label}
+			</a>
+		</nav>
+	</div>
+</header>
+
+<script>
+	const menuToggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+	const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+
+	if (menuToggle && mobileMenu) {
+		const setMenuState = (isOpen: boolean) => {
+			menuToggle.setAttribute('aria-expanded', String(isOpen));
+			menuToggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
+			mobileMenu.hidden = !isOpen;
+			document.body.classList.toggle('menu-is-open', isOpen);
+		};
+
+		menuToggle.addEventListener('click', () => {
+			setMenuState(menuToggle.getAttribute('aria-expanded') !== 'true');
+		});
+
+		mobileMenu.querySelectorAll<HTMLAnchorElement>('a').forEach((link) => {
+			link.addEventListener('click', () => setMenuState(false));
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true') {
+				setMenuState(false);
+				menuToggle.focus();
+			}
+		});
+
+		window.matchMedia('(min-width: 64rem)').addEventListener('change', (event) => {
+			if (event.matches) setMenuState(false);
+		});
+	}
+</script>
+
+<style>
+	.site-header {
+		position: relative;
+		z-index: 20;
+		background: var(--color-background);
+	}
+
+	.site-header__inner {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		min-height: 104px;
+		gap: 2rem;
+	}
+
+	.brand {
+		display: inline-flex;
+		flex-direction: column;
+		width: max-content;
+		text-decoration: none;
+	}
+
+	.brand__name {
+		font-family: var(--font-heading);
+		font-size: 1.125rem;
+		font-weight: 750;
+		line-height: 1.15;
+		letter-spacing: -0.035em;
+	}
+
+	.brand__profession {
+		margin-top: 0.25rem;
+		color: var(--color-text-muted);
+		font-size: 0.75rem;
+		font-weight: 600;
+		line-height: 1.2;
+		letter-spacing: 0.035em;
+	}
+
+	.desktop-navigation {
+		justify-self: center;
+	}
+
+	.desktop-navigation ul {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.1rem, 1.8vw, 2rem);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.desktop-navigation a {
+		position: relative;
+		font-size: 0.95rem;
+		font-weight: 500;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.desktop-navigation a::after {
+		position: absolute;
+		inset: auto 0 -0.4rem;
+		height: 1px;
+		background: currentColor;
+		content: '';
+		transform: scaleX(0);
+		transform-origin: right;
+		transition: transform 180ms ease;
+	}
+
+	.desktop-navigation a:hover::after,
+	.desktop-navigation a[aria-current='page']::after {
+		transform: scaleX(1);
+		transform-origin: left;
+	}
+
+	.navbar-cta,
+	.mobile-menu__cta {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 48px;
+		border-radius: var(--radius-sm);
+		background: var(--color-primary);
+		padding: 0.75rem 1.25rem;
+		font-weight: 650;
+		line-height: 1;
+		text-decoration: none;
+		transition: background-color 180ms ease, transform 180ms ease;
+		white-space: nowrap;
+	}
+
+	.navbar-cta:hover,
+	.mobile-menu__cta:hover {
+		background: color-mix(in srgb, var(--color-primary) 88%, var(--color-background));
+		transform: translateY(-2px);
+	}
+
+	.menu-toggle,
+	.mobile-menu {
+		display: none;
+	}
+
+	@media (max-width: 63.999rem) {
+		.site-header__inner {
+			grid-template-columns: 1fr auto;
+			min-height: 88px;
+			gap: 1rem;
+		}
+
+		.desktop-navigation,
+		.navbar-cta {
+			display: none;
+		}
+
+		.menu-toggle {
+			display: inline-flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			width: 48px;
+			height: 48px;
+			border: 1px solid var(--color-border);
+			border-radius: var(--radius-sm);
+			background: var(--color-background);
+			cursor: pointer;
+			gap: 7px;
+		}
+
+		.menu-toggle span {
+			display: block;
+			width: 20px;
+			height: 2px;
+			background: var(--color-text);
+			transition: transform 180ms ease;
+		}
+
+		.menu-toggle[aria-expanded='true'] span:first-child {
+			transform: translateY(4.5px) rotate(45deg);
+		}
+
+		.menu-toggle[aria-expanded='true'] span:last-child {
+			transform: translateY(-4.5px) rotate(-45deg);
+		}
+
+		.mobile-menu:not([hidden]) {
+			display: block;
+			border-top: 1px solid var(--color-border);
+			border-bottom: 1px solid var(--color-border);
+			background: var(--color-background);
+		}
+
+		.mobile-menu nav {
+			padding-block: 1rem 1.5rem;
+		}
+
+		.mobile-menu ul {
+			margin: 0 0 1rem;
+			padding: 0;
+			list-style: none;
+		}
+
+		.mobile-menu li + li {
+			border-top: 1px solid var(--color-border);
+		}
+
+		.mobile-menu li a {
+			display: flex;
+			align-items: center;
+			min-height: 48px;
+			font-size: 1.05rem;
+			font-weight: 550;
+			text-decoration: none;
+		}
+
+		.mobile-menu__cta {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 27rem) {
+		.brand__profession {
+			font-size: 0.7rem;
+		}
+	}
+</style>

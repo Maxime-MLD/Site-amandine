@@ -1,0 +1,30 @@
+---
+import About from '../components/About.astro';
+import AvisPatients from '../components/AvisPatients.astro';
+import Faq from '../components/Faq.astro';
+import Hero from '../components/Hero.astro';
+import InformationsPratiques from '../components/InformationsPratiques.astro';
+import Methode from '../components/Methode.astro';
+import Navbar from '../components/Navbar.astro';
+import Services from '../components/Services.astro';
+import TrustBar from '../components/TrustBar.astro';
+import ZoneIntervention from '../components/ZoneIntervention.astro';
+import { homeSeo } from '../data/content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title={homeSeo.title} description={homeSeo.description}>
+	<Navbar slot="header" />
+	<Hero />
+	<TrustBar />
+	<Services />
+	<About />
+	<ZoneIntervention />
+	<Methode />
+	<AvisPatients />
+	<InformationsPratiques />
+	<Faq />
+	<script>
+		import '../scripts/animations';
+	</script>
+</BaseLayout>

@@ -1,0 +1,24 @@
+---
+import SEO from '../seo/SEO.astro';
+import type { SEOProps } from '../seo/types';
+import '../styles/global.css';
+
+interface Props extends SEOProps {}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+	<head>
+		<SEO {...props} />
+		<meta name="generator" content={Astro.generator} />
+	</head>
+	<body>
+		<a class="skip-link" href="#main-content">Aller au contenu principal</a>
+		<slot name="header" />
+		<main id="main-content">
+			<slot />
+		</main>
+	</body>
+</html>

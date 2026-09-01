@@ -1,0 +1,189 @@
+---
+import { Image } from 'astro:assets';
+import aboutPlaceholder from '../assets/images/about/about-placeholder.svg';
+import { aboutContent } from '../data/content';
+---
+
+<section class="about site-container" id="a-propos" aria-labelledby="about-title">
+	<div class="about__panel">
+		<div class="about__image-wrapper">
+			<Image
+				class="about__image"
+				src={aboutPlaceholder}
+				width={820}
+				height={960}
+				sizes="(max-width: 767px) calc(100vw - 72px), (max-width: 1023px) calc(100vw - 144px), 620px"
+				alt={aboutContent.imageAlt}
+				loading="lazy"
+				decoding="async"
+				data-parallax
+			/>
+		</div>
+
+		<div class="about__content">
+			<p class="about__eyebrow">{aboutContent.eyebrow}</p>
+			<h2 id="about-title">{aboutContent.title}</h2>
+			<p class="about__text">{aboutContent.text}</p>
+
+			<ol class="about__facts">
+				{aboutContent.professionalInfo.map((item, index) => (
+					<li>
+						<span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+						<p>{item}</p>
+					</li>
+				))}
+			</ol>
+		</div>
+	</div>
+</section>
+
+<style>
+	.about__panel {
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+		align-items: center;
+		gap: clamp(3rem, 5vw, 5rem);
+		overflow: hidden;
+		border-radius: var(--radius-lg);
+		background: var(--color-secondary);
+		padding: clamp(3rem, 5vw, 4.5rem);
+	}
+
+	.about__image-wrapper {
+		width: min(100%, 30rem);
+		height: clamp(31.25rem, 44vw, 38.75rem);
+		justify-self: center;
+		overflow: hidden;
+		border-radius: 32px;
+		background: var(--color-background);
+	}
+
+	.about__image-wrapper :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transform: scale(1.08);
+	}
+
+	.about__content {
+		padding-right: clamp(0rem, 2vw, 1.5rem);
+	}
+
+	.about__eyebrow {
+		color: var(--color-accent);
+		font-family: var(--font-script);
+		font-size: clamp(3rem, 5vw, 4.75rem);
+		line-height: 0.9;
+	}
+
+	.about__content h2 {
+		margin-top: 0.75rem;
+		font-size: clamp(2.5rem, 4vw, 3.75rem);
+	}
+
+	.about__text {
+		max-width: 48ch;
+		margin-top: 1.35rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.6;
+	}
+
+	.about__facts {
+		margin: 1.75rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.about__facts li {
+		display: grid;
+		grid-template-columns: 2rem 1fr;
+		gap: 1rem;
+		border-top: 1px solid color-mix(in srgb, var(--color-text) 13%, transparent);
+		padding-block: 0.75rem;
+	}
+
+	.about__facts li:last-child {
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 13%, transparent);
+	}
+
+	.about__facts span {
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+	}
+
+	.about__facts p {
+		font-weight: 600;
+		line-height: 1.45;
+	}
+
+	@media (max-width: 63.999rem) {
+		.about__panel {
+			grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+			gap: 2.5rem;
+			padding: 2.75rem;
+		}
+
+		.about__image-wrapper {
+			width: min(100%, 26rem);
+			height: clamp(26.25rem, 55vw, 32.5rem);
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.about__panel {
+			grid-template-columns: 1fr;
+			gap: 2.75rem;
+			border-radius: 28px;
+			padding: 1.25rem 1.25rem 3rem;
+		}
+
+		.about__image-wrapper {
+			width: 100%;
+			height: auto;
+			aspect-ratio: 4 / 5;
+			border-radius: 20px;
+		}
+
+		.about__content {
+			padding-inline: 0.25rem;
+		}
+
+		.about__eyebrow {
+			font-size: 3.5rem;
+		}
+
+		.about__content h2 {
+			font-size: clamp(2.25rem, 10vw, 3rem);
+		}
+	}
+
+	@media (max-height: 56.25rem) and (min-width: 64rem) {
+		.about__panel {
+			grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+			gap: 3.5rem;
+			padding: 2.5rem;
+		}
+
+		.about__image-wrapper {
+			width: min(100%, 26rem);
+			height: clamp(28.75rem, 58vh, 33.75rem);
+		}
+
+		.about__content {
+			padding-right: 1rem;
+		}
+
+		.about__eyebrow {
+			font-size: clamp(3rem, 4vw, 3.75rem);
+		}
+
+		.about__content h2 {
+			font-size: clamp(3.25rem, 4vw, 3.5rem);
+		}
+	}
+</style>

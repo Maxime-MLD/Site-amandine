@@ -1,0 +1,322 @@
+---
+import { patientReviews, reviewsContent } from '../data/content';
+
+const marqueeItems = [...patientReviews, ...patientReviews.slice(0, 4)];
+const secondRowItems = [...patientReviews.slice(4), ...patientReviews.slice(0, 4), ...patientReviews.slice(4)];
+---
+
+<section class="reviews" id="avis-patients" aria-labelledby="reviews-title">
+	<div class="reviews__header site-container">
+		<p class="reviews__eyebrow">{reviewsContent.eyebrow}</p>
+		<h2 id="reviews-title">{reviewsContent.title}</h2>
+		<p class="reviews__intro">{reviewsContent.intro}</p>
+	</div>
+
+	<div class="reviews__marquees site-container">
+		<div class="reviews__marquee" aria-label="Avis patients, première rangée">
+			<div class="reviews__track reviews__track--left" data-reviews-track>
+				<div class="reviews__group">
+					{marqueeItems.map((review) => (
+						<article class="review-card">
+							<p class="review-card__stars" aria-label={`${review.rating} étoiles sur 5`}>
+								<span aria-hidden="true">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+							</p>
+							<blockquote><p>{review.text}</p></blockquote>
+							<footer>
+								<span class="review-card__avatar" aria-hidden="true">{review.initials}</span>
+								<cite>{review.name}</cite>
+							</footer>
+						</article>
+					))}
+				</div>
+				<div class="reviews__group" aria-hidden="true">
+					{marqueeItems.map((review) => (
+						<article class="review-card">
+							<p class="review-card__stars"><span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span></p>
+							<blockquote><p>{review.text}</p></blockquote>
+							<footer>
+								<span class="review-card__avatar">{review.initials}</span>
+								<cite>{review.name}</cite>
+							</footer>
+						</article>
+					))}
+				</div>
+			</div>
+		</div>
+
+		<div class="reviews__marquee" aria-label="Avis patients, seconde rangée">
+			<div class="reviews__track reviews__track--right" data-reviews-track>
+				<div class="reviews__group">
+					{secondRowItems.map((review) => (
+						<article class="review-card">
+							<p class="review-card__stars" aria-label={`${review.rating} étoiles sur 5`}>
+								<span aria-hidden="true">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+							</p>
+							<blockquote><p>{review.text}</p></blockquote>
+							<footer>
+								<span class="review-card__avatar" aria-hidden="true">{review.initials}</span>
+								<cite>{review.name}</cite>
+							</footer>
+						</article>
+					))}
+				</div>
+				<div class="reviews__group" aria-hidden="true">
+					{secondRowItems.map((review) => (
+						<article class="review-card">
+							<p class="review-card__stars"><span>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span></p>
+							<blockquote><p>{review.text}</p></blockquote>
+							<footer>
+								<span class="review-card__avatar">{review.initials}</span>
+								<cite>{review.name}</cite>
+							</footer>
+						</article>
+					))}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	const tracks = document.querySelectorAll<HTMLElement>('[data-reviews-track]');
+	const observers: ResizeObserver[] = [];
+
+	tracks.forEach((track) => {
+		const group = track.querySelector<HTMLElement>('.reviews__group');
+		if (!group) return;
+
+		const syncDistance = () => {
+			track.style.setProperty('--marquee-distance', `-${group.getBoundingClientRect().width}px`);
+		};
+
+		syncDistance();
+
+		const observer = new ResizeObserver(syncDistance);
+		observer.observe(group);
+		observers.push(observer);
+	});
+
+	if (import.meta.hot) {
+		import.meta.hot.dispose(() => observers.forEach((observer) => observer.disconnect()));
+	}
+</script>
+
+<style>
+	.reviews {
+		overflow: clip;
+		background: var(--color-secondary);
+		padding-block: clamp(5rem, 8vw, 8rem);
+	}
+
+	.reviews__header {
+		max-width: 820px;
+		text-align: center;
+	}
+
+	.reviews__eyebrow {
+		margin-bottom: 0.9rem;
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.reviews__header h2 {
+		font-size: clamp(3rem, 4vw, 3.75rem);
+	}
+
+	.reviews__intro {
+		max-width: 620px;
+		margin: 1.25rem auto 0;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.55;
+	}
+
+	.reviews__marquees {
+		--marquee-gap: clamp(1rem, 2vw, 1.5rem);
+		--marquee-fade: clamp(5rem, 11vw, 10rem);
+		display: grid;
+		gap: 0;
+		margin-top: clamp(3rem, 5vw, 4.5rem);
+	}
+
+	.reviews__marquee {
+		width: 100%;
+		overflow: hidden;
+		-webkit-mask-image: linear-gradient(
+			to right,
+			transparent 0,
+			#000 var(--marquee-fade),
+			#000 calc(100% - var(--marquee-fade)),
+			transparent 100%
+		);
+		mask-image: linear-gradient(
+			to right,
+			transparent 0,
+			#000 var(--marquee-fade),
+			#000 calc(100% - var(--marquee-fade)),
+			transparent 100%
+		);
+		padding-block: clamp(1.25rem, 2vw, 1.75rem);
+	}
+
+	.reviews__track {
+		--marquee-distance: -50%;
+		display: flex;
+		flex-wrap: nowrap;
+		width: max-content;
+		will-change: transform;
+	}
+
+	.reviews__track--left {
+		animation: reviews-marquee-left 66s linear infinite;
+	}
+
+	.reviews__track--right {
+		animation: reviews-marquee-right 72s linear infinite;
+	}
+
+	.reviews__group {
+		display: flex;
+		flex-shrink: 0;
+		gap: var(--marquee-gap);
+		min-width: max-content;
+		padding-right: var(--marquee-gap);
+	}
+
+	.review-card {
+		display: flex;
+		flex: 0 0 clamp(21.25rem, 29vw, 25rem);
+		flex-direction: column;
+		min-height: 16.5rem;
+		border-radius: var(--radius-md);
+		background: var(--color-background);
+		box-shadow:
+			0 0.625rem 1.875rem rgba(23, 23, 23, 0.05),
+			0 0.125rem 0.625rem rgba(23, 23, 23, 0.03);
+		padding: clamp(1.5rem, 2.5vw, 1.875rem);
+	}
+
+	.review-card__stars {
+		color: var(--color-accent);
+		font-size: 0.875rem;
+		letter-spacing: 0.16em;
+		line-height: 1;
+	}
+
+	.review-card blockquote {
+		flex: 1;
+		margin-top: 1.25rem;
+	}
+
+	.review-card blockquote p {
+		font-size: clamp(1rem, 1.35vw, 1.125rem);
+		line-height: 1.55;
+	}
+
+	.review-card footer {
+		display: flex;
+		align-items: center;
+		gap: 0.8rem;
+		margin-top: 1.5rem;
+	}
+
+	.review-card__avatar {
+		display: grid;
+		flex: 0 0 2.75rem;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		border-radius: 50%;
+		background: var(--color-primary);
+		color: var(--color-text);
+		font-family: var(--font-heading);
+		font-size: 0.75rem;
+		font-weight: 750;
+		letter-spacing: 0.04em;
+	}
+
+	.review-card cite {
+		font-family: var(--font-heading);
+		font-size: 0.9375rem;
+		font-style: normal;
+		font-weight: 650;
+	}
+
+	@keyframes reviews-marquee-left {
+		from { transform: translate3d(0, 0, 0); }
+		to { transform: translate3d(var(--marquee-distance), 0, 0); }
+	}
+
+	@keyframes reviews-marquee-right {
+		from { transform: translate3d(var(--marquee-distance), 0, 0); }
+		to { transform: translate3d(0, 0, 0); }
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.reviews__marquee:hover .reviews__track {
+			animation-play-state: paused;
+		}
+	}
+
+	@media (max-width: 63.999rem) {
+		.reviews__marquees {
+			--marquee-fade: clamp(3.75rem, 10vw, 6rem);
+		}
+
+		.review-card {
+			flex-basis: clamp(19rem, 45vw, 22rem);
+			min-height: 15.5rem;
+			padding: 1.5rem;
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.reviews {
+			padding-block: 4rem;
+		}
+
+		.reviews__header h2 {
+			font-size: clamp(2.35rem, 10vw, 3rem);
+		}
+
+		.reviews__marquees {
+			--marquee-gap: 0.875rem;
+			--marquee-fade: clamp(2rem, 10vw, 3.25rem);
+			margin-top: 2.75rem;
+		}
+
+		.reviews__track--left {
+			animation-duration: 70s;
+		}
+
+		.reviews__track--right {
+			animation-duration: 75s;
+		}
+
+		.review-card {
+			flex-basis: min(18rem, calc(100vw - 4.25rem));
+			min-height: 15rem;
+			padding: 1.25rem;
+		}
+
+		.review-card blockquote p {
+			font-size: 1rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reviews__track {
+			animation: none;
+			transform: none;
+			will-change: auto;
+		}
+
+		.reviews__group[aria-hidden='true'] {
+			display: none;
+		}
+	}
+</style>

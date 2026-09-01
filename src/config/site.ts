@@ -1,0 +1,41 @@
+const TODO_SITE_ORIGIN = 'https://todo-site-url.invalid';
+
+export const siteConfig = {
+	firstName: 'Amandine',
+	lastName: 'Gauthier',
+	fullName: 'Amandine Gauthier',
+	profession: 'Infirmière à domicile',
+	city: 'Roanne',
+	country: 'France',
+	phone: 'TODO_PHONE',
+	email: 'TODO_EMAIL',
+	address: 'TODO_ADDRESS',
+	postalCode: 'TODO_POSTAL_CODE',
+	hours: 'TODO_HOURS',
+	siret: 'TODO_SIRET',
+	rpps: 'TODO_RPPS',
+	serviceArea: ['TODO_SERVICE_AREA'],
+	siteUrl: 'TODO_SITE_URL',
+	googleBusinessUrl: 'TODO_GOOGLE_BUSINESS_URL',
+	googleMapsUrl: 'TODO_GOOGLE_MAPS_URL',
+	professionalTitle: 'TODO_PROFESSIONAL_TITLE',
+	host: {
+		name: 'TODO_HOST_NAME',
+		address: 'TODO_HOST_ADDRESS',
+		phone: 'TODO_HOST_PHONE',
+	},
+	locale: 'fr-FR',
+	language: 'fr',
+	themeColor: '#8BE0B0',
+} as const;
+
+export function resolveSiteUrl(value: string): string {
+	try {
+		const url = new URL(value);
+		return url.protocol === 'http:' || url.protocol === 'https:'
+			? url.origin
+			: TODO_SITE_ORIGIN;
+	} catch {
+		return TODO_SITE_ORIGIN;
+	}
+}

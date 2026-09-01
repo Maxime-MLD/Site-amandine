@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="760" viewBox="0 0 640 760" fill="none">
+  <rect x="94" y="54" width="452" height="652" rx="226" fill="#FFFFFF" fill-opacity="0.34" stroke="#8BE0B0" stroke-width="3" stroke-dasharray="11 14"/>
+  <rect x="224" y="270" width="192" height="150" rx="28" fill="#FFFFFF" stroke="#DCE8E1" stroke-width="3"/>
+  <circle cx="286" cy="326" r="22" fill="#E4F8EC"/>
+  <path d="M244 388L294 348L326 374L348 356L397 399H244V388Z" fill="#8BE0B0"/>
+  <text x="320" y="474" fill="#171717" font-family="Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle" letter-spacing="2">TODO_HERO_IMAGE</text>
+  <text x="320" y="508" fill="#545B57" font-family="Arial, sans-serif" font-size="16" text-anchor="middle">Portrait à remplacer</text>
+</svg>

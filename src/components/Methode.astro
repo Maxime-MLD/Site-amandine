@@ -1,0 +1,284 @@
+---
+import { methodeContent, methodeSteps } from '../data/content';
+---
+
+<section class="methode" id="methode" aria-labelledby="methode-title" data-methode>
+	<div class="site-container">
+		<header class="methode__header">
+			<p class="methode__eyebrow">{methodeContent.eyebrow}</p>
+			<h2 id="methode-title">{methodeContent.title}</h2>
+			<p class="methode__intro">{methodeContent.intro}</p>
+		</header>
+
+		<div class="methode__journey" data-methode-journey>
+			<div class="methode__pin" data-methode-pin>
+				<div class="methode__stage" data-methode-stage>
+					<ol class="methode__steps">
+						{methodeSteps.map((step) => (
+							<li class="methode__step" data-methode-step>
+								<div data-methode-step-content>
+									<p class="methode__number" aria-hidden="true">{step.number}</p>
+									<h3>{step.title}</h3>
+									<p class="methode__description">{step.description}</p>
+								</div>
+							</li>
+						))}
+					</ol>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.methode {
+		overflow: clip;
+		background: var(--color-background);
+		padding-block: clamp(5rem, 8vw, 8rem);
+	}
+
+	.methode__header {
+		max-width: 780px;
+	}
+
+	.methode__eyebrow {
+		margin-bottom: 0.9rem;
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.methode__header h2 {
+		font-size: clamp(3rem, 4vw, 3.75rem);
+	}
+
+	.methode__intro {
+		max-width: 640px;
+		margin-top: 1.35rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.55;
+	}
+
+	.methode__journey {
+		position: relative;
+		margin-top: clamp(3rem, 5vw, 4.5rem);
+	}
+
+	.methode__pin {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 100vw;
+		height: 100svh;
+		margin-left: calc(50% - 50vw);
+	}
+
+	.methode__stage {
+		position: relative;
+		display: grid;
+		place-items: center;
+		isolation: isolate;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.methode__stage::after {
+		position: absolute;
+		z-index: 4;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: clamp(7rem, 15vw, 12rem);
+		background: linear-gradient(
+			to right,
+			rgba(255, 255, 255, 0),
+			rgba(255, 255, 255, 0.82) 62%,
+			var(--color-background) 100%
+		);
+		content: '';
+		pointer-events: none;
+	}
+
+	.methode__steps {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		place-items: center;
+		width: min(720px, 100%);
+		height: min(34rem, 72svh);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.methode__step {
+		position: relative;
+		grid-area: 1 / 1;
+		width: min(560px, calc(100% - 6rem));
+		min-height: clamp(14rem, 30svh, 17rem);
+		border-radius: var(--radius-md);
+		background: var(--color-secondary);
+		box-shadow:
+			0 1.25rem 3.75rem rgba(23, 23, 23, 0.08),
+			0 0.25rem 1.125rem rgba(23, 23, 23, 0.04);
+		padding: clamp(1.6rem, 3vw, 2.25rem);
+		will-change: transform, opacity;
+	}
+
+	.methode__step:nth-child(1) {
+		z-index: 1;
+	}
+
+	.methode__step:nth-child(2) {
+		z-index: 2;
+	}
+
+	.methode__step:nth-child(3) {
+		z-index: 3;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.methode__step {
+			visibility: hidden;
+			opacity: 0;
+		}
+	}
+
+	.methode__number {
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: 0.875rem;
+		font-weight: 750;
+		letter-spacing: 0.12em;
+	}
+
+	.methode__step h3 {
+		margin-top: 0.55rem;
+		font-size: clamp(1.65rem, 2.5vw, 2.25rem);
+		font-weight: 650;
+	}
+
+	.methode__description {
+		max-width: 36ch;
+		margin-top: 0.9rem;
+		color: var(--color-text-muted);
+		font-size: 1.0625rem;
+		line-height: 1.55;
+	}
+
+	@media (max-width: 63.999rem) {
+		.methode {
+			padding-block: 4.5rem;
+		}
+
+		.methode__steps {
+			width: min(680px, 100%);
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.methode {
+			padding-block: 4rem;
+		}
+
+		.methode__header h2 {
+			font-size: clamp(2.35rem, 10vw, 3rem);
+		}
+
+		.methode__journey {
+			margin-top: 2.75rem;
+		}
+
+		.methode__pin {
+			position: relative;
+			display: block;
+			width: 100%;
+			height: auto;
+			margin-left: 0;
+		}
+
+		.methode__stage {
+			display: block;
+			height: auto;
+			overflow: visible;
+		}
+
+		.methode__stage::after {
+			display: none;
+		}
+
+		.methode__steps {
+			display: grid;
+			gap: 1.5rem;
+			width: 100%;
+			height: auto;
+		}
+
+		.methode__step {
+			position: relative;
+			grid-area: auto;
+			width: 100%;
+			min-height: 0;
+			padding: 1.5rem;
+		}
+	}
+
+	@media (max-height: 56.25rem) and (min-width: 64rem) {
+		.methode {
+			padding-block: 5rem;
+		}
+
+		.methode__journey {
+			margin-top: 3rem;
+		}
+
+		.methode__steps {
+			height: min(31rem, 72svh);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.methode__pin {
+			position: relative;
+			width: 100%;
+			height: auto;
+			margin-left: 0;
+		}
+
+		.methode__stage {
+			height: auto;
+			overflow: visible;
+		}
+
+		.methode__stage::after {
+			display: none;
+		}
+
+		.methode__steps {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			align-items: stretch;
+			gap: 1.25rem;
+			width: 100%;
+			height: auto;
+		}
+
+		.methode__step {
+			grid-area: auto;
+			width: auto;
+			min-height: 100%;
+			padding: 1.5rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) and (max-width: 47.999rem) {
+		.methode__steps {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

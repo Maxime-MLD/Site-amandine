@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 960" role="img" aria-labelledby="title desc">
+  <title id="title">Placeholder de la photographie d’Amandine</title>
+  <desc id="desc">Emplacement local explicite à remplacer par une photographie validée.</desc>
+  <rect width="820" height="960" fill="#fff"/>
+  <path d="M-38 903c34-254 149-398 342-438 212-45 385 50 554 267v228H-38Z" fill="#8BE0B0" opacity=".65"/>
+  <ellipse cx="443" cy="317" rx="240" ry="274" fill="#E4F8EC" transform="rotate(8 443 317)"/>
+  <circle cx="665" cy="200" r="24" fill="#FB6F84"/>
+  <path d="M325 623c49-69 105-103 168-103 66 0 125 34 179 103" fill="none" stroke="#171717" stroke-linecap="round" stroke-width="12" opacity=".16"/>
+  <text x="410" y="790" text-anchor="middle" fill="#171717" font-family="Arial, sans-serif" font-size="24" font-weight="700">TODO_ABOUT_IMAGE</text>
+</svg>

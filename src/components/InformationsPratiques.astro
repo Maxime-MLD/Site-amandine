@@ -1,0 +1,307 @@
+---
+import { practicalContent, practicalDocuments } from '../data/content';
+---
+
+<section class="practical" id="informations-pratiques" aria-labelledby="practical-title" data-practical>
+	<div class="practical__inner site-container">
+		<header class="practical__header">
+			<p class="practical__eyebrow">{practicalContent.eyebrow}</p>
+			<h2 id="practical-title">{practicalContent.title}</h2>
+			<p class="practical__intro">{practicalContent.intro}</p>
+		</header>
+
+		<div class="practical__grid" data-practical-grid>
+			<article class="practical-card practical-card--availability" data-practical-card>
+				<p class="practical-card__label">{practicalContent.availability.label}</p>
+				<div class="practical-card__body">
+					<h3>{practicalContent.availability.title}</h3>
+					<p class="practical-card__hours">{practicalContent.availability.hours}</p>
+					<p class="practical-card__text">{practicalContent.availability.text}</p>
+				</div>
+			</article>
+
+			<article class="practical-card practical-card--area" data-practical-card>
+				<p class="practical-card__label">{practicalContent.area.label}</p>
+				<div class="practical-card__body">
+					<h3>{practicalContent.area.title}</h3>
+					<p class="practical-card__text">{practicalContent.area.text}</p>
+					<a class="practical-card__link" href="#zone-intervention">
+						{practicalContent.area.linkLabel}<span aria-hidden="true">↗</span>
+					</a>
+				</div>
+			</article>
+
+			<article class="practical-card practical-card--documents" data-practical-card>
+				<p class="practical-card__label">{practicalContent.documents.label}</p>
+				<div class="practical-card__body">
+					<h3>{practicalContent.documents.title}</h3>
+					<ul class="practical-card__list">
+						{practicalDocuments.map((document) => <li>{document}</li>)}
+					</ul>
+					<p class="practical-card__note">{practicalContent.documents.text}</p>
+				</div>
+			</article>
+
+			<article class="practical-card practical-card--urgent" id="contact" data-practical-card>
+				<p class="practical-card__label">{practicalContent.urgent.label}</p>
+				<div class="practical-card__body">
+					<h3>{practicalContent.urgent.title}</h3>
+					<p class="practical-card__text">{practicalContent.urgent.text}</p>
+					<a class="practical-card__cta" href={practicalContent.urgent.href}>
+						{practicalContent.urgent.ctaLabel}<span aria-hidden="true">→</span>
+					</a>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>
+
+<style>
+	.practical {
+		overflow: clip;
+		background: var(--color-background);
+		padding-block: clamp(6rem, 9vw, 9rem);
+	}
+
+	.practical__header {
+		max-width: 850px;
+	}
+
+	.practical__eyebrow,
+	.practical-card__label {
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.practical__eyebrow {
+		margin-bottom: 0.9rem;
+	}
+
+	.practical__header h2 {
+		max-width: 13em;
+		font-size: clamp(3rem, 4vw, 3.75rem);
+	}
+
+	.practical__intro {
+		max-width: 690px;
+		margin-top: 1.5rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.6;
+	}
+
+	.practical__grid {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: clamp(1rem, 2vw, 1.5rem);
+		margin-top: clamp(3rem, 5vw, 4.5rem);
+	}
+
+	.practical-card {
+		display: flex;
+		min-width: 0;
+		min-height: 19rem;
+		flex-direction: column;
+		justify-content: space-between;
+		border-radius: var(--radius-md);
+		background: var(--color-secondary);
+		box-shadow:
+			0 0.75rem 2.1875rem rgba(23, 23, 23, 0.04),
+			0 0.1875rem 0.625rem rgba(23, 23, 23, 0.025);
+		padding: clamp(1.75rem, 3vw, 2.5rem);
+	}
+
+	.practical-card--availability,
+	.practical-card--urgent {
+		grid-column: span 7;
+	}
+
+	.practical-card--area,
+	.practical-card--documents {
+		grid-column: span 5;
+	}
+
+	.practical-card--availability {
+		min-height: 22rem;
+	}
+
+	.practical-card--urgent {
+		min-height: 20.5rem;
+	}
+
+	.practical-card__body {
+		display: flex;
+		align-items: flex-start;
+		flex-direction: column;
+		margin-top: clamp(2.75rem, 5vw, 5rem);
+	}
+
+	.practical-card h3 {
+		max-width: 18em;
+		font-size: clamp(1.65rem, 2.6vw, 2.35rem);
+		font-weight: 700;
+		line-height: 1.12;
+	}
+
+	.practical-card__hours {
+		margin-top: 0.75rem;
+		font-family: var(--font-heading);
+		font-size: clamp(2.75rem, 5.5vw, 4.75rem);
+		font-variant-numeric: tabular-nums;
+		font-weight: 700;
+		letter-spacing: -0.055em;
+		line-height: 1;
+	}
+
+	.practical-card__text,
+	.practical-card__note {
+		max-width: 48ch;
+		color: var(--color-text-muted);
+		line-height: 1.6;
+	}
+
+	.practical-card__text {
+		margin-top: 1.25rem;
+		font-size: clamp(1rem, 1.4vw, 1.125rem);
+	}
+
+	.practical-card__link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 1.75rem;
+		font-family: var(--font-heading);
+		font-size: 0.95rem;
+		font-weight: 700;
+	}
+
+	.practical-card__link span {
+		color: var(--color-accent);
+	}
+
+	.practical-card__list {
+		width: 100%;
+		margin: 1.5rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.practical-card__list li {
+		position: relative;
+		border-top: 1px solid rgba(23, 23, 23, 0.1);
+		padding: 0.7rem 0 0.7rem 1.25rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	.practical-card__list li::before {
+		position: absolute;
+		top: 1.15rem;
+		left: 0;
+		width: 0.4rem;
+		height: 0.4rem;
+		border-radius: 50%;
+		background: var(--color-primary);
+		content: '';
+	}
+
+	.practical-card__note {
+		margin-top: 1.25rem;
+		font-size: 0.95rem;
+	}
+
+	.practical-card__cta {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		min-height: 3rem;
+		margin-top: 2rem;
+		border-radius: 999px;
+		background: var(--color-primary);
+		padding: 0.75rem 1.25rem;
+		font-family: var(--font-heading);
+		font-size: 0.95rem;
+		font-weight: 750;
+		text-decoration: none;
+		transition: transform 180ms ease, background-color 180ms ease;
+	}
+
+	.practical-card__cta:hover {
+		transform: translateY(-2px);
+		background: #76d69f;
+	}
+
+	.practical-card__cta span {
+		color: var(--color-accent);
+		font-size: 1.1rem;
+	}
+
+	@media (max-width: 63.999rem) {
+		.practical {
+			padding-block: 5.5rem;
+		}
+
+		.practical__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.practical-card {
+			grid-column: auto;
+			min-height: 19rem;
+		}
+
+		.practical-card--availability,
+		.practical-card--urgent {
+			grid-column: 1 / -1;
+			min-height: 20rem;
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.practical {
+			padding-block: 4rem;
+		}
+
+		.practical__header h2 {
+			font-size: clamp(2.35rem, 10vw, 3rem);
+		}
+
+		.practical__intro {
+			margin-top: 1.25rem;
+		}
+
+		.practical__grid {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+			margin-top: 2.75rem;
+		}
+
+		.practical-card,
+		.practical-card--availability,
+		.practical-card--urgent {
+			grid-column: auto;
+			min-height: 0;
+			padding: 1.5rem;
+		}
+
+		.practical-card__body {
+			margin-top: 2.5rem;
+		}
+
+		.practical-card__hours {
+			font-size: clamp(2.2rem, 11vw, 3rem);
+			white-space: nowrap;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.practical-card__cta {
+			transition: none;
+		}
+	}
+</style>

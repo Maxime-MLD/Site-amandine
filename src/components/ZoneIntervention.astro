@@ -1,0 +1,223 @@
+---
+import { Image } from 'astro:assets';
+import mapIllustration from '../assets/images/map/roanne-area.svg';
+import { siteConfig } from '../config/site';
+import { serviceAreas, zoneContent } from '../data/content';
+
+const hasGoogleMapsUrl = !siteConfig.googleMapsUrl.startsWith('TODO_');
+---
+
+<section class="zone" id="zone-intervention" aria-labelledby="zone-title">
+	<div class="zone__layout site-container">
+		<div class="zone__content">
+			<p class="zone__eyebrow">{zoneContent.eyebrow}</p>
+			<h2 id="zone-title">{zoneContent.title}</h2>
+			<p class="zone__text">{zoneContent.text}</p>
+
+			<div class="zone__areas">
+				<h3>{zoneContent.areasLabel}</h3>
+				<ul>
+					{serviceAreas.map((area) => <li>{area}</li>)}
+				</ul>
+			</div>
+		</div>
+
+		<div class="zone__visual">
+			<div class="zone__map">
+				<Image
+					src={mapIllustration}
+					width={960}
+					height={650}
+					sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 48px), 730px"
+					alt={zoneContent.mapAlt}
+					loading="lazy"
+					decoding="async"
+				/>
+			</div>
+
+			{hasGoogleMapsUrl ? (
+				<a class="zone__map-link" href={siteConfig.googleMapsUrl} target="_blank" rel="noopener noreferrer">
+					{zoneContent.mapLinkLabel}<span aria-hidden="true">↗</span>
+				</a>
+			) : (
+				<span class="zone__map-link zone__map-link--disabled" aria-disabled="true">
+					{zoneContent.mapLinkLabel}<span aria-hidden="true">↗</span>
+				</span>
+			)}
+		</div>
+	</div>
+</section>
+
+<style>
+	.zone {
+		padding-block: clamp(7.5rem, 9vw, 8.75rem);
+		background: var(--color-background);
+	}
+
+	.zone__layout {
+		display: grid;
+		grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+		align-items: center;
+		gap: clamp(3rem, 4.5vw, 4.5rem);
+	}
+
+	.zone__eyebrow {
+		margin-bottom: 0.9rem;
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.zone__content h2 {
+		max-width: 10.5em;
+		font-size: clamp(3rem, 4vw, 3.75rem);
+	}
+
+	.zone__text {
+		max-width: 46ch;
+		margin-top: 1.5rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.6;
+	}
+
+	.zone__areas {
+		margin-top: 2rem;
+	}
+
+	.zone__areas h3 {
+		font-size: 0.875rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.zone__areas ul {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0;
+		margin: 1rem 0 0;
+		padding: 0;
+		border-top: 1px solid var(--color-border);
+		list-style: none;
+	}
+
+	.zone__areas li {
+		border-bottom: 1px solid var(--color-border);
+		padding-block: 0.8rem;
+		font-weight: 600;
+	}
+
+	.zone__areas li:nth-child(odd) {
+		padding-right: 1rem;
+	}
+
+	.zone__areas li:nth-child(even) {
+		padding-left: 1rem;
+		border-left: 1px solid var(--color-border);
+	}
+
+	.zone__map {
+		height: clamp(30rem, 36vw, 35rem);
+		overflow: hidden;
+		border-radius: 32px;
+		background: var(--color-secondary);
+	}
+
+	.zone__map :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.zone__map-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-top: 1.25rem;
+		font-family: var(--font-heading);
+		font-size: 0.95rem;
+		font-weight: 700;
+		text-decoration-thickness: 1px;
+	}
+
+	.zone__map-link span {
+		color: var(--color-accent);
+	}
+
+	.zone__map-link--disabled {
+		cursor: not-allowed;
+		opacity: 0.55;
+	}
+
+	@media (max-width: 63.999rem) {
+		.zone {
+			padding-block: 4.5rem;
+		}
+
+		.zone__layout {
+			grid-template-columns: 1fr;
+			gap: 3rem;
+		}
+
+		.zone__map {
+			height: clamp(25rem, 55vw, 31.25rem);
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.zone {
+			padding-block: 4rem;
+		}
+
+		.zone__layout {
+			gap: 3rem;
+		}
+
+		.zone__areas ul {
+			grid-template-columns: 1fr;
+		}
+
+		.zone__areas li:nth-child(odd),
+		.zone__areas li:nth-child(even) {
+			padding-inline: 0;
+			border-left: 0;
+		}
+
+		.zone__map {
+			height: auto;
+			aspect-ratio: 4 / 3;
+			border-radius: 24px;
+		}
+	}
+
+	@media (max-height: 56.25rem) and (min-width: 64rem) {
+		.zone {
+			padding-block: 5rem;
+		}
+
+		.zone__layout {
+			grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+			gap: 3.5rem;
+		}
+
+		.zone__content h2 {
+			font-size: clamp(3.25rem, 4vw, 3.75rem);
+		}
+
+		.zone__text {
+			margin-top: 1.1rem;
+		}
+
+		.zone__areas {
+			margin-top: 1.5rem;
+		}
+
+		.zone__map {
+			height: clamp(30rem, 60vh, 31.875rem);
+		}
+	}
+</style>
