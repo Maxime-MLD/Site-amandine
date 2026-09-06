@@ -1,0 +1,111 @@
+---
+import Footer from '../components/Footer.astro';
+import Navbar from '../components/Navbar.astro';
+import { siteConfig } from '../config/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title={`Page introuvable | ${siteConfig.fullName}`}
+	description="La page demandée n’existe pas ou a été déplacée."
+	robots="noindex, follow"
+>
+	<Navbar slot="header" />
+	<section class="not-found" aria-labelledby="not-found-title">
+		<div class="not-found__inner site-container">
+			<p class="not-found__eyebrow">Erreur 404</p>
+			<h1 id="not-found-title">Page introuvable</h1>
+			<p class="not-found__text">
+				La page que vous cherchez n’existe pas ou a été déplacée. Retournez à l’accueil pour
+				retrouver toutes les informations sur les soins infirmiers à domicile à Montagny et alentours.
+			</p>
+			<div class="not-found__actions">
+				<a class="not-found__button not-found__button--primary" href="/">Retour à l’accueil</a>
+				<a class="not-found__button not-found__button--secondary" href="/#contact">Me contacter</a>
+			</div>
+		</div>
+	</section>
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.not-found {
+		background: var(--color-background);
+		padding-block: clamp(4rem, 9vw, 7rem) clamp(6rem, 10vw, 9rem);
+	}
+
+	.not-found__inner {
+		max-width: 44rem;
+	}
+
+	.not-found__eyebrow {
+		margin-bottom: 0.9rem;
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.not-found h1 {
+		font-size: clamp(3rem, 6vw, 4.75rem);
+	}
+
+	.not-found__text {
+		max-width: 40rem;
+		margin-top: 1.5rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.6;
+	}
+
+	.not-found__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2.25rem;
+	}
+
+	.not-found__button {
+		display: inline-flex;
+		min-height: 52px;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid transparent;
+		border-radius: var(--radius-sm);
+		padding: 0.85rem 1.5rem;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		line-height: 1;
+		text-decoration: none;
+		transition: background-color 180ms ease, transform 180ms ease, border-color 180ms ease;
+	}
+
+	.not-found__button:hover {
+		transform: translateY(-2px);
+	}
+
+	.not-found__button--primary {
+		background: var(--color-primary);
+	}
+
+	.not-found__button--primary:hover {
+		background: color-mix(in srgb, var(--color-primary) 88%, var(--color-background));
+	}
+
+	.not-found__button--secondary {
+		border-color: var(--color-primary);
+		background: var(--color-background);
+	}
+
+	.not-found__button--secondary:hover {
+		background: color-mix(in srgb, var(--color-background) 78%, var(--color-primary));
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.not-found__button {
+			transition: none;
+		}
+	}
+</style>

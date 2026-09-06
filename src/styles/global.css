@@ -1,12 +1,23 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/manrope';
 @import '@fontsource-variable/source-sans-3';
-@import '@fontsource/allura/400.css';
+@import '@fontsource/playfair-display/latin-700-italic.css';
 
 :root {
 	--color-primary: #8be0b0;
 	--color-secondary: #e4f8ec;
 	--color-accent: #fb6f84;
+	--color-peach: #f4c7a1;
+	/* Darker accent reserved for small text (eyebrows/labels/errors) so they meet
+	   WCAG AA contrast. Decorative uses and large script accents keep --color-accent. */
+	--color-accent-text: #be3356;
+	/* New editorial palette (rolled out on the Hero + header first). */
+	--c-petrol: #123b4a;
+	--c-ivory: #f4efe7;
+	--c-steel: #52798a;
+	--c-amber: #d99a3e;
+	--c-ink: #17191a;
+	--c-offwhite: #fffdf9;
 	--color-background: #ffffff;
 	--color-surface: #f7faf8;
 	--color-text: #171717;
@@ -14,12 +25,17 @@
 	--color-border: #dce8e1;
 	--font-heading: 'Manrope Variable', 'Arial', sans-serif;
 	--font-body: 'Source Sans 3 Variable', 'Arial', sans-serif;
-	--font-script: 'Allura', cursive;
-	--container: 1280px;
+	--font-accent: 'Playfair Display', 'Georgia', serif;
+	--container: 1480px;
 	--radius-sm: 12px;
 	--radius-md: 24px;
 	--radius-lg: 40px;
 	--shadow-soft: 0 18px 50px rgb(23 23 23 / 8%);
+	/* Decorative art-direction layers (used as background-image layers so they sit
+	   behind content/photos, never receive events, and add no DOM). Very subtle. */
+	--grain-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%3E%20%3Cfilter%20id%3D%22g%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.8%22%20numOctaves%3D%222%22%20stitchTiles%3D%22stitch%22%2F%3E%20%3CfeColorMatrix%20values%3D%220.34%200.34%200.34%200%200%200.34%200.34%200.34%200%200%200.34%200.34%200.34%200%200%200%200%200%200%201%22%2F%3E%3C%2Ffilter%3E%20%3Crect%20width%3D%22120%22%20height%3D%22120%22%20filter%3D%22url(%23g)%22%20opacity%3D%220.05%22%2F%3E%3C%2Fsvg%3E");
+	--decor-peach: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22480%22%20height%3D%22340%22%20fill%3D%22none%22%3E%20%3Cpath%20d%3D%22M6%20250%20C%20110%20150%20180%20300%20290%20220%20C%20372%20160%20424%20232%20474%20178%22%20stroke%3D%22%23F4C7A1%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-opacity%3D%220.55%22%2F%3E%3C%2Fsvg%3E");
+	--decor-rose: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22440%22%20height%3D%22360%22%20fill%3D%22none%22%3E%20%3Cpath%20d%3D%22M28%20250%20C%2070%20130%20210%20120%20214%20214%20C%20217%20280%20128%20288%20150%20202%20C%20170%20128%20300%20150%20430%2074%22%20stroke%3D%22%23FB6F84%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-opacity%3D%220.4%22%2F%3E%3C%2Fsvg%3E");
 	--text-h1: clamp(2.5rem, 7vw, 5.75rem);
 	--text-h2: clamp(2rem, 4vw, 3.5rem);
 	--text-h3: clamp(1.4rem, 2vw, 2rem);
@@ -41,7 +57,7 @@ html {
 }
 
 body {
-	min-width: 320px;
+	min-width: 0;
 	margin: 0;
 	background: var(--color-background);
 	color: var(--color-text);
@@ -97,8 +113,45 @@ a:hover {
 
 .font-heading { font-family: var(--font-heading); }
 .font-body { font-family: var(--font-body); }
-.font-script { font-family: var(--font-script); }
 .text-muted { color: var(--color-text-muted); }
+
+.title-accent {
+	position: relative;
+	isolation: isolate;
+	display: inline-block;
+	font-family: var(--font-accent);
+	font-weight: 700;
+	color: var(--color-accent);
+	font-size: calc(1em + 2px);
+	line-height: 1;
+	letter-spacing: 0;
+	vertical-align: -0.025em;
+	padding-inline: 0.025em 0.065em;
+	text-transform: none;
+	font-style: italic;
+}
+
+.title-accent::after {
+	position: absolute;
+	z-index: -1;
+	right: -0.075em;
+	bottom: 0.015em;
+	left: -0.055em;
+	height: 0.16em;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 12' preserveAspectRatio='none'%3E%3Cpath fill='%23F4C7A1' fill-opacity='.84' d='M1 8.2C18 7.1 31 4.7 49 4.3C67 3.9 83 5.3 99 6.8C82 7.4 70 9.5 52 9.2C33 9 17 9.6 1 8.2Z'/%3E%3C/svg%3E");
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	content: '';
+	pointer-events: none;
+}
+
+.title-accent--hero::after {
+	right: -0.095em;
+	bottom: -0.005em;
+	left: -0.07em;
+	height: 0.18em;
+}
 
 .skip-link {
 	position: fixed;
@@ -121,6 +174,18 @@ a:hover {
 	.site-container {
 		width: min(var(--container), calc(100% - 32px));
 	}
+
+	.title-accent::after {
+		right: -0.04em;
+		bottom: 0.025em;
+		left: -0.03em;
+		height: 0.14em;
+	}
+
+	.title-accent--hero::after {
+		bottom: 0.005em;
+		height: 0.16em;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -134,9 +199,19 @@ a:hover {
 		animation-iteration-count: 1 !important;
 	}
 
-	[data-methode-step] {
+	[data-methode-card] {
 		visibility: visible !important;
 		opacity: 1 !important;
 		transform: none !important;
+	}
+}
+
+/* Keep mobile uncluttered: drop the decorative lines (grain stays). Because the
+   lines are driven by these variables, setting them to none removes every line
+   layer site-wide in one place. */
+@media (max-width: 47.999rem) {
+	:root {
+		--decor-peach: none;
+		--decor-rose: none;
 	}
 }

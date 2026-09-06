@@ -1,22 +1,29 @@
 ---
-import { trustBarItems } from '../data/content';
+const trustItems = [
+	'SOINS À DOMICILE',
+	'CABINET SUR RENDEZ-VOUS',
+	'MONTAGNY & ALENTOURS',
+	'ÉCOUTE',
+	'DISPONIBILITÉ',
+	'BIENVEILLANCE',
+];
+
+const trustMessage = `${trustItems.join(' • ')} •`;
 ---
 
-<section class="trust-bar site-container" aria-label="Informations pratiques">
-	<ul class="sr-only">
-		{trustBarItems.map((item) => <li>{item}</li>)}
-	</ul>
+<section class="trust-ribbon site-container" aria-label="Repères de confiance">
+	<p class="sr-only">{trustMessage}</p>
 
-	<div class="trust-bar__viewport" aria-hidden="true">
-		<div class="trust-bar__track">
+	<div class="trust-ribbon__ticker" aria-hidden="true">
+		<div class="trust-ribbon__track">
 			{[0, 1].map((groupIndex) => (
-				<div class="trust-bar__group" data-duplicate={groupIndex === 1 ? 'true' : undefined}>
-					{[0, 1].map((sequenceIndex) => (
-						<div class="trust-bar__sequence" data-filler={sequenceIndex === 1 ? 'true' : undefined}>
-							{trustBarItems.map((item) => (
+				<div class="trust-ribbon__group" data-copy={groupIndex === 1 ? 'true' : undefined}>
+					{[0, 1].map(() => (
+						<div class="trust-ribbon__message">
+							{trustItems.map((item) => (
 								<>
-									<span class="trust-bar__item">{item}</span>
-									<span class="trust-bar__separator">✦</span>
+									<span class="trust-ribbon__item">{item}</span>
+									<span class="trust-ribbon__dot">•</span>
 								</>
 							))}
 						</div>
@@ -25,88 +32,197 @@ import { trustBarItems } from '../data/content';
 			))}
 		</div>
 	</div>
+
+	<div class="trust-ribbon__signal" aria-hidden="true">
+		<svg class="trust-ribbon__pulse" viewBox="0 0 56 18" role="presentation">
+			<path d="M1 10h12l4-7 6 14 7-13 5 6h20" />
+		</svg>
+		<span class="trust-ribbon__rule"></span>
+		<svg class="trust-ribbon__pulse trust-ribbon__pulse--end" viewBox="0 0 56 18" role="presentation">
+			<path d="M1 10h12l4-7 6 14 7-13 5 6h20" />
+		</svg>
+	</div>
 </section>
 
 <style>
-	.trust-bar {
-		margin-top: 1.5rem;
-		margin-bottom: 2rem;
+	.trust-ribbon {
+		position: relative;
+		height: 92px;
+		margin-top: 1.25rem;
+		margin-bottom: clamp(3rem, 4vw, 4.75rem);
 		overflow: hidden;
-		border-top: 1px solid var(--color-border);
-		border-bottom: 1px solid var(--color-border);
-		background: var(--color-background);
+		border: 1px solid rgb(18 59 74 / 14%);
+		border-radius: 18px;
+		background: #fffdf9;
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 72%);
 	}
 
-	.trust-bar__viewport {
+	.trust-ribbon__ticker {
+		position: absolute;
+		inset: 0 0 24px;
+		display: flex;
+		align-items: center;
 		overflow: hidden;
 		-webkit-mask-image: linear-gradient(
 			to right,
 			transparent 0,
-			#000 6%,
-			#000 94%,
+			#000 7%,
+			#000 93%,
 			transparent 100%
 		);
 		mask-image: linear-gradient(
 			to right,
 			transparent 0,
-			#000 6%,
-			#000 94%,
+			#000 7%,
+			#000 93%,
 			transparent 100%
 		);
-		padding-block: 1.35rem;
 	}
 
-	.trust-bar__track {
+	.trust-ribbon__track {
 		display: flex;
 		width: max-content;
-		animation: trust-bar-marquee 30s linear infinite;
+		align-items: center;
+		animation: trust-ribbon-scroll 30s linear infinite;
 		will-change: transform;
 	}
 
-	.trust-bar__group {
+	.trust-ribbon__group,
+	.trust-ribbon__message {
 		display: flex;
 		flex: none;
 		align-items: center;
 	}
 
-	.trust-bar__sequence {
-		display: flex;
-		flex: none;
-		align-items: center;
-		gap: clamp(1.5rem, 3vw, 3rem);
-		padding-right: clamp(1.5rem, 3vw, 3rem);
+	.trust-ribbon__message {
+		gap: clamp(1rem, 1.65vw, 1.75rem);
+		padding-right: clamp(1rem, 1.65vw, 1.75rem);
 	}
 
-	.trust-bar__item {
-		font-size: clamp(1rem, 1.5vw, 1.125rem);
-		font-weight: 600;
+	.trust-ribbon__item {
+		color: #123b4a;
+		font-family: var(--font-heading);
+		font-size: clamp(0.82rem, 0.9vw, 0.94rem);
+		font-weight: 650;
+		letter-spacing: 0.105em;
+		line-height: 1;
+		text-transform: uppercase;
 		white-space: nowrap;
 	}
 
-	.trust-bar__separator {
-		color: var(--color-accent);
-		font-size: 0.9rem;
+	.trust-ribbon__dot {
+		flex: none;
+		color: #d99a3e;
+		font-size: 0.72rem;
+		line-height: 1;
 	}
 
-	@keyframes trust-bar-marquee {
-		to { transform: translateX(-50%); }
+	.trust-ribbon__signal {
+		position: absolute;
+		right: clamp(1.25rem, 2.5vw, 2.5rem);
+		bottom: 12px;
+		left: clamp(1.25rem, 2.5vw, 2.5rem);
+		display: grid;
+		grid-template-columns: 56px minmax(0, 1fr) 56px;
+		align-items: center;
+		pointer-events: none;
+	}
+
+	.trust-ribbon__pulse {
+		display: block;
+		width: 56px;
+		height: 18px;
+		fill: none;
+		stroke: #d99a3e;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.1;
+		vector-effect: non-scaling-stroke;
+	}
+
+	.trust-ribbon__pulse--end {
+		transform: scaleX(-1);
+	}
+
+	.trust-ribbon__rule {
+		height: 1px;
+		background: rgb(217 154 62 / 34%);
+	}
+
+	.trust-ribbon:hover .trust-ribbon__track {
+		animation-play-state: paused;
+	}
+
+	@keyframes trust-ribbon-scroll {
+		to {
+			transform: translate3d(-50%, 0, 0);
+		}
+	}
+
+	@media (max-width: 63.999rem) {
+		.trust-ribbon {
+			height: 86px;
+			border-radius: 16px;
+		}
+
+		.trust-ribbon__ticker {
+			bottom: 22px;
+		}
+
+		.trust-ribbon__track {
+			animation-duration: 28s;
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.trust-ribbon {
+			height: 78px;
+			margin-top: 1rem;
+			margin-bottom: 3rem;
+			border-radius: 14px;
+		}
+
+		.trust-ribbon__ticker {
+			bottom: 19px;
+			-webkit-mask-image: linear-gradient(to right, transparent 0, #000 13%, #000 87%, transparent 100%);
+			mask-image: linear-gradient(to right, transparent 0, #000 13%, #000 87%, transparent 100%);
+		}
+
+		.trust-ribbon__track {
+			animation-duration: 25s;
+		}
+
+		.trust-ribbon__message {
+			gap: 0.9rem;
+			padding-right: 0.9rem;
+		}
+
+		.trust-ribbon__item {
+			font-size: 0.75rem;
+			letter-spacing: 0.085em;
+		}
+
+		.trust-ribbon__signal {
+			right: 0.9rem;
+			bottom: 9px;
+			left: 0.9rem;
+			grid-template-columns: 42px minmax(0, 1fr) 42px;
+		}
+
+		.trust-ribbon__pulse {
+			width: 42px;
+			height: 14px;
+			stroke-width: 1;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.trust-bar__track {
-			width: auto;
+		.trust-ribbon__track {
 			animation: none;
+			transform: none;
 		}
 
-		.trust-bar__sequence {
-			flex-wrap: wrap;
-			justify-content: center;
-			row-gap: 0.7rem;
-			padding-right: 0;
-		}
-
-		.trust-bar__group[data-duplicate='true'],
-		.trust-bar__sequence[data-filler='true'] {
+		.trust-ribbon__group[data-copy='true'] {
 			display: none;
 		}
 	}

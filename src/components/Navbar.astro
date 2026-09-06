@@ -1,20 +1,28 @@
 ---
 import { siteConfig } from '../config/site';
 import { heroContent, navigation } from '../data/content';
+
+const isHomePage = Astro.url.pathname === '/';
+const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 ---
 
-<header class="site-header">
+<header class="site-header" data-site-header>
 	<div class="site-container site-header__inner">
-		<a class="brand" href="#accueil" aria-label={`${siteConfig.fullName}, accueil`}>
-			<span class="brand__name">{siteConfig.fullName}</span>
-			<span class="brand__profession">{siteConfig.profession}</span>
+		<a class="brand" href={homeAnchor('#accueil')} aria-label={`${siteConfig.fullName}, accueil`}>
+			<svg class="brand__mark" viewBox="0 0 48 44" aria-hidden="true">
+				<path d="M3 24h8l4.5-11 6.5 23 7-18 4.5 6H45" />
+			</svg>
+			<span class="brand__copy">
+				<span class="brand__name">{siteConfig.fullName}</span>
+				<span class="brand__profession">{siteConfig.profession}</span>
+			</span>
 		</a>
 
 		<nav class="desktop-navigation" aria-label="Navigation principale">
 			<ul>
 				{navigation.map((item) => (
 					<li>
-						<a href={item.href} aria-current={item.href === '#accueil' ? 'page' : undefined}>
+						<a href={homeAnchor(item.href)} aria-current={isHomePage && item.href === '#accueil' ? 'page' : undefined}>
 							{item.label}
 						</a>
 					</li>
@@ -22,7 +30,7 @@ import { heroContent, navigation } from '../data/content';
 			</ul>
 		</nav>
 
-		<a class="navbar-cta" href={heroContent.actions.primary.href}>
+		<a class="navbar-cta" href={homeAnchor(heroContent.actions.primary.href)}>
 			{heroContent.actions.primary.label}
 		</a>
 
@@ -43,19 +51,32 @@ import { heroContent, navigation } from '../data/content';
 		<nav class="site-container" aria-label="Navigation mobile">
 			<ul>
 				{navigation.map((item) => (
-					<li><a href={item.href}>{item.label}</a></li>
+					<li><a href={homeAnchor(item.href)}>{item.label}</a></li>
 				))}
 			</ul>
-			<a class="mobile-menu__cta" href={heroContent.actions.primary.href}>
+			<a class="mobile-menu__cta" href={homeAnchor(heroContent.actions.primary.href)}>
 				{heroContent.actions.primary.label}
 			</a>
+			<p class="mobile-menu__meta">
+				<span>Montagny (42)</span>
+				<span>Soins à domicile &amp; au cabinet</span>
+			</p>
 		</nav>
 	</div>
 </header>
 
 <script>
+	const siteHeader = document.querySelector<HTMLElement>('[data-site-header]');
 	const menuToggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
 	const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+	const controller = new AbortController();
+
+	const updateHeader = () => {
+		siteHeader?.toggleAttribute('data-scrolled', window.scrollY > 24);
+	};
+
+	updateHeader();
+	window.addEventListener('scroll', updateHeader, { passive: true, signal: controller.signal });
 
 	if (menuToggle && mobileMenu) {
 		const setMenuState = (isOpen: boolean) => {
@@ -67,10 +88,10 @@ import { heroContent, navigation } from '../data/content';
 
 		menuToggle.addEventListener('click', () => {
 			setMenuState(menuToggle.getAttribute('aria-expanded') !== 'true');
-		});
+		}, { signal: controller.signal });
 
 		mobileMenu.querySelectorAll<HTMLAnchorElement>('a').forEach((link) => {
-			link.addEventListener('click', () => setMenuState(false));
+			link.addEventListener('click', () => setMenuState(false), { signal: controller.signal });
 		});
 
 		document.addEventListener('keydown', (event) => {
@@ -78,51 +99,102 @@ import { heroContent, navigation } from '../data/content';
 				setMenuState(false);
 				menuToggle.focus();
 			}
-		});
+		}, { signal: controller.signal });
 
 		window.matchMedia('(min-width: 64rem)').addEventListener('change', (event) => {
 			if (event.matches) setMenuState(false);
-		});
+		}, { signal: controller.signal });
+	}
+
+	if (import.meta.hot) {
+		import.meta.hot.dispose(() => controller.abort());
 	}
 </script>
 
 <style>
 	.site-header {
-		position: relative;
-		z-index: 20;
-		background: var(--color-background);
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		height: 96px;
+		background: var(--c-ivory);
+		color: var(--c-petrol);
+		transition: background-color 280ms ease, box-shadow 280ms ease, backdrop-filter 280ms ease;
+	}
+
+	.site-header[data-scrolled] {
+		background: rgb(255 253 249 / 88%);
+		box-shadow: 0 1px 0 rgb(18 59 74 / 9%);
+		backdrop-filter: blur(12px);
 	}
 
 	.site-header__inner {
+		position: relative;
+		z-index: 2;
 		display: grid;
-		grid-template-columns: auto 1fr auto;
+		height: 96px;
+		grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr);
 		align-items: center;
-		min-height: 104px;
-		gap: 2rem;
+		gap: clamp(2rem, 3vw, 4rem);
 	}
 
 	.brand {
 		display: inline-flex;
-		flex-direction: column;
 		width: max-content;
+		align-items: center;
+		gap: 0.8rem;
 		text-decoration: none;
+	}
+
+	.brand__mark {
+		width: 44px;
+		height: 44px;
+		flex: none;
+		fill: none;
+		stroke: var(--c-amber);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2.6;
+		transition: width 280ms ease, height 280ms ease, stroke-width 280ms ease;
+	}
+
+	.brand__copy {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.brand__name {
 		font-family: var(--font-heading);
-		font-size: 1.125rem;
-		font-weight: 750;
+		font-size: 1.08rem;
+		font-weight: 680;
 		line-height: 1.15;
 		letter-spacing: -0.035em;
+		transition: font-size 280ms ease;
 	}
 
 	.brand__profession {
-		margin-top: 0.25rem;
-		color: var(--color-text-muted);
-		font-size: 0.75rem;
-		font-weight: 600;
+		margin-top: 0.22rem;
+		color: var(--c-steel);
+		font-size: 0.72rem;
+		font-weight: 500;
 		line-height: 1.2;
-		letter-spacing: 0.035em;
+		letter-spacing: 0.045em;
+		transition: font-size 280ms ease, margin-top 280ms ease;
+	}
+
+	.site-header[data-scrolled] .brand__mark {
+		width: 38px;
+		height: 38px;
+		stroke-width: 2.8;
+	}
+
+	.site-header[data-scrolled] .brand__name {
+		font-size: 1rem;
+	}
+
+	.site-header[data-scrolled] .brand__profession {
+		margin-top: 0.16rem;
+		font-size: 0.68rem;
 	}
 
 	.desktop-navigation {
@@ -132,7 +204,7 @@ import { heroContent, navigation } from '../data/content';
 	.desktop-navigation ul {
 		display: flex;
 		align-items: center;
-		gap: clamp(1.1rem, 1.8vw, 2rem);
+		gap: clamp(1.4rem, 2vw, 2.4rem);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -140,21 +212,33 @@ import { heroContent, navigation } from '../data/content';
 
 	.desktop-navigation a {
 		position: relative;
-		font-size: 0.95rem;
-		font-weight: 500;
+		display: inline-block;
+		padding-block: 0.65rem;
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 520;
+		letter-spacing: -0.01em;
 		text-decoration: none;
 		white-space: nowrap;
+		transition: color 240ms ease;
 	}
 
 	.desktop-navigation a::after {
 		position: absolute;
-		inset: auto 0 -0.4rem;
-		height: 1px;
-		background: currentColor;
+		right: 12%;
+		bottom: 0.28rem;
+		left: 12%;
+		height: 1.5px;
+		border-radius: 999px;
+		background: var(--c-amber);
 		content: '';
 		transform: scaleX(0);
 		transform-origin: right;
-		transition: transform 180ms ease;
+		transition: transform 240ms ease;
+	}
+
+	.desktop-navigation a:hover {
+		color: color-mix(in srgb, var(--c-petrol) 45%, var(--c-amber));
 	}
 
 	.desktop-navigation a:hover::after,
@@ -166,23 +250,35 @@ import { heroContent, navigation } from '../data/content';
 	.navbar-cta,
 	.mobile-menu__cta {
 		display: inline-flex;
+		min-height: 50px;
 		align-items: center;
 		justify-content: center;
-		min-height: 48px;
-		border-radius: var(--radius-sm);
-		background: var(--color-primary);
-		padding: 0.75rem 1.25rem;
-		font-weight: 650;
+		border-radius: 15px;
+		background: var(--c-amber);
+		color: var(--c-petrol);
+		padding: 0.82rem 1.35rem;
+		font-family: var(--font-heading);
+		font-weight: 680;
 		line-height: 1;
 		text-decoration: none;
-		transition: background-color 180ms ease, transform 180ms ease;
+		transition: background-color 240ms ease, transform 240ms ease;
 		white-space: nowrap;
+	}
+
+	.navbar-cta {
+		justify-self: end;
 	}
 
 	.navbar-cta:hover,
 	.mobile-menu__cta:hover {
-		background: color-mix(in srgb, var(--color-primary) 88%, var(--color-background));
+		background: color-mix(in srgb, var(--c-amber) 88%, var(--c-petrol));
 		transform: translateY(-2px);
+	}
+
+	.navbar-cta:focus-visible,
+	.mobile-menu__cta:focus-visible,
+	.menu-toggle:focus-visible {
+		outline-color: var(--c-amber);
 	}
 
 	.menu-toggle,
@@ -190,10 +286,29 @@ import { heroContent, navigation } from '../data/content';
 		display: none;
 	}
 
+	:global(body.menu-is-open) {
+		overflow: hidden;
+	}
+
+	@media (max-width: 75rem) {
+		.site-header__inner {
+			grid-template-columns: minmax(210px, 1fr) auto minmax(210px, 1fr);
+			gap: 1.6rem;
+		}
+
+		.desktop-navigation ul {
+			gap: 1.35rem;
+		}
+	}
+
 	@media (max-width: 63.999rem) {
+		.site-header,
+		.site-header__inner {
+			height: 84px;
+		}
+
 		.site-header__inner {
 			grid-template-columns: 1fr auto;
-			min-height: 88px;
 			gap: 1rem;
 		}
 
@@ -202,16 +317,24 @@ import { heroContent, navigation } from '../data/content';
 			display: none;
 		}
 
+		.brand__mark,
+		.site-header[data-scrolled] .brand__mark {
+			width: 38px;
+			height: 38px;
+		}
+
 		.menu-toggle {
 			display: inline-flex;
+			position: relative;
+			z-index: 2;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
 			width: 48px;
 			height: 48px;
-			border: 1px solid var(--color-border);
-			border-radius: var(--radius-sm);
-			background: var(--color-background);
+			border: 1px solid rgb(18 59 74 / 18%);
+			border-radius: 14px;
+			background: var(--c-offwhite);
 			cursor: pointer;
 			gap: 7px;
 		}
@@ -220,8 +343,9 @@ import { heroContent, navigation } from '../data/content';
 			display: block;
 			width: 20px;
 			height: 2px;
-			background: var(--color-text);
-			transition: transform 180ms ease;
+			border-radius: 999px;
+			background: var(--c-petrol);
+			transition: transform 240ms ease;
 		}
 
 		.menu-toggle[aria-expanded='true'] span:first-child {
@@ -233,43 +357,121 @@ import { heroContent, navigation } from '../data/content';
 		}
 
 		.mobile-menu:not([hidden]) {
+			position: fixed;
+			z-index: 1;
+			top: 84px;
+			right: 0;
+			bottom: 0;
+			left: 0;
 			display: block;
-			border-top: 1px solid var(--color-border);
-			border-bottom: 1px solid var(--color-border);
-			background: var(--color-background);
+			overflow-y: auto;
+			border-top: 1px solid rgb(18 59 74 / 9%);
+			background: var(--c-ivory);
 		}
 
 		.mobile-menu nav {
-			padding-block: 1rem 1.5rem;
+			display: flex;
+			min-height: 100%;
+			flex-direction: column;
+			padding-block: clamp(2.5rem, 8vh, 5rem) 2rem;
 		}
 
 		.mobile-menu ul {
-			margin: 0 0 1rem;
+			display: grid;
+			gap: 0.35rem;
+			margin: 0 0 2rem;
 			padding: 0;
 			list-style: none;
 		}
 
-		.mobile-menu li + li {
-			border-top: 1px solid var(--color-border);
+		.mobile-menu li {
+			opacity: 0;
+			animation: mobile-link-in 360ms ease forwards;
 		}
+
+		.mobile-menu li:nth-child(2) { animation-delay: 40ms; }
+		.mobile-menu li:nth-child(3) { animation-delay: 80ms; }
+		.mobile-menu li:nth-child(4) { animation-delay: 120ms; }
+		.mobile-menu li:nth-child(5) { animation-delay: 160ms; }
 
 		.mobile-menu li a {
 			display: flex;
+			min-height: 58px;
 			align-items: center;
-			min-height: 48px;
-			font-size: 1.05rem;
-			font-weight: 550;
+			border-bottom: 1px solid rgb(18 59 74 / 10%);
+			color: var(--c-petrol);
+			font-family: var(--font-heading);
+			font-size: clamp(1.55rem, 5.8vw, 2rem);
+			font-weight: 560;
+			letter-spacing: -0.04em;
 			text-decoration: none;
 		}
 
 		.mobile-menu__cta {
 			width: 100%;
+			min-height: 56px;
+			margin-top: auto;
+		}
+
+		.mobile-menu__meta {
+			display: flex;
+			flex-direction: column;
+			margin-top: 1.5rem;
+			color: var(--c-steel);
+			font-size: 0.88rem;
+			line-height: 1.5;
 		}
 	}
 
 	@media (max-width: 27rem) {
-		.brand__profession {
-			font-size: 0.7rem;
+		.brand {
+			gap: 0.6rem;
+		}
+
+		.brand__mark,
+		.site-header[data-scrolled] .brand__mark {
+			width: 34px;
+			height: 34px;
+		}
+
+		.brand__name,
+		.site-header[data-scrolled] .brand__name {
+			font-size: 0.96rem;
+		}
+
+		.brand__profession,
+		.site-header[data-scrolled] .brand__profession {
+			font-size: 0.65rem;
+		}
+	}
+
+	@keyframes mobile-link-in {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.site-header,
+		.brand__mark,
+		.brand__name,
+		.brand__profession,
+		.desktop-navigation a,
+		.desktop-navigation a::after,
+		.navbar-cta,
+		.mobile-menu__cta,
+		.menu-toggle span {
+			transition: none;
+		}
+
+		.mobile-menu li {
+			opacity: 1;
+			animation: none;
 		}
 	}
 </style>

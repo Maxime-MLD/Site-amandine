@@ -1,307 +1,593 @@
 ---
-import { practicalContent, practicalDocuments } from '../data/content';
+import { practicalContent } from '../data/content';
 ---
 
-<section class="practical" id="informations-pratiques" aria-labelledby="practical-title" data-practical>
+<section class="practical" id="informations-pratiques" aria-labelledby="practical-title">
 	<div class="practical__inner site-container">
+		<!-- Section Header -->
 		<header class="practical__header">
 			<p class="practical__eyebrow">{practicalContent.eyebrow}</p>
-			<h2 id="practical-title">{practicalContent.title}</h2>
-			<p class="practical__intro">{practicalContent.intro}</p>
+			<h2 id="practical-title" class="practical__title">
+				{practicalContent.title.lead}{' '}
+				<span class="practical__title-accent">{practicalContent.title.accent}</span>.
+			</h2>
 		</header>
 
-		<div class="practical__grid" data-practical-grid>
-			<article class="practical-card practical-card--availability" data-practical-card>
-				<p class="practical-card__label">{practicalContent.availability.label}</p>
-				<div class="practical-card__body">
-					<h3>{practicalContent.availability.title}</h3>
-					<p class="practical-card__hours">{practicalContent.availability.hours}</p>
-					<p class="practical-card__text">{practicalContent.availability.text}</p>
+		<!-- Asymmetric Bento Grid with Continuous Light Gradient -->
+		<div class="bento-grid">
+			{/* Card 1: Disponibilités (Grande card gauche - Pôle lumineux) */}
+			<article class="bento-card bento-card--availability">
+				{/* Background abstract clock / dial at 5-8% opacity */}
+				<div class="bento-card__bg-decor" aria-hidden="true">
+					<svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<circle cx="120" cy="120" r="100" stroke="#123B4A" stroke-width="2" stroke-dasharray="4 8" />
+						<circle cx="120" cy="120" r="70" stroke="#123B4A" stroke-width="1.5" />
+						<path d="M120 50V120L165 145" stroke="#123B4A" stroke-width="2.5" stroke-linecap="round" />
+						<circle cx="120" cy="120" r="5" fill="#123B4A" />
+					</svg>
+				</div>
+
+				<div class="bento-card__header">
+					<span class="bento-card__tag">{practicalContent.availability.label}</span>
+				</div>
+
+				<div class="bento-card__body">
+					<h3 class="bento-card__title bento-card__title--lg">
+						{practicalContent.availability.headline}
+					</h3>
+					<p class="bento-card__desc">
+						{practicalContent.availability.description}
+					</p>
+				</div>
+
+				<div class="bento-availability__meta">
+					<div class="bento-availability__schedule">
+						<span class="bento-availability__stat">{practicalContent.availability.hoursPrimary}</span>
+						<span class="bento-availability__sep" aria-hidden="true">·</span>
+						<span class="bento-availability__stat">{practicalContent.availability.hoursSecondary}</span>
+					</div>
+					<p class="bento-availability__note">
+						<span class="bento-availability__dot" aria-hidden="true"></span>
+						{practicalContent.availability.note}
+					</p>
 				</div>
 			</article>
 
-			<article class="practical-card practical-card--area" data-practical-card>
-				<p class="practical-card__label">{practicalContent.area.label}</p>
-				<div class="practical-card__body">
-					<h3>{practicalContent.area.title}</h3>
-					<p class="practical-card__text">{practicalContent.area.text}</p>
-					<a class="practical-card__link" href="#zone-intervention">
-						{practicalContent.area.linkLabel}<span aria-hidden="true">↗</span>
-					</a>
+			{/* Card 2: À prévoir (Petite card haut-droite 1) */}
+			<article class="bento-card bento-card--documents">
+				<div class="bento-card__header">
+					<span class="bento-card__tag">{practicalContent.documents.label}</span>
 				</div>
-			</article>
 
-			<article class="practical-card practical-card--documents" data-practical-card>
-				<p class="practical-card__label">{practicalContent.documents.label}</p>
-				<div class="practical-card__body">
-					<h3>{practicalContent.documents.title}</h3>
-					<ul class="practical-card__list">
-						{practicalDocuments.map((document) => <li>{document}</li>)}
+				<div class="bento-card__body">
+					<h3 class="bento-card__title">
+						{practicalContent.documents.title}
+					</h3>
+					<ul class="bento-documents__list">
+						{practicalContent.documents.items.map((item) => (
+							<li class="bento-documents__item">
+								<span class="bento-documents__dash" aria-hidden="true">—</span>
+								<span>{item}</span>
+							</li>
+						))}
 					</ul>
-					<p class="practical-card__note">{practicalContent.documents.text}</p>
 				</div>
 			</article>
 
-			<article class="practical-card practical-card--urgent" id="contact" data-practical-card>
-				<p class="practical-card__label">{practicalContent.urgent.label}</p>
-				<div class="practical-card__body">
-					<h3>{practicalContent.urgent.title}</h3>
-					<p class="practical-card__text">{practicalContent.urgent.text}</p>
-					<a class="practical-card__cta" href={practicalContent.urgent.href}>
-						{practicalContent.urgent.ctaLabel}<span aria-hidden="true">→</span>
-					</a>
+			{/* Card 3: Au cabinet (Petite card haut-droite 2, contraste fort) */}
+			<article class="bento-card bento-card--cabinet">
+				<div class="bento-card__header">
+					<span class="bento-card__tag bento-card__tag--amber">{practicalContent.cabinet.label}</span>
 				</div>
+
+				<div class="bento-card__body">
+					<h3 class="bento-card__title bento-card__title--light">
+						{practicalContent.cabinet.headline}
+					</h3>
+					<p class="bento-card__desc bento-card__desc--light">
+						{practicalContent.cabinet.description}
+					</p>
+				</div>
+
+				<p class="bento-cabinet__location">
+					{practicalContent.cabinet.locationText}
+				</p>
 			</article>
+
+			{/* Card 4: Contact / CTA (Grande card horizontale bas-droite - Pôle profond) */}
+			<a
+				href={practicalContent.cta.href}
+				class="bento-card bento-card--cta"
+				aria-label={`${practicalContent.cta.title} - ${practicalContent.cta.description}`}
+			>
+				<div class="bento-cta__content">
+					<h3 class="bento-cta__title">{practicalContent.cta.title}</h3>
+					<p class="bento-cta__desc">{practicalContent.cta.description}</p>
+				</div>
+
+				<div class="bento-cta__action">
+					<span class="bento-cta__label">{practicalContent.cta.buttonLabel}</span>
+					<span class="bento-cta__icon" aria-hidden="true">
+						<svg viewBox="0 0 20 20" class="bento-cta__arrow">
+							<path d="M4 10h12m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+				</div>
+			</a>
 		</div>
 	</div>
 </section>
 
 <style>
 	.practical {
+		position: relative;
 		overflow: clip;
-		background: var(--color-background);
-		padding-block: clamp(6rem, 9vw, 9rem);
+		background: #fffdf9;
+		padding-block: clamp(5.5rem, 8vw, 8.5rem);
 	}
 
 	.practical__header {
-		max-width: 850px;
-	}
-
-	.practical__eyebrow,
-	.practical-card__label {
-		color: var(--color-accent);
-		font-family: var(--font-heading);
-		font-size: var(--text-small);
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		max-width: 52rem;
 	}
 
 	.practical__eyebrow {
-		margin-bottom: 0.9rem;
+		margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
+		color: #d99a3e;
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 750;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
 	}
 
-	.practical__header h2 {
-		max-width: 13em;
-		font-size: clamp(3rem, 4vw, 3.75rem);
+	.practical__title {
+		color: #123b4a;
+		font-family: var(--font-heading);
+		font-size: clamp(2.35rem, 4.4vw, 3.85rem);
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		line-height: 1.15;
+		text-wrap: balance;
+		max-width: 22ch;
 	}
 
-	.practical__intro {
-		max-width: 690px;
-		margin-top: 1.5rem;
-		color: var(--color-text-muted);
-		font-size: var(--text-body-lg);
-		line-height: 1.6;
+	.practical__title-accent {
+		display: inline-block;
+		color: #d99a3e;
+		font-family: var(--font-accent);
+		font-size: 1.05em;
+		font-style: italic;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		text-decoration: none;
+		border: none;
+		margin-left: 0.04em;
 	}
 
-	.practical__grid {
+	/* Bento Grid Layout */
+	.bento-grid {
+		position: relative;
 		display: grid;
-		grid-template-columns: repeat(12, minmax(0, 1fr));
-		gap: clamp(1rem, 2vw, 1.5rem);
-		margin-top: clamp(3rem, 5vw, 4.5rem);
+		grid-template-columns: 1.18fr 1fr 1fr;
+		gap: clamp(1.25rem, 2vw, 1.75rem);
+		margin-top: clamp(2.75rem, 4vw, 3.75rem);
 	}
 
-	.practical-card {
+	/* Base Card: quiet, light, clean borders & subtle tactile grain */
+	.bento-card {
+		position: relative;
+		overflow: hidden;
+		border-radius: 1.5rem;
+		border: 1px solid rgba(18, 59, 74, 0.08);
 		display: flex;
-		min-width: 0;
-		min-height: 19rem;
 		flex-direction: column;
 		justify-content: space-between;
-		border-radius: var(--radius-md);
-		background: var(--color-secondary);
+		padding: clamp(1.85rem, 2.5vw, 2.5rem);
 		box-shadow:
-			0 0.75rem 2.1875rem rgba(23, 23, 23, 0.04),
-			0 0.1875rem 0.625rem rgba(23, 23, 23, 0.025);
-		padding: clamp(1.75rem, 3vw, 2.5rem);
+			0 2px 8px rgba(18, 59, 74, 0.02),
+			0 6px 16px rgba(18, 59, 74, 0.025);
+		transition:
+			transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+			box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	.practical-card--availability,
-	.practical-card--urgent {
-		grid-column: span 7;
+	/* Ensure inner contents sit above grain layer */
+	.bento-card__header,
+	.bento-card__body,
+	.bento-availability__meta,
+	.bento-cabinet__location,
+	.bento-cta__content,
+	.bento-cta__action {
+		position: relative;
+		z-index: 2;
 	}
 
-	.practical-card--area,
-	.practical-card--documents {
-		grid-column: span 5;
+	/* Subtle Texture Grain Layer */
+	.bento-card::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: var(--grain-image) 0 0 / 128px repeat;
+		opacity: 0.04;
+		pointer-events: none;
+		z-index: 1;
 	}
 
-	.practical-card--availability {
-		min-height: 22rem;
+	@media (hover: hover) and (pointer: fine) {
+		.bento-card:hover {
+			transform: translateY(-2px);
+			box-shadow:
+				0 4px 12px rgba(18, 59, 74, 0.025),
+				0 10px 22px rgba(18, 59, 74, 0.03);
+		}
 	}
 
-	.practical-card--urgent {
-		min-height: 20.5rem;
+	/* Card 1: Disponibilités (Grande card gauche) - Brightest origin of light */
+	.bento-card--availability {
+		grid-column: 1;
+		grid-row: 1 / span 2;
+		background: linear-gradient(135deg, #ffffff 0%, #fffdf9 55%, #fcf8f0 100%);
+		min-height: 28rem;
 	}
 
-	.practical-card__body {
-		display: flex;
-		align-items: flex-start;
-		flex-direction: column;
-		margin-top: clamp(2.75rem, 5vw, 5rem);
+	/* Enhanced grain on light cards */
+	.bento-card--availability::after {
+		opacity: 0.065;
 	}
 
-	.practical-card h3 {
-		max-width: 18em;
-		font-size: clamp(1.65rem, 2.6vw, 2.35rem);
-		font-weight: 700;
-		line-height: 1.12;
+	.bento-card__bg-decor {
+		position: absolute;
+		right: -2rem;
+		bottom: -2rem;
+		width: clamp(12rem, 16vw, 16rem);
+		height: clamp(12rem, 16vw, 16rem);
+		opacity: 0.06;
+		pointer-events: none;
+		user-select: none;
+		z-index: 0;
 	}
 
-	.practical-card__hours {
-		margin-top: 0.75rem;
+	.bento-card__bg-decor svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	.bento-card__tag {
+		display: inline-block;
+		color: #d99a3e;
 		font-family: var(--font-heading);
-		font-size: clamp(2.75rem, 5.5vw, 4.75rem);
-		font-variant-numeric: tabular-nums;
+		font-size: 0.85rem;
+		font-weight: 750;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.bento-card__title {
+		color: #123b4a;
+		font-family: var(--font-heading);
+		font-size: clamp(1.25rem, 1.5vw, 1.45rem);
 		font-weight: 700;
-		letter-spacing: -0.055em;
-		line-height: 1;
+		letter-spacing: -0.02em;
+		line-height: 1.25;
+		margin: 0;
 	}
 
-	.practical-card__text,
-	.practical-card__note {
-		max-width: 48ch;
-		color: var(--color-text-muted);
+	.bento-card__title--lg {
+		font-size: clamp(1.75rem, 2.3vw, 2.35rem);
+		letter-spacing: -0.025em;
+		line-height: 1.2;
+		margin-top: 0.5rem;
+	}
+
+	.bento-card__desc {
+		color: #52798a;
+		font-family: var(--font-heading);
+		font-size: clamp(0.96rem, 1.1vw, 1.05rem);
 		line-height: 1.6;
+		margin-top: 0.85rem;
+		max-width: 38ch;
 	}
 
-	.practical-card__text {
-		margin-top: 1.25rem;
-		font-size: clamp(1rem, 1.4vw, 1.125rem);
+	.bento-availability__meta {
+		margin-top: clamp(2rem, 3.5vw, 3rem);
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(18, 59, 74, 0.08);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
 	}
 
-	.practical-card__link {
+	.bento-availability__schedule {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 0.4rem 0.65rem;
+	}
+
+	.bento-availability__stat {
+		color: #123b4a;
+		font-family: var(--font-heading);
+		font-size: clamp(2.15rem, 3.2vw, 2.9rem);
+		font-weight: 750;
+		letter-spacing: -0.04em;
+		line-height: 1;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	.bento-availability__sep {
+		color: #d99a3e;
+		font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+		font-weight: 700;
+		line-height: 1;
+		user-select: none;
+	}
+
+	.bento-availability__note {
 		display: inline-flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 0.5rem;
-		margin-top: 1.75rem;
+		color: #52798a;
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 500;
+		line-height: 1.5;
+		margin: 0;
+	}
+
+	.bento-availability__dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #d99a3e;
+		flex-shrink: 0;
+		margin-top: 0.35rem;
+	}
+
+	/* Card 2: À prévoir (Petite card haut-droite 1) */
+	.bento-card--documents {
+		grid-column: 2;
+		grid-row: 1;
+		background: linear-gradient(135deg, #f8f4ed 0%, #f4efe7 60%, #ece4d7 100%);
+	}
+
+	/* Enhanced grain on light cards */
+	.bento-card--documents::after {
+		opacity: 0.065;
+	}
+
+	.bento-documents__list {
+		list-style: none;
+		padding: 0;
+		margin: 1.25rem 0 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.bento-documents__item {
+		display: flex;
+		align-items: baseline;
+		gap: 0.65rem;
+		color: #123b4a;
 		font-family: var(--font-heading);
 		font-size: 0.95rem;
-		font-weight: 700;
-	}
-
-	.practical-card__link span {
-		color: var(--color-accent);
-	}
-
-	.practical-card__list {
-		width: 100%;
-		margin: 1.5rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.practical-card__list li {
-		position: relative;
-		border-top: 1px solid rgba(23, 23, 23, 0.1);
-		padding: 0.7rem 0 0.7rem 1.25rem;
-		font-weight: 600;
+		font-weight: 550;
 		line-height: 1.4;
 	}
 
-	.practical-card__list li::before {
-		position: absolute;
-		top: 1.15rem;
-		left: 0;
-		width: 0.4rem;
-		height: 0.4rem;
-		border-radius: 50%;
-		background: var(--color-primary);
-		content: '';
+	.bento-documents__dash {
+		color: #d99a3e;
+		font-weight: 700;
+		flex-shrink: 0;
+		user-select: none;
 	}
 
-	.practical-card__note {
-		margin-top: 1.25rem;
+	/* Card 3: Au cabinet (Petite card haut-droite 2) */
+	.bento-card--cabinet {
+		grid-column: 3;
+		grid-row: 1;
+		background: linear-gradient(135deg, #174557 0%, #123b4a 60%, #0d2c37 100%);
+		border-color: rgba(244, 239, 231, 0.12);
+	}
+
+	.bento-card--cabinet::after {
+		opacity: 0.025;
+	}
+
+	.bento-card__tag--amber {
+		color: #d99a3e;
+	}
+
+	.bento-card__title--light {
+		color: #f4efe7;
+		margin-top: 0.5rem;
+	}
+
+	.bento-card__desc--light {
+		color: rgba(244, 239, 231, 0.78);
 		font-size: 0.95rem;
+		margin-top: 0.65rem;
+		line-height: 1.55;
 	}
 
-	.practical-card__cta {
+	.bento-cabinet__location {
+		color: #f4efe7;
+		font-family: var(--font-heading);
+		font-size: 0.92rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		margin: 1.5rem 0 0;
+		line-height: 1.4;
+		opacity: 0.92;
+	}
+
+	/* Card 4: Contact / CTA (Grande card horizontale bas-droite) */
+	.bento-card--cta {
+		grid-column: 2 / span 2;
+		grid-row: 2;
+		background: linear-gradient(135deg, #e4ac59 0%, #d99a3e 50%, #c48227 100%);
+		border-color: rgba(18, 59, 74, 0.1);
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+		text-decoration: none;
+		color: #123b4a;
+		cursor: pointer;
+	}
+
+	.bento-card--cta::after {
+		opacity: 0.04;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.bento-card--cta:hover .bento-cta__arrow {
+			transform: translateX(4px);
+		}
+	}
+
+	.bento-card--cta:focus-visible {
+		outline: 2px solid #123b4a;
+		outline-offset: 3px;
+	}
+
+	.bento-cta__content {
+		max-width: 38ch;
+		padding-right: 0.75rem;
+	}
+
+	.bento-cta__title {
+		color: #123b4a;
+		font-family: var(--font-heading);
+		font-size: clamp(1.55rem, 2.2vw, 2.05rem);
+		font-weight: 750;
+		letter-spacing: -0.025em;
+		line-height: 1.2;
+		margin: 0;
+	}
+
+	.bento-cta__desc {
+		color: rgba(18, 59, 74, 0.88);
+		font-family: var(--font-heading);
+		font-size: clamp(0.98rem, 1.1vw, 1.08rem);
+		font-weight: 550;
+		line-height: 1.5;
+		margin-top: 0.45rem;
+		margin-bottom: 0;
+	}
+
+	.bento-cta__action {
 		display: inline-flex;
 		align-items: center;
-		justify-content: center;
 		gap: 0.75rem;
-		min-height: 3rem;
-		margin-top: 2rem;
+		padding: 0.75rem 1.35rem;
 		border-radius: 999px;
-		background: var(--color-primary);
-		padding: 0.75rem 1.25rem;
+		background: #123b4a;
+		color: #fffdf9;
 		font-family: var(--font-heading);
 		font-size: 0.95rem;
-		font-weight: 750;
-		text-decoration: none;
-		transition: transform 180ms ease, background-color 180ms ease;
+		font-weight: 700;
+		flex-shrink: 0;
+		transition: background-color 200ms ease;
 	}
 
-	.practical-card__cta:hover {
-		transform: translateY(-2px);
-		background: #76d69f;
+	.bento-cta__icon {
+		display: grid;
+		place-items: center;
+		width: 1.25rem;
+		height: 1.25rem;
 	}
 
-	.practical-card__cta span {
-		color: var(--color-accent);
-		font-size: 1.1rem;
+	.bento-cta__arrow {
+		width: 1.15rem;
+		height: 1.15rem;
+		transition: transform 220ms ease;
 	}
 
+	/* Responsive Tablet */
 	@media (max-width: 63.999rem) {
 		.practical {
 			padding-block: 5.5rem;
 		}
 
-		.practical__grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+		.bento-grid {
+			grid-template-columns: 1fr 1fr;
+			gap: 1.25rem;
 		}
 
-		.practical-card {
-			grid-column: auto;
-			min-height: 19rem;
-		}
-
-		.practical-card--availability,
-		.practical-card--urgent {
+		.bento-card--availability {
 			grid-column: 1 / -1;
-			min-height: 20rem;
+			grid-row: auto;
+			min-height: auto;
+		}
+
+		.bento-card--documents {
+			grid-column: 1;
+			grid-row: auto;
+		}
+
+		.bento-card--cabinet {
+			grid-column: 2;
+			grid-row: auto;
+		}
+
+		.bento-card--cta {
+			grid-column: 1 / -1;
+			grid-row: auto;
 		}
 	}
 
+	/* Responsive Mobile */
 	@media (max-width: 47.999rem) {
 		.practical {
-			padding-block: 4rem;
+			padding-block: 4.5rem;
 		}
 
-		.practical__header h2 {
-			font-size: clamp(2.35rem, 10vw, 3rem);
+		.practical__title {
+			font-size: clamp(2.15rem, 8.5vw, 2.85rem);
 		}
 
-		.practical__intro {
-			margin-top: 1.25rem;
-		}
-
-		.practical__grid {
+		.bento-grid {
 			grid-template-columns: 1fr;
 			gap: 1rem;
-			margin-top: 2.75rem;
+			margin-top: 2.25rem;
 		}
 
-		.practical-card,
-		.practical-card--availability,
-		.practical-card--urgent {
-			grid-column: auto;
-			min-height: 0;
-			padding: 1.5rem;
+		.bento-card {
+			padding: 1.75rem 1.4rem;
 		}
 
-		.practical-card__body {
-			margin-top: 2.5rem;
+		.bento-card--availability,
+		.bento-card--documents,
+		.bento-card--cabinet,
+		.bento-card--cta {
+			grid-column: 1;
+			grid-row: auto;
 		}
 
-		.practical-card__hours {
-			font-size: clamp(2.2rem, 11vw, 3rem);
-			white-space: nowrap;
+		.bento-card--cta {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1.25rem;
+		}
+
+		.bento-cta__action {
+			width: 100%;
+			justify-content: center;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.practical-card__cta {
-			transition: none;
+		.bento-card {
+			transition: none !important;
+		}
+
+		.bento-cta__arrow {
+			transition: none !important;
 		}
 	}
 </style>
+

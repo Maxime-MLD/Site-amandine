@@ -1,10 +1,17 @@
 import { writeFile } from 'node:fs/promises';
 
-const outputPath = new URL('../src/assets/images/map/roanne-area.svg', import.meta.url);
-const bounds = { south: 45.99, west: 4.0, north: 46.08, east: 4.145 };
-const center = { lat: 46.0345572, lon: 4.0729178 };
+// Stylised static map of the service area, generated from real OpenStreetMap
+// road/water geometry around Montagny (42) and themed with the site palette.
+const outputPath = new URL('../src/assets/images/map/montagny-area.svg', import.meta.url);
+
+// Montagny, Loire (42840)
+const center = { lat: 46.0086, lon: 4.2506 };
+// ~24 km tall / ~43 km wide view, aspect-matched to the 960×560 canvas so the
+// 10 km zone circle renders round and centred.
+const bounds = { south: 45.899, west: 3.979, north: 46.119, east: 4.522 };
 const width = 960;
 const height = 560;
+const radiusKm = 10;
 
 const query = `[out:json][timeout:60];
 (
@@ -34,6 +41,8 @@ const projectedHeight = bounds.north - bounds.south;
 const scale = Math.min(width / projectedWidth, height / projectedHeight);
 const offsetX = (width - projectedWidth * scale) / 2;
 const offsetY = (height - projectedHeight * scale) / 2;
+// 1° of latitude ≈ 111 km, so the projected scale converts km → px directly.
+const radiusPx = (radiusKm / 111) * scale;
 
 function project(point) {
 	return {
@@ -91,11 +100,14 @@ for (const element of elements) {
 	groups.get(groupFor(element)).push(`<path d="${pathFor(element)}"/>`);
 }
 
-const roanne = project(center);
+const montagny = project(center);
+const cx = montagny.x.toFixed(1);
+const cy = montagny.y.toFixed(1);
+const r = radiusPx.toFixed(1);
 const sourceDate = new Intl.DateTimeFormat('fr-FR', { year: 'numeric', month: '2-digit' }).format(new Date());
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title desc">
-  <title id="title">Carte géographique de Roanne</title>
-  <desc id="desc">Carte statique basée sur les données OpenStreetMap, avec les routes et cours d’eau réels autour de Roanne.</desc>
+  <title id="title">Carte géographique de Montagny (42)</title>
+  <desc id="desc">Carte statique basée sur les données OpenStreetMap, avec les routes et cours d’eau réels autour de Montagny et un rayon illustratif de ${radiusKm} km.</desc>
   <rect width="${width}" height="${height}" fill="#E4F8EC"/>
   <g fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
     <g stroke="#D7E9DF" stroke-width="1.2">${groups.get('road-local').join('')}</g>
@@ -104,16 +116,17 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${hei
     <g stroke="#B6D2C3" stroke-width="3.8">${groups.get('road-major').join('')}</g>
     <g stroke="#A7D9C0" stroke-width="7" opacity=".9">${groups.get('water').join('')}</g>
   </g>
-  <circle cx="${roanne.x.toFixed(1)}" cy="${roanne.y.toFixed(1)}" r="118" fill="#8BE0B0" opacity=".22"/>
-  <circle cx="${roanne.x.toFixed(1)}" cy="${roanne.y.toFixed(1)}" r="15" fill="#FB6F84" stroke="#FFFFFF" stroke-width="6"/>
-  <circle cx="${roanne.x.toFixed(1)}" cy="${roanne.y.toFixed(1)}" r="25" fill="none" stroke="#FB6F84" stroke-width="2" opacity=".42"/>
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="#8BE0B0" opacity=".2"/>
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#8BE0B0" stroke-width="2.5" stroke-dasharray="7 7" opacity=".65"/>
+  <circle cx="${cx}" cy="${cy}" r="26" fill="none" stroke="#FB6F84" stroke-width="2" opacity=".4"/>
+  <circle cx="${cx}" cy="${cy}" r="15" fill="#FB6F84" stroke="#FFFFFF" stroke-width="6"/>
   <g fill="#171717" font-family="Arial, sans-serif" text-anchor="middle">
-    <text x="${roanne.x.toFixed(1)}" y="${(roanne.y + 55).toFixed(1)}" font-size="24" font-weight="700">Roanne</text>
-    <text x="${roanne.x.toFixed(1)}" y="${(roanne.y + 80).toFixed(1)}" font-size="12" font-weight="700" letter-spacing="1.6" opacity=".55">RAYON ILLUSTRATIF</text>
+    <text x="${cx}" y="${(montagny.y + 56).toFixed(1)}" font-size="26" font-weight="700">Montagny</text>
+    <text x="${cx}" y="${(montagny.y + 82).toFixed(1)}" font-size="12" font-weight="700" letter-spacing="1.6" opacity=".55">RAYON ILLUSTRATIF · ${radiusKm} KM</text>
   </g>
-  <text x="24" y="536" fill="#171717" font-family="Arial, sans-serif" font-size="11" opacity=".52">Données © contributeurs OpenStreetMap · ${sourceDate}</text>
+  <text x="24" y="${height - 22}" fill="#171717" font-family="Arial, sans-serif" font-size="11" opacity=".5">Données © contributeurs OpenStreetMap · ${sourceDate}</text>
 </svg>
 `;
 
 await writeFile(outputPath, svg);
-console.log(`Generated ${outputPath.pathname} from ${elements.length} OpenStreetMap ways.`);
+console.log(`Generated ${outputPath.pathname} from ${elements.length} OpenStreetMap ways (radius ${radiusPx.toFixed(0)}px = ${radiusKm} km).`);

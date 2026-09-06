@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 540" role="img" aria-labelledby="title desc">
-  <title id="title">Placeholder du service 1</title>
-  <desc id="desc">Composition abstraite à remplacer par une photographie validée.</desc>
-  <rect width="720" height="540" fill="#E4F8EC"/>
-  <circle cx="590" cy="95" r="150" fill="#8BE0B0" opacity=".72"/>
-  <path d="M-30 460C135 300 285 360 410 252c92-79 161-82 340-65v353H-30Z" fill="#fff" opacity=".9"/>
-  <circle cx="126" cy="137" r="18" fill="#FB6F84"/>
-  <text x="56" y="470" fill="#171717" font-family="Arial, sans-serif" font-size="20" font-weight="700">TODO_SERVICE_IMAGE_1</text>
-</svg>

@@ -1,0 +1,381 @@
+---
+import { Image } from 'astro:assets';
+import portrait from '../assets/images/cta/amandine-portrait.png';
+import { finalCtaContent } from '../data/content';
+---
+
+<section class="final-cta" aria-labelledby="final-cta-title">
+	<div class="site-container">
+		<div class="final-cta__card">
+			<!-- Background Layer (Clipped to card's border-radius) -->
+			<div class="final-cta__bg" aria-hidden="true">
+				<!-- Refined ECG Cardiogram Line: emerging after "accompagner" with clear pulses and soft fade -->
+				<svg class="final-cta__ecg" viewBox="0 0 1200 200" fill="none" preserveAspectRatio="none">
+					<defs>
+						<linearGradient id="final-cta-ecg-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1200" y2="0">
+							<!-- Left zone (title & "accompagner"): completely transparent -->
+							<stop offset="0%" stop-color="#d99a3e" stop-opacity="0" />
+							<stop offset="43%" stop-color="#d99a3e" stop-opacity="0" />
+							<!-- Soft progressive fade emerging just past "accompagner" -->
+							<stop offset="45.5%" stop-color="#d99a3e" stop-opacity="0.25" />
+							<stop offset="48.5%" stop-color="#d99a3e" stop-opacity="0.88" />
+							<!-- Visible ECG pulse in the open space -->
+							<stop offset="62%" stop-color="#d99a3e" stop-opacity="0.9" />
+							<!-- Subtle continuation behind Amandine to the right border -->
+							<stop offset="78%" stop-color="#d99a3e" stop-opacity="0.55" />
+							<stop offset="92%" stop-color="#d99a3e" stop-opacity="0.3" />
+							<stop offset="100%" stop-color="#d99a3e" stop-opacity="0.15" />
+						</linearGradient>
+					</defs>
+					<path
+						d="M 510 100 L 600 100 L 608 90 L 616 100 L 626 100 L 636 116 L 650 22 L 664 144 L 676 100 L 688 100 L 704 76 L 722 100 L 870 100 L 882 92 L 890 100 L 898 100 L 908 112 L 920 38 L 932 132 L 942 100 L 954 100 L 968 82 L 984 100 L 1200 100"
+						stroke="url(#final-cta-ecg-gradient)"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						vector-effect="non-scaling-stroke"
+					/>
+				</svg>
+			</div>
+
+			<!-- Left Column: Storytelling & Action -->
+			<div class="final-cta__content">
+				<p class="final-cta__eyebrow">{finalCtaContent.eyebrow}</p>
+				<h2 id="final-cta-title" class="final-cta__title">
+					{finalCtaContent.titleLead}<br />
+					{finalCtaContent.titleSubLead}{' '}
+					<span class="final-cta__title-accent">{finalCtaContent.titleAccent}</span>.
+				</h2>
+				<p class="final-cta__desc">
+					{finalCtaContent.intro}
+				</p>
+
+				<div class="final-cta__actions">
+					<a href={finalCtaContent.primary.href} class="final-cta__btn final-cta__btn--primary">
+						<span>{finalCtaContent.primary.label}</span>
+						<svg viewBox="0 0 16 16" fill="none" class="final-cta__btn-arrow" aria-hidden="true">
+							<path d="M3 8h10m-4-4 4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</a>
+					<a href={finalCtaContent.secondary.href} class="final-cta__btn final-cta__btn--secondary">
+						<span>{finalCtaContent.secondary.label}</span>
+					</a>
+				</div>
+			</div>
+
+			<!-- Right Column: Amandine Portrait (Head pops out of card top) -->
+			<div class="final-cta__visual" aria-hidden="true">
+				<Image
+					src={portrait}
+					width={1024}
+					height={1536}
+					alt={finalCtaContent.portraitAlt}
+					loading="lazy"
+					decoding="async"
+					class="final-cta__portrait-img"
+				/>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.final-cta {
+		position: relative;
+		overflow: visible;
+		background: #fffdf9;
+		padding-top: clamp(6.5rem, 9vw, 9rem);
+		padding-bottom: clamp(4.5rem, 6.5vw, 6.5rem);
+	}
+
+	.final-cta__card {
+		position: relative;
+		overflow: visible;
+		display: grid;
+		grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+		min-height: clamp(27rem, 33vw, 32.5rem);
+		border-radius: clamp(1.75rem, 2.5vw, 2.25rem);
+		border: 1px solid rgba(244, 239, 231, 0.12);
+		box-shadow:
+			0 20px 50px rgba(18, 59, 74, 0.14),
+			0 6px 18px rgba(18, 59, 74, 0.08);
+	}
+
+	/* Clipped background container: gradient, grain, and full-width ECG */
+	.final-cta__bg {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		overflow: hidden;
+		background: linear-gradient(145deg, #184b5c 0%, #123b4a 52%, #0d2833 100%);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	/* Ultra-subtle paper grain */
+	.final-cta__bg::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: var(--grain-image) 0 0 / 128px repeat;
+		opacity: 0.032;
+		pointer-events: none;
+	}
+
+	/* Refined ECG Cardiogram Line: emerging after "accompagner" */
+	.final-cta__ecg {
+		position: absolute;
+		left: 0;
+		width: 100%;
+		top: 42%;
+		transform: translateY(-50%);
+		height: clamp(6.5rem, 11vw, 9.5rem);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.final-cta__ecg path {
+		filter: drop-shadow(0 0 6px rgba(217, 154, 62, 0.42));
+	}
+
+	/* Left Column Content */
+	.final-cta__content {
+		position: relative;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-start;
+		padding: clamp(3rem, 5vw, 4.5rem) clamp(2rem, 3.8vw, 3.75rem);
+		max-width: 44rem;
+	}
+
+	.final-cta__eyebrow {
+		margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
+		color: #d99a3e;
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 750;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.final-cta__title {
+		color: #f4efe7;
+		font-family: var(--font-heading);
+		font-size: clamp(2.35rem, 3.8vw, 3.45rem);
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		line-height: 1.12;
+		text-wrap: balance;
+		margin: 0;
+	}
+
+	.final-cta__title-accent {
+		display: inline-block;
+		color: #d99a3e;
+		font-family: var(--font-accent);
+		font-size: 1.05em;
+		font-style: italic;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		text-decoration: none;
+		border: none;
+		margin-left: 0.04em;
+	}
+
+	.final-cta__desc {
+		margin-top: clamp(1.25rem, 2vw, 1.6rem);
+		color: rgba(244, 239, 231, 0.82);
+		font-family: var(--font-heading);
+		font-size: clamp(1rem, 1.15vw, 1.125rem);
+		line-height: 1.6;
+		max-width: 38ch;
+	}
+
+	/* Action Buttons */
+	.final-cta__actions {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.85rem;
+		margin-top: clamp(1.75rem, 2.5vw, 2.35rem);
+	}
+
+	.final-cta__btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		text-decoration: none;
+		font-family: var(--font-heading);
+		font-size: 0.98rem;
+		line-height: 1;
+		border-radius: 9999px;
+		transition:
+			background-color 200ms ease,
+			border-color 200ms ease,
+			color 200ms ease,
+			transform 200ms ease,
+			box-shadow 200ms ease;
+	}
+
+	.final-cta__btn:focus-visible {
+		outline: 2px solid #d99a3e;
+		outline-offset: 4px;
+	}
+
+	.final-cta__btn--primary {
+		background: #d99a3e;
+		color: #123b4a;
+		font-weight: 750;
+		padding: 0.9rem 1.65rem;
+		gap: 0.55rem;
+		border: 1px solid transparent;
+		box-shadow: 0 4px 14px rgba(217, 154, 62, 0.25);
+	}
+
+	.final-cta__btn--primary:hover {
+		background: #e4ad5c;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 18px rgba(217, 154, 62, 0.35);
+	}
+
+	.final-cta__btn-arrow {
+		width: 1rem;
+		height: 1rem;
+		transition: transform 200ms ease;
+	}
+
+	.final-cta__btn--primary:hover .final-cta__btn-arrow {
+		transform: translateX(3px);
+	}
+
+	.final-cta__btn--secondary {
+		background: transparent;
+		color: #f4efe7;
+		font-weight: 600;
+		padding: 0.9rem 1.45rem;
+		border: 1px solid rgba(244, 239, 231, 0.28);
+	}
+
+	.final-cta__btn--secondary:hover {
+		background: rgba(244, 239, 231, 0.08);
+		border-color: rgba(244, 239, 231, 0.5);
+		color: #ffffff;
+		transform: translateY(-2px);
+	}
+
+	/* Right Column Visual: Amandine's head popping out of the top */
+	.final-cta__visual {
+		position: absolute;
+		right: clamp(1rem, 3.5vw, 3.5rem);
+		bottom: 0;
+		width: min(42%, 28rem);
+		height: calc(100% + clamp(3.25rem, 5.5vw, 5.25rem));
+		pointer-events: none;
+		z-index: 3;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+	}
+
+	.final-cta__portrait-img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		object-position: center bottom;
+		filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.22));
+	}
+
+	/* Responsive Tablet */
+	@media (max-width: 63.999rem) {
+		.final-cta {
+			padding-top: clamp(5.5rem, 8vw, 7rem);
+			padding-bottom: clamp(3.5rem, 5.5vw, 5rem);
+		}
+
+		.final-cta__card {
+			grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.78fr);
+			min-height: 28rem;
+		}
+
+		.final-cta__content {
+			padding: clamp(2.5rem, 4.5vw, 3.5rem) clamp(1.75rem, 3vw, 2.5rem);
+		}
+
+		.final-cta__title {
+			font-size: clamp(2.15rem, 4vw, 2.85rem);
+		}
+
+		.final-cta__visual {
+			right: 0.75rem;
+			width: 44%;
+			height: calc(100% + 3.25rem);
+		}
+	}
+
+	/* Responsive Mobile */
+	@media (max-width: 47.999rem) {
+		.final-cta {
+			padding-top: 3.5rem;
+			padding-bottom: 3.5rem;
+		}
+
+		.final-cta__card {
+			display: flex;
+			flex-direction: column;
+			min-height: auto;
+			border-radius: 1.5rem;
+		}
+
+		.final-cta__ecg {
+			top: 38%;
+			height: 4.5rem;
+		}
+
+		.final-cta__content {
+			padding: 2.5rem 1.4rem 1.75rem;
+			max-width: 100%;
+		}
+
+		.final-cta__title {
+			font-size: clamp(2.05rem, 8vw, 2.65rem);
+		}
+
+		.final-cta__desc {
+			font-size: 0.98rem;
+		}
+
+		.final-cta__actions {
+			width: 100%;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.75rem;
+		}
+
+		.final-cta__btn {
+			width: 100%;
+			justify-content: center;
+			padding-block: 1rem;
+		}
+
+		.final-cta__visual {
+			position: relative;
+			right: auto;
+			bottom: auto;
+			width: min(85%, 20rem);
+			height: auto;
+			aspect-ratio: 0.82;
+			align-self: center;
+			margin-top: 0.75rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.final-cta__btn,
+		.final-cta__btn-arrow {
+			transition: none !important;
+		}
+	}
+</style>
+

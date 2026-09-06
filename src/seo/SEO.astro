@@ -9,8 +9,8 @@ const {
 	title,
 	description,
 	canonical = Astro.url.href,
-	image,
-	imageAlt,
+	image = seoConfig.defaultImage,
+	imageAlt = seoConfig.defaultImageAlt,
 	robots = seoConfig.defaultRobots,
 	schema,
 } = Astro.props;
@@ -19,6 +19,12 @@ const canonicalUrl = new URL(canonical, Astro.site ?? Astro.url.origin).href;
 const imageUrl = image ? new URL(image, Astro.site ?? Astro.url.origin).href : undefined;
 const twitterCard = imageUrl ? 'summary_large_image' : 'summary';
 const schemaJson = schema ? JSON.stringify(schema) : undefined;
+
+const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+const hasGoogleSiteVerification =
+	typeof googleSiteVerification === 'string' &&
+	googleSiteVerification.length > 0 &&
+	!googleSiteVerification.startsWith('TODO_');
 ---
 
 <meta charset="UTF-8" />
@@ -26,6 +32,9 @@ const schemaJson = schema ? JSON.stringify(schema) : undefined;
 <title>{title}</title>
 <meta name="description" content={description} />
 <meta name="robots" content={robots} />
+{hasGoogleSiteVerification && (
+	<meta name="google-site-verification" content={googleSiteVerification} />
+)}
 <meta name="author" content={seoConfig.author} />
 <meta name="theme-color" content={seoConfig.themeColor} />
 <link rel="canonical" href={canonicalUrl} />

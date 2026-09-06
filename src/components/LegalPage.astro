@@ -1,0 +1,134 @@
+---
+interface Props {
+	eyebrow: string;
+	title: string;
+	intro: string;
+	updated: string;
+}
+
+const { eyebrow, title, intro, updated } = Astro.props;
+---
+
+<section class="legal-page" aria-labelledby="legal-title">
+	<div class="legal-page__inner site-container">
+		<a class="legal-page__back" href="/">← Retour à l’accueil</a>
+		<header>
+			<p class="legal-page__eyebrow">{eyebrow}</p>
+			<h1 id="legal-title">{title}</h1>
+			<p class="legal-page__intro">{intro}</p>
+			<p class="legal-page__updated">Dernière mise à jour : {updated}</p>
+		</header>
+		<div class="legal-page__content">
+			<slot />
+		</div>
+	</div>
+</section>
+
+<style>
+	.legal-page {
+		background: var(--color-background);
+		padding-block: clamp(3rem, 6vw, 5rem) clamp(6rem, 9vw, 9rem);
+	}
+
+	.legal-page__inner {
+		max-width: 68rem;
+	}
+
+	.legal-page__back {
+		display: inline-flex;
+		margin-bottom: clamp(3rem, 6vw, 5rem);
+		font-family: var(--font-heading);
+		font-size: 0.9375rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.legal-page__eyebrow {
+		margin-bottom: 0.9rem;
+		color: var(--color-accent);
+		font-family: var(--font-heading);
+		font-size: var(--text-small);
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.legal-page h1 {
+		max-width: 13em;
+		font-size: clamp(3rem, 5vw, 4.75rem);
+	}
+
+	.legal-page__intro {
+		max-width: 48rem;
+		margin-top: 1.5rem;
+		color: var(--color-text-muted);
+		font-size: var(--text-body-lg);
+		line-height: 1.6;
+	}
+
+	.legal-page__updated {
+		margin-top: 1rem;
+		color: rgb(84 91 87 / 78%);
+		font-size: 0.875rem;
+	}
+
+	.legal-page__content {
+		display: grid;
+		gap: 1rem;
+		margin-top: clamp(3rem, 5vw, 4.5rem);
+	}
+
+	.legal-page__content :global(article) {
+		border-radius: var(--radius-md);
+		background: var(--color-secondary);
+		padding: clamp(1.75rem, 4vw, 3rem);
+	}
+
+	.legal-page__content :global(h2) {
+		font-size: clamp(1.5rem, 2.5vw, 2rem);
+	}
+
+	.legal-page__content :global(h3) {
+		margin-top: 1.5rem;
+		font-size: 1.1rem;
+	}
+
+	.legal-page__content :global(p),
+	.legal-page__content :global(li) {
+		max-width: 70ch;
+		color: var(--color-text-muted);
+		line-height: 1.65;
+	}
+
+	.legal-page__content :global(h2 + p),
+	.legal-page__content :global(h2 + ul),
+	.legal-page__content :global(h3 + p),
+	.legal-page__content :global(h3 + ul),
+	.legal-page__content :global(p + p) {
+		margin-top: 1rem;
+	}
+
+	.legal-page__content :global(ul) {
+		margin: 1rem 0 0;
+		padding-left: 1.25rem;
+	}
+
+	.legal-page__content :global(a) {
+		font-weight: 650;
+	}
+
+	.legal-page__content :global(.legal-notice) {
+		border: 1px solid rgb(251 111 132 / 25%);
+		background: rgb(251 111 132 / 8%);
+	}
+
+	@media (max-width: 47.999rem) {
+		.legal-page {
+			padding-block: 2.5rem 4rem;
+		}
+
+		.legal-page h1 {
+			font-size: clamp(2.5rem, 12vw, 3.25rem);
+		}
+	}
+</style>

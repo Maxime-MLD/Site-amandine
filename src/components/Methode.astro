@@ -1,31 +1,67 @@
 ---
+import { Image } from 'astro:assets';
+import contactImage from '../assets/images/methode/contact.webp';
+import organisationImage from '../assets/images/methode/organisation-rendez-vous.webp';
+import soinImage from '../assets/images/methode/votre-soin.webp';
 import { methodeContent, methodeSteps } from '../data/content';
+
+const themes = ['ivory', 'offwhite', 'sand'] as const;
+const images = [contactImage, organisationImage, soinImage] as const;
+const cards = methodeSteps.map((step, index) => ({
+	...step,
+	theme: themes[index],
+	image: images[index],
+}));
 ---
 
 <section class="methode" id="methode" aria-labelledby="methode-title" data-methode>
 	<div class="site-container">
-		<header class="methode__header">
-			<p class="methode__eyebrow">{methodeContent.eyebrow}</p>
-			<h2 id="methode-title">{methodeContent.title}</h2>
-			<p class="methode__intro">{methodeContent.intro}</p>
+		<header class="methode__header" data-methode-header>
+			<p class="methode__eyebrow" data-methode-reveal>
+				{methodeContent.eyebrow}
+			</p>
+			<h2 id="methode-title" class="methode__title">
+				<span class="methode__title-line" data-methode-reveal>Comment se déroule</span>
+				<span class="methode__title-line" data-methode-reveal>
+					votre <em class="methode__title-accent">accompagnement</em> ?
+				</span>
+			</h2>
+			<p class="methode__intro" data-methode-reveal>{methodeContent.intro}</p>
 		</header>
+	</div>
 
-		<div class="methode__journey" data-methode-journey>
-			<div class="methode__pin" data-methode-pin>
-				<div class="methode__stage" data-methode-stage>
-					<ol class="methode__steps">
-						{methodeSteps.map((step) => (
-							<li class="methode__step" data-methode-step>
-								<div data-methode-step-content>
-									<p class="methode__number" aria-hidden="true">{step.number}</p>
-									<h3>{step.title}</h3>
-									<p class="methode__description">{step.description}</p>
-								</div>
-							</li>
-						))}
-					</ol>
-				</div>
-			</div>
+	<div class="methode__pin" data-methode-pin>
+		<div class="methode__deck" data-methode-deck>
+			{cards.map((card) => (
+				<article
+					class:list={['methode-card', `methode-card--${card.theme}`]}
+					data-methode-card
+				>
+					<span class="methode-card__tab">
+						Étape <span class="methode-card__tab-sep" aria-hidden="true">/</span> <strong class="methode-card__tab-num">{card.number}</strong>
+					</span>
+
+					<div class="methode-card__body">
+						<div class="methode-card__text">
+							<span class="methode-card__step-badge" aria-hidden="true">{card.number}</span>
+							<h3 class="methode-card__title">{card.title}</h3>
+							<p class="methode-card__desc">{card.description}</p>
+						</div>
+
+						<div class="methode-card__media" aria-hidden="true">
+							<Image
+								src={card.image}
+								width={1200}
+								height={800}
+								sizes="(max-width: 767px) calc(100vw - 64px), (max-width: 1023px) 42vw, 540px"
+								alt=""
+								loading="lazy"
+								decoding="async"
+							/>
+						</div>
+					</div>
+				</article>
+			))}
 		</div>
 	</div>
 </section>
@@ -33,252 +69,371 @@ import { methodeContent, methodeSteps } from '../data/content';
 <style>
 	.methode {
 		overflow: clip;
-		background: var(--color-background);
-		padding-block: clamp(5rem, 8vw, 8rem);
+		background: var(--grain-image) 0 0 / 128px repeat, #faf8f4;
+		padding-block: clamp(5rem, 8vw, 7.5rem) 0;
 	}
 
 	.methode__header {
-		max-width: 780px;
+		max-width: min(65rem, 100%);
+		margin-inline: auto;
+		text-align: center;
 	}
 
 	.methode__eyebrow {
-		margin-bottom: 0.9rem;
-		color: var(--color-accent);
+		margin-bottom: clamp(1rem, 1.6vw, 1.35rem);
+		color: var(--c-amber, #d99a3e);
 		font-family: var(--font-heading);
 		font-size: var(--text-small);
-		font-weight: 700;
-		letter-spacing: 0.1em;
+		font-weight: 750;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
 	}
 
-	.methode__header h2 {
-		font-size: clamp(3rem, 4vw, 3.75rem);
+	.methode__title {
+		color: var(--c-petrol, #123b4a);
+		font-family: var(--font-heading);
+		font-size: clamp(2.75rem, 5.8vw, 5.25rem);
+		font-weight: 680;
+		letter-spacing: -0.04em;
+		line-height: 0.98;
+		text-wrap: balance;
+	}
+
+	.methode__title-line {
+		display: block;
+	}
+
+	.methode__title-accent {
+		display: inline-block;
+		color: var(--c-amber, #d99a3e);
+		font-family: var(--font-accent);
+		font-size: 1.08em;
+		font-style: italic;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		text-decoration: none;
+		border: none;
+		margin-left: 0.02em;
 	}
 
 	.methode__intro {
-		max-width: 640px;
-		margin-top: 1.35rem;
-		color: var(--color-text-muted);
-		font-size: var(--text-body-lg);
-		line-height: 1.55;
-	}
-
-	.methode__journey {
-		position: relative;
-		margin-top: clamp(3rem, 5vw, 4.5rem);
-	}
-
-	.methode__pin {
-		position: relative;
-		display: grid;
-		place-items: center;
-		width: 100vw;
-		height: 100svh;
-		margin-left: calc(50% - 50vw);
-	}
-
-	.methode__stage {
-		position: relative;
-		display: grid;
-		place-items: center;
-		isolation: isolate;
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-	}
-
-	.methode__stage::after {
-		position: absolute;
-		z-index: 4;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		width: clamp(7rem, 15vw, 12rem);
-		background: linear-gradient(
-			to right,
-			rgba(255, 255, 255, 0),
-			rgba(255, 255, 255, 0.82) 62%,
-			var(--color-background) 100%
-		);
-		content: '';
-		pointer-events: none;
-	}
-
-	.methode__steps {
-		position: relative;
-		z-index: 1;
-		display: grid;
-		place-items: center;
-		width: min(720px, 100%);
-		height: min(34rem, 72svh);
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.methode__step {
-		position: relative;
-		grid-area: 1 / 1;
-		width: min(560px, calc(100% - 6rem));
-		min-height: clamp(14rem, 30svh, 17rem);
-		border-radius: var(--radius-md);
-		background: var(--color-secondary);
-		box-shadow:
-			0 1.25rem 3.75rem rgba(23, 23, 23, 0.08),
-			0 0.25rem 1.125rem rgba(23, 23, 23, 0.04);
-		padding: clamp(1.6rem, 3vw, 2.25rem);
-		will-change: transform, opacity;
-	}
-
-	.methode__step:nth-child(1) {
-		z-index: 1;
-	}
-
-	.methode__step:nth-child(2) {
-		z-index: 2;
-	}
-
-	.methode__step:nth-child(3) {
-		z-index: 3;
-	}
-
-	@media (prefers-reduced-motion: no-preference) {
-		.methode__step {
-			visibility: hidden;
-			opacity: 0;
-		}
-	}
-
-	.methode__number {
-		color: var(--color-accent);
+		max-width: 620px;
+		margin: clamp(1.6rem, 2.4vw, 2.25rem) auto 0;
+		color: var(--c-steel, #52798a);
 		font-family: var(--font-heading);
-		font-size: 0.875rem;
-		font-weight: 750;
-		letter-spacing: 0.12em;
+		font-size: clamp(1.125rem, 1.4vw, 1.3rem);
+		line-height: 1.6;
+		text-wrap: balance;
 	}
 
-	.methode__step h3 {
-		margin-top: 0.55rem;
-		font-size: clamp(1.65rem, 2.5vw, 2.25rem);
-		font-weight: 650;
+	/* Initial opacity for scroll reveal when animations are active */
+	[data-methode-reveal] {
+		opacity: 1;
 	}
 
-	.methode__description {
-		max-width: 36ch;
-		margin-top: 0.9rem;
-		color: var(--color-text-muted);
-		font-size: 1.0625rem;
-		line-height: 1.55;
-	}
-
-	@media (max-width: 63.999rem) {
-		.methode {
-			padding-block: 4.5rem;
-		}
-
-		.methode__steps {
-			width: min(680px, 100%);
-		}
-	}
-
-	@media (max-width: 47.999rem) {
-		.methode {
-			padding-block: 4rem;
-		}
-
-		.methode__header h2 {
-			font-size: clamp(2.35rem, 10vw, 3rem);
-		}
-
-		.methode__journey {
-			margin-top: 2.75rem;
-		}
-
-		.methode__pin {
-			position: relative;
-			display: block;
-			width: 100%;
-			height: auto;
-			margin-left: 0;
-		}
-
-		.methode__stage {
-			display: block;
-			height: auto;
-			overflow: visible;
-		}
-
-		.methode__stage::after {
-			display: none;
-		}
-
-		.methode__steps {
-			display: grid;
-			gap: 1.5rem;
-			width: 100%;
-			height: auto;
-		}
-
-		.methode__step {
-			position: relative;
-			grid-area: auto;
-			width: 100%;
-			min-height: 0;
-			padding: 1.5rem;
-		}
-	}
-
-	@media (max-height: 56.25rem) and (min-width: 64rem) {
-		.methode {
-			padding-block: 5rem;
-		}
-
-		.methode__journey {
-			margin-top: 3rem;
-		}
-
-		.methode__steps {
-			height: min(31rem, 72svh);
-		}
+	[data-methode-ready] [data-methode-reveal] {
+		opacity: 0.22;
+		will-change: opacity;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.methode__pin {
-			position: relative;
-			width: 100%;
-			height: auto;
-			margin-left: 0;
-		}
-
-		.methode__stage {
-			height: auto;
-			overflow: visible;
-		}
-
-		.methode__stage::after {
-			display: none;
-		}
-
-		.methode__steps {
-			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			align-items: stretch;
-			gap: 1.25rem;
-			width: 100%;
-			height: auto;
-		}
-
-		.methode__step {
-			grid-area: auto;
-			width: auto;
-			min-height: 100%;
-			padding: 1.5rem;
+		[data-methode-ready] [data-methode-reveal] {
+			opacity: 1 !important;
 		}
 	}
 
-	@media (prefers-reduced-motion: reduce) and (max-width: 47.999rem) {
-		.methode__steps {
+	/* -- Deck: base = normal flow (no-JS / reduced-motion fallback) -- */
+	.methode__pin {
+		margin-top: clamp(2.5rem, 4vw, 3.5rem);
+		padding-bottom: clamp(5rem, 8vw, 7.5rem);
+	}
+
+	.methode__deck {
+		--tab-w: clamp(9.5rem, 12vw, 11rem);
+		--tab-1: 1.5rem;
+		--tab-2: calc(1.5rem + var(--tab-w) + 0.75rem);
+		--tab-3: calc(1.5rem + (var(--tab-w) + 0.75rem) * 2);
+		display: grid;
+		gap: clamp(3rem, 4vw, 3.5rem);
+		width: min(76%, 66rem);
+		margin-inline: auto;
+		padding-top: 3rem;
+	}
+
+	.methode-card {
+		position: relative;
+		display: flex;
+		min-height: clamp(22rem, 42vw, 26rem);
+		flex-direction: column;
+		justify-content: center;
+		border-radius: 1.75rem;
+		border: 1px solid rgba(18, 59, 74, 0.08);
+		padding: clamp(2.25rem, 3.2vw, 3rem);
+		box-shadow:
+			0 18px 45px rgba(18, 59, 74, 0.07),
+			0 4px 14px rgba(18, 59, 74, 0.03);
+		background:
+			var(--grain-image) 0 0 / 128px repeat,
+			linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 65%),
+			var(--card-bg);
+		color: var(--card-text);
+	}
+
+	.methode-card--ivory {
+		--card-bg: #f4efe7;
+		--card-text: #123b4a;
+		--card-muted: #3a5460;
+		--tab-left: var(--tab-1);
+	}
+
+	.methode-card--offwhite {
+		--card-bg: #fffdf9;
+		--card-text: #123b4a;
+		--card-muted: #3a5460;
+		--tab-left: var(--tab-2);
+	}
+
+	.methode-card--sand {
+		--card-bg: #eae3d6;
+		--card-text: #123b4a;
+		--card-muted: #3a5460;
+		--tab-left: var(--tab-3);
+	}
+
+	/* Filing-card tab */
+	.methode-card__tab {
+		position: absolute;
+		bottom: calc(100% - 1px);
+		left: var(--tab-left);
+		z-index: 2;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		width: var(--tab-w);
+		height: 2.65rem;
+		padding: 0 1.15rem;
+		border-radius: 0.85rem 0.85rem 0 0;
+		border: 1px solid rgba(18, 59, 74, 0.08);
+		border-bottom: none;
+		background:
+			var(--grain-image) 0 0 / 128px repeat,
+			linear-gradient(145deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 70%),
+			var(--card-bg);
+		color: var(--card-text);
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
+		font-weight: 750;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.methode-card__tab-sep {
+		color: #52798a;
+		opacity: 0.6;
+	}
+
+	.methode-card__tab-num {
+		color: #d99a3e;
+		font-weight: 800;
+	}
+
+	.methode-card__body {
+		display: grid;
+		grid-template-columns: minmax(0, 0.98fr) minmax(0, 1.02fr);
+		align-items: center;
+		gap: clamp(1.5rem, 2.5vw, 2.5rem);
+		width: 100%;
+	}
+
+	.methode-card__text {
+		min-width: 0;
+	}
+
+	.methode-card__step-badge {
+		display: block;
+		margin-bottom: 0.35rem;
+		color: #d99a3e;
+		font-family: var(--font-accent);
+		font-size: 1.18rem;
+		font-style: italic;
+		font-weight: 600;
+		line-height: 1;
+		letter-spacing: -0.01em;
+	}
+
+	.methode-card__title {
+		color: var(--card-text);
+		font-family: var(--font-heading);
+		font-size: clamp(1.95rem, 2.8vw, 2.65rem);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		text-wrap: balance;
+	}
+
+	.methode-card__desc {
+		max-width: 38ch;
+		margin-top: clamp(0.95rem, 1.4vw, 1.25rem);
+		color: var(--card-muted);
+		font-family: var(--font-heading);
+		font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+		line-height: 1.65;
+	}
+
+	.methode-card__media {
+		height: clamp(18rem, 29vw, 24.5rem);
+		overflow: hidden;
+		border-radius: clamp(0.85rem, 1.1vw, 1.05rem);
+		border: 1px solid rgba(18, 59, 74, 0.07);
+		background: rgb(255 255 255 / 40%);
+		box-shadow: 0 12px 32px rgba(18, 59, 74, 0.08);
+	}
+
+	.methode-card__media :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+	}
+
+	/* -- Pinned stack (all widths, motion allowed, JS ready) -- */
+	@media (prefers-reduced-motion: no-preference) {
+		[data-methode-ready] .methode__pin {
+			display: grid;
+			place-items: center;
+			width: 100%;
+			height: 100svh;
+			margin-top: clamp(2rem, 3vw, 3rem);
+			padding-bottom: 0;
+			overflow: hidden;
+		}
+
+		[data-methode-ready] .methode__deck {
+			display: block;
+			position: relative;
+			width: min(76%, 66rem);
+			height: min(75svh, 38.5rem);
+			margin-inline: auto;
+			padding-top: 0;
+		}
+
+		[data-methode-ready] .methode-card {
+			position: absolute;
+			inset: 0;
+			height: 100%;
+			min-height: 0;
+			will-change: transform;
+		}
+
+		[data-methode-ready] .methode-card--ivory {
+			z-index: 1;
+		}
+
+		[data-methode-ready] .methode-card--offwhite {
+			z-index: 2;
+		}
+
+		[data-methode-ready] .methode-card--sand {
+			z-index: 3;
+		}
+	}
+
+	/* -- Tablet -- */
+	@media (max-width: 63.999rem) {
+		.methode__deck {
+			--tab-w: 8.5rem;
+			--tab-1: 1rem;
+			--tab-2: calc(1rem + var(--tab-w) + 0.5rem);
+			--tab-3: calc(1rem + (var(--tab-w) + 0.5rem) * 2);
+			width: min(88%, calc(100% - 48px));
+		}
+
+		[data-methode-ready] .methode__deck {
+			width: min(88%, calc(100% - 48px));
+			height: min(75svh, 35.5rem);
+		}
+
+		.methode-card {
+			padding: 2.25rem 2rem;
+		}
+
+		.methode-card__body {
+			gap: 1.75rem;
+		}
+
+		.methode-card__media {
+			height: clamp(15.5rem, 26vw, 19.5rem);
+		}
+
+		.methode-card__desc {
+			max-width: 40ch;
+		}
+	}
+
+	/* -- Mobile -- */
+	@media (max-width: 47.999rem) {
+		.methode {
+			padding-top: 4rem;
+		}
+
+		.methode__title {
+			font-size: clamp(2.2rem, 8.8vw, 2.9rem);
+			line-height: 1.04;
+		}
+
+		.methode__deck {
+			--tab-w: clamp(5.6rem, 25vw, 6.75rem);
+			--tab-1: 0.5rem;
+			--tab-2: calc(0.5rem + var(--tab-w) + 0.35rem);
+			--tab-3: calc(0.5rem + (var(--tab-w) + 0.35rem) * 2);
+			width: min(var(--container), calc(100% - 32px));
+			gap: 3rem;
+		}
+
+		.methode-card {
+			min-height: 0;
+			padding: 1.6rem 1.35rem;
+			border-radius: 1.35rem;
+		}
+
+		.methode-card__tab {
+			height: 2.25rem;
+			padding: 0 0.65rem;
+			font-size: 0.6875rem;
+			letter-spacing: 0.04em;
+			border-radius: 0.7rem 0.7rem 0 0;
+		}
+
+		.methode-card__body {
 			grid-template-columns: 1fr;
+			gap: 1.1rem;
+		}
+
+		.methode-card__step-badge {
+			display: none;
+		}
+
+		.methode-card__media {
+			height: clamp(12rem, 46vw, 15.5rem);
+			border-radius: 0.85rem;
+		}
+
+		.methode-card__title {
+			font-size: clamp(1.5rem, 6.2vw, 1.95rem);
+		}
+
+		.methode-card__desc {
+			margin-top: 0.5rem;
+			font-size: 0.98rem;
+			line-height: 1.5;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) and (max-width: 47.999rem) {
+		[data-methode-ready] .methode__deck {
+			width: min(var(--container), calc(100% - 32px));
+			height: min(85svh, 35.5rem);
 		}
 	}
 </style>

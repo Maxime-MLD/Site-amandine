@@ -1,0 +1,108 @@
+---
+import Footer from '../components/Footer.astro';
+import LegalPage from '../components/LegalPage.astro';
+import Navbar from '../components/Navbar.astro';
+import { siteConfig } from '../config/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const emailHref = `mailto:${siteConfig.email}`;
+---
+
+<BaseLayout
+	title={`Politique de confidentialité | ${siteConfig.fullName}`}
+	description={`Politique de confidentialité et traitement des données du formulaire de contact de ${siteConfig.fullName}.`}
+>
+	<Navbar slot="header" />
+	<LegalPage
+		eyebrow="Vos données"
+		title="Politique de confidentialité"
+		intro="Cette page explique simplement quelles informations sont recueillies lorsque vous utilisez le formulaire de contact et comment elles sont traitées."
+		updated="2 septembre 2026"
+	>
+		<article class="legal-notice">
+			<h2>Coordonnées à compléter avant publication</h2>
+			<p>
+				Toute valeur commençant par « TODO_ » provient de la configuration du site et doit être
+				remplacée par l’information professionnelle définitive avant la mise en ligne.
+			</p>
+		</article>
+
+		<article>
+			<h2>Responsable du traitement</h2>
+			<p>
+				Le responsable du traitement est <strong>{siteConfig.fullName}</strong>, joignable à
+				<a href={emailHref}>{siteConfig.email}</a> ou à l’adresse suivante : {siteConfig.address},
+				{siteConfig.postalCode} {siteConfig.city}.
+			</p>
+		</article>
+
+		<article>
+			<h2>Données collectées et finalité</h2>
+			<p>Le formulaire recueille uniquement les informations nécessaires pour répondre à votre demande :</p>
+			<ul>
+				<li>nom et prénom ;</li>
+				<li>numéro de téléphone ;</li>
+				<li>adresse e-mail ;</li>
+				<li>type de demande ;</li>
+				<li>contenu du message.</li>
+			</ul>
+			<p>
+				Ces données servent exclusivement à vous recontacter et, le cas échéant, à organiser une
+				prise en charge. Leur traitement repose sur les démarches effectuées à votre demande avant
+				une éventuelle prise en charge. Les champs sont obligatoires pour permettre une réponse adaptée.
+			</p>
+			<p>
+				<strong>Ne transmettez pas d’informations médicales sensibles dans le formulaire.</strong>
+				Les informations médicales nécessaires à un soin doivent être échangées par un canal adapté.
+			</p>
+		</article>
+
+		<article>
+			<h2>Destinataires et Web3Forms</h2>
+			<p>
+				Les informations sont destinées à {siteConfig.fullName}. Le formulaire utilise le service
+				<a href="https://web3forms.com/privacy" target="_blank" rel="noopener noreferrer">Web3Forms</a>
+				pour transmettre le message par e-mail. Web3Forms indique traiter les soumissions sans les
+				conserver, sous réserve de journaux techniques supprimés périodiquement, et utiliser des
+				serveurs situés aux États-Unis.
+			</p>
+			<p>
+				Avant la mise en ligne, l’éditrice du site doit s’assurer que les garanties contractuelles et
+				les paramètres du compte Web3Forms correspondent à ses obligations en matière de protection
+				des données.
+			</p>
+		</article>
+
+		<article>
+			<h2>Durée de conservation</h2>
+			<p>
+				Les demandes de contact sans suite sont conservées pendant une durée maximale de 12 mois à
+				compter du dernier échange, puis supprimées. Lorsqu’une prise en charge est engagée, les données
+				nécessaires sont conservées selon les durées applicables aux obligations professionnelles et légales.
+			</p>
+		</article>
+
+		<article>
+			<h2>Vos droits</h2>
+			<p>
+				Vous pouvez demander l’accès, la rectification, l’effacement ou la limitation du traitement de
+				vos données, et exercer votre droit d’opposition lorsque celui-ci s’applique. Pour exercer vos
+				droits, contactez <a href={emailHref}>{siteConfig.email}</a>.
+			</p>
+			<p>
+				Si vous estimez, après avoir contacté la responsable du traitement, que vos droits ne sont pas
+				respectés, vous pouvez adresser une réclamation à la
+				<a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">CNIL</a>.
+			</p>
+		</article>
+
+		<article>
+			<h2>Cookies</h2>
+			<p>
+				Dans sa configuration actuelle, le site n’utilise ni outil publicitaire ni mesure d’audience
+				déposant des cookies. Cette information devra être mise à jour si de tels services sont ajoutés.
+			</p>
+		</article>
+	</LegalPage>
+	<Footer slot="footer" />
+</BaseLayout>

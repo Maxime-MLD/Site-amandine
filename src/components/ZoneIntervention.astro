@@ -1,223 +1,238 @@
 ---
-import { Image } from 'astro:assets';
-import mapIllustration from '../assets/images/map/roanne-area.svg';
-import { siteConfig } from '../config/site';
-import { serviceAreas, zoneContent } from '../data/content';
-
-const hasGoogleMapsUrl = !siteConfig.googleMapsUrl.startsWith('TODO_');
+import { zoneContent } from '../data/content';
 ---
 
 <section class="zone" id="zone-intervention" aria-labelledby="zone-title">
-	<div class="zone__layout site-container">
+	<div class="zone__inner site-container">
 		<div class="zone__content">
-			<p class="zone__eyebrow">{zoneContent.eyebrow}</p>
-			<h2 id="zone-title">{zoneContent.title}</h2>
-			<p class="zone__text">{zoneContent.text}</p>
+			<p class="zone__eyebrow">
+				<span class="zone__eyebrow-line" aria-hidden="true"></span>
+				{zoneContent.eyebrow}
+			</p>
 
-			<div class="zone__areas">
-				<h3>{zoneContent.areasLabel}</h3>
-				<ul>
-					{serviceAreas.map((area) => <li>{area}</li>)}
-				</ul>
-			</div>
+			<h2 id="zone-title" class="zone__title">
+				<span class="zone__title-line">{zoneContent.title.line1}</span>
+				<span class="zone__title-line">
+					{zoneContent.title.line2Lead}{' '}<em class="zone__title-accent">{zoneContent.title.line2Accent}</em>.
+				</span>
+			</h2>
+
+			<p class="zone__text">{zoneContent.text}</p>
 		</div>
 
 		<div class="zone__visual">
-			<div class="zone__map">
-				<Image
-					src={mapIllustration}
-					width={960}
-					height={650}
-					sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 48px), 730px"
-					alt={zoneContent.mapAlt}
-					loading="lazy"
-					decoding="async"
-				/>
-			</div>
+			<div class="zone__stat">
+				<span class="zone__stat-number">{zoneContent.radius}</span>
 
-			{hasGoogleMapsUrl ? (
-				<a class="zone__map-link" href={siteConfig.googleMapsUrl} target="_blank" rel="noopener noreferrer">
-					{zoneContent.mapLinkLabel}<span aria-hidden="true">↗</span>
-				</a>
-			) : (
-				<span class="zone__map-link zone__map-link--disabled" aria-disabled="true">
-					{zoneContent.mapLinkLabel}<span aria-hidden="true">↗</span>
-				</span>
-			)}
+				<div class="zone__pulse" aria-hidden="true">
+					<svg viewBox="0 0 160 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path
+							d="M0 10H56L62 3L68 17L74 6L80 12L84 10H160"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</div>
+
+				<div class="zone__stat-info">
+					<p class="zone__stat-label">{zoneContent.cabinetLabel}</p>
+					<p class="zone__stat-note">{zoneContent.cabinetNote}</p>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>
 
 <style>
 	.zone {
-		padding-block: clamp(7.5rem, 9vw, 8.75rem);
-		background: var(--color-background);
+		position: relative;
+		isolation: isolate;
+		overflow: clip;
+		scroll-margin-top: 5rem;
+		padding-block: clamp(4.25rem, 6.5vw, 5.75rem);
+		background: var(--grain-image) 0 0 / 128px repeat, var(--c-petrol);
+		color: var(--c-ivory);
 	}
 
-	.zone__layout {
+	.zone__inner {
 		display: grid;
-		grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+		grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
 		align-items: center;
-		gap: clamp(3rem, 4.5vw, 4.5rem);
+		justify-content: space-between;
+		gap: clamp(2.5rem, 5vw, 6rem);
+		max-width: 72rem;
+		margin-inline: auto;
+	}
+
+	/* --- Left Column: Editorial Information --- */
+	.zone__content {
+		max-width: 38rem;
 	}
 
 	.zone__eyebrow {
-		margin-bottom: 0.9rem;
-		color: var(--color-accent);
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin-bottom: 1.1rem;
+		color: var(--c-amber);
 		font-family: var(--font-heading);
-		font-size: var(--text-small);
+		font-size: 0.78rem;
 		font-weight: 700;
-		letter-spacing: 0.1em;
+		letter-spacing: 0.16em;
+		line-height: 1.2;
 		text-transform: uppercase;
 	}
 
-	.zone__content h2 {
-		max-width: 10.5em;
-		font-size: clamp(3rem, 4vw, 3.75rem);
+	.zone__eyebrow-line {
+		display: inline-block;
+		width: 2rem;
+		height: 2px;
+		background: var(--c-amber);
+	}
+
+	.zone__title {
+		color: var(--c-ivory);
+		font-family: var(--font-heading);
+		font-size: clamp(2.35rem, 3.4vw, 3.5rem);
+		font-weight: 680;
+		letter-spacing: -0.035em;
+		line-height: 1.1;
+		text-wrap: balance;
+	}
+
+	.zone__title-line {
+		display: block;
+	}
+
+	.zone__title-accent {
+		color: var(--c-amber);
+		font-family: var(--font-accent);
+		font-size: 1.02em;
+		font-style: italic;
+		font-weight: 600;
+		letter-spacing: -0.02em;
 	}
 
 	.zone__text {
-		max-width: 46ch;
-		margin-top: 1.5rem;
-		color: var(--color-text-muted);
-		font-size: var(--text-body-lg);
-		line-height: 1.6;
+		max-width: 44ch;
+		margin-top: clamp(1.2rem, 1.8vw, 1.6rem);
+		color: color-mix(in srgb, var(--c-ivory) 84%, var(--c-steel));
+		font-family: var(--font-heading);
+		font-size: clamp(1.05rem, 1.25vw, 1.2rem);
+		font-weight: 450;
+		line-height: 1.65;
+		text-wrap: balance;
 	}
 
-	.zone__areas {
-		margin-top: 2rem;
+	/* --- Right Column: Graphic 10 km & Cabinet Info --- */
+	.zone__visual {
+		display: flex;
+		justify-content: flex-start;
 	}
 
-	.zone__areas h3 {
-		font-size: 0.875rem;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
+	.zone__stat {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
 	}
 
-	.zone__areas ul {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0;
-		margin: 1rem 0 0;
-		padding: 0;
-		border-top: 1px solid var(--color-border);
-		list-style: none;
+	.zone__stat-number {
+		display: block;
+		color: var(--c-amber);
+		font-family: var(--font-accent);
+		font-size: clamp(4.75rem, 7.5vw, 7.5rem);
+		font-style: italic;
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		line-height: 0.88;
+		user-select: none;
 	}
 
-	.zone__areas li {
-		border-bottom: 1px solid var(--color-border);
-		padding-block: 0.8rem;
-		font-weight: 600;
+	.zone__pulse {
+		width: clamp(120px, 14vw, 150px);
+		height: 18px;
+		margin-block: clamp(1.1rem, 1.6vw, 1.45rem) clamp(0.95rem, 1.3vw, 1.2rem);
+		color: var(--c-amber);
+		opacity: 0.45;
 	}
 
-	.zone__areas li:nth-child(odd) {
-		padding-right: 1rem;
-	}
-
-	.zone__areas li:nth-child(even) {
-		padding-left: 1rem;
-		border-left: 1px solid var(--color-border);
-	}
-
-	.zone__map {
-		height: clamp(30rem, 36vw, 35rem);
-		overflow: hidden;
-		border-radius: 32px;
-		background: var(--color-secondary);
-	}
-
-	.zone__map :global(img) {
+	.zone__pulse svg {
 		display: block;
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
 	}
 
-	.zone__map-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		margin-top: 1.25rem;
+	.zone__stat-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.zone__stat-label {
+		color: var(--c-ivory);
 		font-family: var(--font-heading);
-		font-size: 0.95rem;
+		font-size: clamp(1.15rem, 1.35vw, 1.3rem);
 		font-weight: 700;
-		text-decoration-thickness: 1px;
+		letter-spacing: -0.02em;
+		line-height: 1.25;
 	}
 
-	.zone__map-link span {
-		color: var(--color-accent);
+	.zone__stat-note {
+		color: color-mix(in srgb, var(--c-ivory) 75%, var(--c-steel));
+		font-family: var(--font-heading);
+		font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+		font-weight: 450;
+		line-height: 1.4;
 	}
 
-	.zone__map-link--disabled {
-		cursor: not-allowed;
-		opacity: 0.55;
-	}
-
+	/* --- Responsive Layout --- */
 	@media (max-width: 63.999rem) {
-		.zone {
-			padding-block: 4.5rem;
+		.zone__inner {
+			grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+			gap: clamp(2rem, 4vw, 3.5rem);
 		}
 
-		.zone__layout {
-			grid-template-columns: 1fr;
-			gap: 3rem;
+		.zone__title {
+			font-size: clamp(2rem, 3.6vw, 2.75rem);
 		}
 
-		.zone__map {
-			height: clamp(25rem, 55vw, 31.25rem);
+		.zone__stat-number {
+			font-size: clamp(4rem, 8vw, 5.5rem);
 		}
 	}
 
 	@media (max-width: 47.999rem) {
 		.zone {
-			padding-block: 4rem;
+			padding-block: clamp(3.5rem, 8vw, 4.5rem);
 		}
 
-		.zone__layout {
-			gap: 3rem;
-		}
-
-		.zone__areas ul {
+		.zone__inner {
 			grid-template-columns: 1fr;
+			gap: 2.75rem;
 		}
 
-		.zone__areas li:nth-child(odd),
-		.zone__areas li:nth-child(even) {
-			padding-inline: 0;
-			border-left: 0;
+		.zone__content {
+			max-width: none;
 		}
 
-		.zone__map {
-			height: auto;
-			aspect-ratio: 4 / 3;
-			border-radius: 24px;
-		}
-	}
-
-	@media (max-height: 56.25rem) and (min-width: 64rem) {
-		.zone {
-			padding-block: 5rem;
-		}
-
-		.zone__layout {
-			grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-			gap: 3.5rem;
-		}
-
-		.zone__content h2 {
-			font-size: clamp(3.25rem, 4vw, 3.75rem);
+		.zone__title {
+			font-size: clamp(2rem, 8.5vw, 2.75rem);
 		}
 
 		.zone__text {
-			margin-top: 1.1rem;
+			max-width: none;
+			font-size: 1.06rem;
 		}
 
-		.zone__areas {
-			margin-top: 1.5rem;
+		.zone__stat-number {
+			font-size: clamp(4.25rem, 18vw, 5.5rem);
 		}
 
-		.zone__map {
-			height: clamp(30rem, 60vh, 31.875rem);
+		.zone__pulse {
+			width: 130px;
+			margin-block: 1.1rem 0.95rem;
 		}
 	}
 </style>

@@ -1,0 +1,79 @@
+---
+import Footer from '../components/Footer.astro';
+import LegalPage from '../components/LegalPage.astro';
+import Navbar from '../components/Navbar.astro';
+import { siteConfig } from '../config/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const phoneHref = `tel:${siteConfig.phone.replace(/\s+/g, '')}`;
+const emailHref = `mailto:${siteConfig.email}`;
+---
+
+<BaseLayout
+	title={`Mentions légales | ${siteConfig.fullName}`}
+	description={`Mentions légales du site professionnel de ${siteConfig.fullName}, infirmière à domicile à ${siteConfig.city}.`}
+>
+	<Navbar slot="header" />
+	<LegalPage
+		eyebrow="Informations légales"
+		title="Mentions légales"
+		intro="Les informations relatives à l’édition, l’hébergement et l’utilisation de ce site."
+		updated="2 septembre 2026"
+	>
+		<article class="legal-notice">
+			<h2>Informations à compléter avant publication</h2>
+			<p>
+				Les coordonnées professionnelles, numéros d’identification et informations d’hébergement
+				ci-dessous proviennent de la configuration du site. Toute valeur commençant par « TODO_ »
+				doit être remplacée par l’information définitive avant la mise en ligne.
+			</p>
+		</article>
+
+		<article>
+			<h2>Édition du site</h2>
+			<p>
+				Ce site est édité par <strong>{siteConfig.fullName}</strong>, {siteConfig.profession.toLowerCase()},
+				exerçant à {siteConfig.address}, {siteConfig.postalCode} {siteConfig.city}, {siteConfig.country}.
+			</p>
+			<ul>
+				<li>Téléphone : <a href={phoneHref}>{siteConfig.phone}</a></li>
+				<li>Email : <a href={emailHref}>{siteConfig.email}</a></li>
+				<li>SIRET : {siteConfig.siret}</li>
+				<li>RPPS : {siteConfig.rpps}</li>
+				<li>Titre professionnel : {siteConfig.professionalTitle}</li>
+			</ul>
+			<p>La directrice de la publication est {siteConfig.fullName}.</p>
+		</article>
+
+		<article>
+			<h2>Hébergement</h2>
+			<p>Le site est hébergé par :</p>
+			<ul>
+				<li>{siteConfig.host.name}</li>
+				<li>{siteConfig.host.address}</li>
+				<li>{siteConfig.host.phone}</li>
+			</ul>
+		</article>
+
+		<article>
+			<h2>Conception et propriété intellectuelle</h2>
+			<p>
+				Le site a été réalisé par
+				<a href="https://www.mld-dev.com" target="_blank" rel="noopener noreferrer">MLD DEV</a>.
+				Sauf indication contraire, les textes, éléments graphiques et contenus présents sur ce site
+				sont protégés par le droit de la propriété intellectuelle. Toute reproduction ou utilisation
+				non autorisée est interdite.
+			</p>
+		</article>
+
+		<article>
+			<h2>Responsabilité</h2>
+			<p>
+				Les informations publiées ont une vocation générale et ne remplacent pas un avis médical,
+				une consultation ou la prise en charge d’une urgence. En cas d’urgence médicale, contactez
+				les services d’urgence compétents.
+			</p>
+		</article>
+	</LegalPage>
+	<Footer slot="footer" />
+</BaseLayout>

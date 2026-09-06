@@ -1,0 +1,499 @@
+---
+import { siteConfig } from '../config/site';
+
+const currentYear = new Date().getFullYear();
+const hasPhone = Boolean(siteConfig.phone && !siteConfig.phone.startsWith('TODO_'));
+const hasEmail = Boolean(siteConfig.email && !siteConfig.email.startsWith('TODO_'));
+const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : '#';
+const emailHref = hasEmail ? `mailto:${siteConfig.email}` : '#';
+
+const footerNavigation = [
+	{ label: 'Accueil', href: '/#accueil' },
+	{ label: 'Soins', href: '/#soins' },
+	{ label: 'À propos', href: '/#a-propos' },
+	{ label: 'Zone d’intervention', href: '/#zone-intervention' },
+	{ label: 'Avis patients', href: '/#avis-patients' },
+	{ label: 'FAQ', href: '/#faq' },
+	{ label: 'Contact', href: '/#contact' },
+] as const;
+---
+
+<footer class="site-footer">
+	<!-- Monumental Background Cardiogram (Design Statement) -->
+	<div class="site-footer__ecg-bg" aria-hidden="true">
+		<svg class="site-footer__monumental-ecg" viewBox="0 0 1600 400" fill="none" preserveAspectRatio="none">
+			<defs>
+				<linearGradient id="monumentalEcgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stop-color="#52798a" stop-opacity="0.8" />
+					<stop offset="32%" stop-color="#2c697e" stop-opacity="0.95" />
+					<stop offset="48%" stop-color="#f4efe7" stop-opacity="0.85" />
+					<stop offset="64%" stop-color="#1b4f62" stop-opacity="0.95" />
+					<stop offset="100%" stop-color="#52798a" stop-opacity="0.75" />
+				</linearGradient>
+			</defs>
+			<path
+				class="footer-monumental-ecg__path"
+				d="M 40 240 L 380 240 L 435 180 L 485 285 L 540 205 L 630 50 L 720 340 L 790 240 L 840 240 L 895 180 L 950 240 L 1560 240"
+				stroke="url(#monumentalEcgGrad)"
+				stroke-width="28"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+	</div>
+
+	<div class="site-footer__inner site-container">
+		<div class="site-footer__main">
+			<!-- Identity / Brand Column -->
+			<div class="site-footer__identity">
+				<a class="site-footer__brand" href="/#accueil" aria-label={`${siteConfig.fullName}, retour à l’accueil`}>
+					<svg class="site-footer__brand-mark" viewBox="0 0 48 44" aria-hidden="true">
+						<path d="M3 24h8l4.5-11 6.5 23 7-18 4.5 6H45" />
+					</svg>
+					<span class="site-footer__brand-copy">
+						<span class="site-footer__brand-name">{siteConfig.fullName}</span>
+						<small>Infirmière à domicile</small>
+					</span>
+				</a>
+				<p class="site-footer__place">Montagny et alentours</p>
+				<p class="site-footer__promise">
+					Soins infirmiers à domicile avec écoute, disponibilité et professionnalisme.
+				</p>
+			</div>
+
+			<!-- Navigation Column -->
+			<nav class="site-footer__navigation" aria-label="Navigation du pied de page">
+				<p class="site-footer__heading">Navigation</p>
+				<ul>
+					{footerNavigation.map((item) => (
+						<li><a href={item.href}>{item.label}</a></li>
+					))}
+				</ul>
+			</nav>
+
+			<!-- Contact Column -->
+			<div class="site-footer__contact">
+				<p class="site-footer__heading">Contact</p>
+				<dl>
+					<div class="site-footer__phone">
+						<dt>Téléphone</dt>
+						<dd>{hasPhone ? <a href={phoneHref}>{siteConfig.phone}</a> : 'À compléter'}</dd>
+					</div>
+					<div>
+						<dt>Email</dt>
+						<dd>{hasEmail ? <a href={emailHref}>{siteConfig.email}</a> : 'À compléter'}</dd>
+					</div>
+					<div>
+						<dt>Secteur</dt>
+						<dd>Montagny et alentours</dd>
+					</div>
+					<div>
+						<dt>Disponibilités</dt>
+						<dd>Du lundi au samedi<br />7h00 — 19h00</dd>
+					</div>
+				</dl>
+			</div>
+		</div>
+
+		<!-- Bottom Copyright & Legal Links -->
+		<div class="site-footer__bottom">
+			<p>© {currentYear} {siteConfig.fullName} — Tous droits réservés.</p>
+			<p class="site-footer__credit">
+				Site réalisé par
+				<a href="https://www.mld-dev.com" target="_blank" rel="noopener noreferrer">MLD DEV</a>
+			</p>
+			<nav aria-label="Informations légales">
+				<a href="/mentions-legales/">Mentions légales</a>
+				<a href="/politique-de-confidentialite/">Politique de confidentialité</a>
+			</nav>
+		</div>
+	</div>
+</footer>
+
+<script>
+	function initFooterEcg() {
+		const path = document.querySelector<SVGPathElement>('.footer-monumental-ecg__path');
+		const footer = document.querySelector<HTMLElement>('.site-footer');
+		if (!path || !footer) return;
+
+		// Calculate exact SVG path length
+		const length = Math.ceil(path.getTotalLength()) || 2200;
+		path.style.strokeDasharray = `${length}`;
+
+		// Instant full line if user prefers reduced motion
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			path.style.strokeDashoffset = '0';
+			return;
+		}
+
+		// Initial state: hidden
+		path.style.strokeDashoffset = `${length}`;
+
+		// IntersectionObserver to animate once on entry
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0];
+				if (entry.isIntersecting) {
+					requestAnimationFrame(() => {
+						path.style.transition = 'stroke-dashoffset 3.8s cubic-bezier(0.22, 0.85, 0.36, 1)';
+						path.style.strokeDashoffset = '0';
+					});
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1 }
+		);
+
+		observer.observe(footer);
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initFooterEcg);
+	} else {
+		initFooterEcg();
+	}
+</script>
+
+<style>
+	.site-footer {
+		position: relative;
+		overflow: hidden;
+		background: linear-gradient(180deg, #1a5163 0%, #123b4a 48%, #091c24 100%);
+		color: #f4efe7;
+	}
+
+	/* Ultra-subtle paper grain */
+	.site-footer::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image: var(--grain-image);
+		background-size: 128px;
+		background-repeat: repeat;
+		opacity: 0.028;
+		pointer-events: none;
+	}
+
+	.site-footer__inner {
+		position: relative;
+		z-index: 1;
+	}
+
+	.site-footer__main {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(11rem, 0.72fr) minmax(16rem, 1fr);
+		gap: clamp(3rem, 7vw, 7rem);
+		padding-block: clamp(4.5rem, 7vw, 6rem) clamp(2rem, 3.5vw, 3rem);
+	}
+
+	.site-footer__identity {
+		max-width: 28rem;
+	}
+
+	.site-footer__brand {
+		display: inline-flex;
+		align-items: center;
+		gap: clamp(0.85rem, 1.4vw, 1.2rem);
+		text-decoration: none;
+	}
+
+	.site-footer__brand-mark {
+		width: clamp(2.5rem, 3.8vw, 3.25rem);
+		height: clamp(2.3rem, 3.5vw, 3rem);
+		flex: none;
+		fill: none;
+		stroke: #d99a3e;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2.6;
+		filter: drop-shadow(0 0 6px rgba(217, 154, 62, 0.35));
+		transition: transform 240ms ease;
+	}
+
+	.site-footer__brand:hover .site-footer__brand-mark {
+		transform: scale(1.08);
+	}
+
+	.site-footer__brand-copy {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.site-footer__brand-name {
+		color: #f4efe7;
+		font-family: var(--font-heading);
+		font-size: clamp(1.85rem, 2.8vw, 2.4rem);
+		font-weight: 750;
+		letter-spacing: -0.045em;
+		line-height: 1.08;
+	}
+
+	.site-footer__brand small {
+		margin-top: 0.35rem;
+		color: #d99a3e;
+		font-size: 0.875rem;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+	}
+
+	.site-footer__place {
+		margin-top: 1.4rem;
+		color: rgba(244, 239, 231, 0.92);
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 700;
+	}
+
+	.site-footer__place::before {
+		display: inline-block;
+		width: 0.5rem;
+		height: 0.5rem;
+		margin-right: 0.6rem;
+		border-radius: 50%;
+		background: #d99a3e;
+		content: '';
+		vertical-align: 0.08em;
+	}
+
+	.site-footer__promise {
+		max-width: 35ch;
+		margin-top: 1rem;
+		color: rgba(244, 239, 231, 0.72);
+		font-size: 1rem;
+		line-height: 1.6;
+	}
+
+	.site-footer__heading,
+	.site-footer dt {
+		color: #d99a3e;
+		font-family: var(--font-heading);
+		font-size: 0.76rem;
+		font-weight: 750;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.site-footer__navigation ul {
+		display: grid;
+		gap: 0.55rem;
+		margin: 1.35rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.site-footer a:not(.site-footer__brand) {
+		position: relative;
+		color: rgba(244, 239, 231, 0.82);
+		text-decoration: none;
+		transition: color 180ms ease;
+	}
+
+	.site-footer a:not(.site-footer__brand)::after {
+		position: absolute;
+		inset: auto 0 -0.2rem;
+		height: 1px;
+		background: #d99a3e;
+		content: '';
+		transform: scaleX(0);
+		transform-origin: right;
+		transition: transform 180ms ease;
+	}
+
+	.site-footer a:not(.site-footer__brand):hover {
+		color: #ffffff;
+	}
+
+	.site-footer a:not(.site-footer__brand):hover::after,
+	.site-footer a:not(.site-footer__brand):focus-visible::after {
+		transform: scaleX(1);
+		transform-origin: left;
+	}
+
+	.site-footer__contact dl {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.25rem 1.5rem;
+		margin: 1.35rem 0 0;
+	}
+
+	.site-footer__contact dl > div:first-child,
+	.site-footer__contact dl > div:nth-child(2) {
+		grid-column: 1 / -1;
+	}
+
+	.site-footer dd {
+		margin: 0.25rem 0 0;
+		color: #f4efe7;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.45;
+		overflow-wrap: anywhere;
+	}
+
+	.site-footer__phone dd {
+		font-family: var(--font-heading);
+		font-size: clamp(1.25rem, 2vw, 1.55rem);
+		font-weight: 720;
+		letter-spacing: -0.03em;
+	}
+
+	.site-footer__phone a {
+		color: #f4efe7 !important;
+	}
+
+	.site-footer__phone a:hover {
+		color: #d99a3e !important;
+	}
+
+	/* Monumental Background Cardiogram (Design Statement) */
+	.site-footer__ecg-bg {
+		position: absolute;
+		inset-inline: clamp(1rem, 4vw, 3.5rem);
+		top: 50%;
+		transform: translateY(-46%);
+		height: clamp(16rem, 34vw, 24rem);
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.site-footer__monumental-ecg {
+		width: 100%;
+		height: 100%;
+		display: block;
+		overflow: visible;
+	}
+
+	.footer-monumental-ecg__path {
+		opacity: 0.11;
+		filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.22));
+	}
+
+	.site-footer__bottom {
+		border-top: 1px solid rgba(244, 239, 231, 0.1);
+		display: grid;
+		grid-template-columns: 1fr auto auto;
+		align-items: center;
+		gap: 1.5rem 2.25rem;
+		padding-block: 1.5rem 2.5rem;
+		color: rgba(244, 239, 231, 0.65);
+		font-size: 0.875rem;
+		line-height: 1.45;
+	}
+
+	.site-footer__credit a {
+		margin-left: 0.25rem;
+		color: rgba(244, 239, 231, 0.88);
+		font-weight: 700;
+	}
+
+	.site-footer__bottom nav {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+	}
+
+	@media (max-width: 63.999rem) {
+		.site-footer__main {
+			grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.9fr);
+			gap: 3.5rem 4rem;
+		}
+
+		.site-footer__identity {
+			grid-column: 1 / -1;
+		}
+
+		.site-footer__bottom {
+			grid-template-columns: 1fr auto;
+		}
+
+		.site-footer__credit {
+			grid-column: 1;
+			grid-row: 2;
+		}
+
+		.site-footer__bottom nav {
+			grid-column: 2;
+			grid-row: 1 / span 2;
+			align-items: flex-end;
+			flex-direction: column;
+			gap: 0.55rem;
+		}
+	}
+
+	@media (max-width: 47.999rem) {
+		.site-footer__main {
+			display: flex;
+			gap: 0;
+			flex-direction: column;
+			padding-block: 4rem 2.5rem;
+		}
+
+		.site-footer__identity {
+			order: 1;
+		}
+
+		.site-footer__contact {
+			order: 2;
+			margin-top: 3rem;
+		}
+
+		.site-footer__navigation {
+			order: 3;
+			margin-top: 2.75rem;
+		}
+
+		.site-footer__contact dl {
+			grid-template-columns: 1fr;
+		}
+
+		.site-footer__contact dl > div:first-child,
+		.site-footer__contact dl > div:nth-child(2) {
+			grid-column: auto;
+		}
+
+		.site-footer__navigation ul {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.7rem 1rem;
+		}
+
+		.site-footer__ecg-bg {
+			height: clamp(12rem, 45vw, 17rem);
+			top: 40%;
+			inset-inline: 0.75rem;
+		}
+
+		.footer-monumental-ecg__path {
+			stroke-width: 34;
+			opacity: 0.09;
+		}
+
+		.site-footer__bottom {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.75rem;
+			flex-direction: column;
+			padding-block: 1.25rem 2rem;
+		}
+
+		.site-footer__credit,
+		.site-footer__bottom nav {
+			display: flex;
+			grid-column: auto;
+			grid-row: auto;
+			align-items: flex-start;
+			gap: 0.65rem;
+			flex-direction: column;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.site-footer a:not(.site-footer__brand) {
+			transition: none !important;
+		}
+
+		.footer-monumental-ecg__path {
+			transition: none !important;
+			stroke-dashoffset: 0 !important;
+		}
+	}
+</style>

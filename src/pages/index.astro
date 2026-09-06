@@ -1,7 +1,10 @@
 ---
 import About from '../components/About.astro';
 import AvisPatients from '../components/AvisPatients.astro';
+import Contact from '../components/Contact.astro';
 import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import Footer from '../components/Footer.astro';
 import Hero from '../components/Hero.astro';
 import InformationsPratiques from '../components/InformationsPratiques.astro';
 import Methode from '../components/Methode.astro';
@@ -11,9 +14,10 @@ import TrustBar from '../components/TrustBar.astro';
 import ZoneIntervention from '../components/ZoneIntervention.astro';
 import { homeSeo } from '../data/content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { homeLocalBusinessSchema } from '../seo/schema';
 ---
 
-<BaseLayout title={homeSeo.title} description={homeSeo.description}>
+<BaseLayout title={homeSeo.title} description={homeSeo.description} schema={homeLocalBusinessSchema}>
 	<Navbar slot="header" />
 	<Hero />
 	<TrustBar />
@@ -24,7 +28,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 	<AvisPatients />
 	<InformationsPratiques />
 	<Faq />
+	<FinalCta />
+	<Contact />
+	<Footer slot="footer" />
 	<script>
 		import '../scripts/animations';
+		import '../scripts/contact-form';
 	</script>
 </BaseLayout>

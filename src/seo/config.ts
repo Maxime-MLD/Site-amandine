@@ -7,4 +7,6 @@ export const seoConfig = {
 	siteName: `${siteConfig.fullName} - ${siteConfig.profession}`,
 	themeColor: siteConfig.themeColor,
 	defaultRobots: 'index, follow',
+	defaultImage: '/og-image.png',
+	defaultImageAlt: `${siteConfig.fullName}, ${siteConfig.profession.toLowerCase()} à ${siteConfig.city} et alentours`,
 } as const;

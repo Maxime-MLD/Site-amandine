@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160" fill="none">
+  <defs>
+    <radialGradient id="bg3" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#F9F6F0"/>
+      <stop offset="100%" stop-color="#E5DED2"/>
+    </radialGradient>
+  </defs>
+  <circle cx="80" cy="80" r="78" fill="url(#bg3)"/>
+  <circle cx="80" cy="80" r="77.5" stroke="#123B4A" stroke-opacity="0.12"/>
+  <circle cx="80" cy="62" r="26" fill="#123B4A" fill-opacity="0.22"/>
+  <path d="M38 128 C42 98, 60 92, 80 92 C100 92, 118 98, 122 128 Z" fill="#123B4A" fill-opacity="0.22"/>
+  <text x="80" y="68" font-family="'Manrope', sans-serif" font-size="15" font-weight="700" fill="#123B4A" text-anchor="middle" letter-spacing="0.05em">TB</text>
+</svg>

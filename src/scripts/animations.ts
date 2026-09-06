@@ -3,117 +3,146 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Method section scroll animation
+// Method section — pinned "filing-card" stack (desktop, tablet AND mobile).
+// The 3 cards land in the exact same rectangle; only their offset tabs stay
+// visible. Card 1 shows first, then 2 then 3 rise from below into place, with a
+// short delay before card 2 and small breaths between/after. One scrubbed
+// timeline drives it, so the reverse plays automatically.
 function initMethodeAnimation() {
 	const section = document.querySelector<HTMLElement>('[data-methode]');
 	if (!section) return;
 
 	const pin = section.querySelector<HTMLElement>('[data-methode-pin]');
-	const steps = gsap.utils.toArray<HTMLElement>('[data-methode-step]', section);
-	if (!pin || steps.length !== 3) return;
+	const cards = gsap.utils.toArray<HTMLElement>('[data-methode-card]', section);
+	const header = section.querySelector<HTMLElement>('[data-methode-header]');
+	const revealItems = gsap.utils.toArray<HTMLElement>('[data-methode-reveal]', section);
 
-	ScrollTrigger.getById('methode-desktop')?.kill();
-	steps.forEach((_, index) => ScrollTrigger.getById(`methode-mobile-${index}`)?.kill());
+	if (!pin || cards.length !== 3) return;
+
+	ScrollTrigger.getById('methode-pin')?.kill();
+	ScrollTrigger.getById('methode-header-reveal')?.kill();
+
+	// Only switch the cards into the absolute-stacked pinned layout once JS is
+	// ready. Without this flag they stay in normal flow and remain fully visible
+	// if GSAP fails to load (progressive enhancement).
+	section.setAttribute('data-methode-ready', '');
 
 	const media = gsap.matchMedia();
-	media.add('(prefers-reduced-motion: no-preference) and (min-width: 48rem)', () => {
-		const [firstStep, secondStep, thirdStep] = steps;
 
-		gsap.set(steps, {
-			autoAlpha: 0,
-			x: 0,
-			xPercent: 160,
-			y: 0,
-			scale: 0.98,
-			transformOrigin: 'center center',
-		});
+	// Same pinned behaviour on every width — only the internal layout (CSS) and
+	// pin distance change. Cards 2 & 3 start fully below the masked viewport and
+	// only the currently-active card carries a shadow (no stacked shadows).
+	media.add('(prefers-reduced-motion: no-preference)', () => {
+		const [first, second, third] = cards;
+
+		const SHADOW_ON = '0 18px 45px rgba(23, 23, 23, 0.08), 0 4px 14px rgba(23, 23, 23, 0.04)';
+		const SHADOW_OFF = '0 18px 45px rgba(23, 23, 23, 0), 0 4px 14px rgba(23, 23, 23, 0)';
+
+		// Full viewport height (+ buffer) so a pending card sits completely below
+		// the masked pin — body, image and shadow all off-screen.
+		const hideY = () => window.innerHeight + 120;
+		const CARD2_IN = 0.18;
+		const CARD3_IN = 0.56;
+
+		// Explicit initial state (NOT fromTo/immediateRender, which renders the end
+		// state under scrub) so only card 1 — with its shadow — is visible at start.
+		gsap.set(first, { y: 0, boxShadow: SHADOW_ON });
+		gsap.set([second, third], { y: hideY, boxShadow: SHADOW_OFF });
+
+		const tab1 = first.querySelector<HTMLElement>('.methode-card__tab');
+		const tab2 = second.querySelector<HTMLElement>('.methode-card__tab');
+		const tab3 = third.querySelector<HTMLElement>('.methode-card__tab');
+		const allTabs = [tab1, tab2, tab3].filter(Boolean) as HTMLElement[];
+
+		if (tab1 && tab2 && tab3) {
+			gsap.set(tab1, { opacity: 1 });
+			gsap.set([tab2, tab3], { opacity: 0.68 });
+		}
+
+		// Header progressive opacity reveal on scroll (0.22 -> 1)
+		if (header && revealItems.length > 0) {
+			gsap.set(revealItems, { opacity: 0.22 });
+
+			const headerTimeline = gsap.timeline({
+				scrollTrigger: {
+					id: 'methode-header-reveal',
+					trigger: header,
+					start: 'top 88%',
+					end: 'top 28%',
+					scrub: true,
+					invalidateOnRefresh: true,
+				},
+			});
+
+			revealItems.forEach((el, index) => {
+				headerTimeline.to(
+					el,
+					{
+						opacity: 1,
+						duration: 0.45,
+						ease: 'none',
+					},
+					index * 0.18
+				);
+			});
+		}
 
 		const timeline = gsap.timeline({
+			defaults: { ease: 'power2.out' },
 			scrollTrigger: {
-				id: 'methode-desktop',
+				id: 'methode-pin',
 				trigger: pin,
 				start: 'top top',
-				end: () => `+=${Math.max(window.innerHeight * 2.4, 1500)}`,
+				end: () => `+=${Math.round(window.innerHeight * 2.4)}`,
 				pin: true,
 				pinSpacing: true,
 				scrub: true,
 				anticipatePin: 1,
 				invalidateOnRefresh: true,
+				// Re-hide, for the new viewport, any card still parked below at the
+				// current scroll position (resize / orientation change).
+				onRefresh: (self) => {
+					if (self.progress < CARD2_IN) gsap.set(second, { y: window.innerHeight + 120 });
+					if (self.progress < CARD3_IN) gsap.set(third, { y: window.innerHeight + 120 });
+				},
 			},
 		});
 
 		timeline
-			.addLabel('card-1', 0)
-			.to(
-				firstStep,
-				{ autoAlpha: 1, xPercent: 0, scale: 1, duration: 1, ease: 'power1.out' },
-				'card-1',
-			)
-			.addLabel('card-2', 1.12)
-			.to(
-				firstStep,
-				{ autoAlpha: 0.92, x: -20, y: -17, scale: 0.97, duration: 0.88, ease: 'power1.inOut' },
-				'card-2',
-			)
-			.to(
-				secondStep,
-				{ autoAlpha: 1, xPercent: 0, scale: 1, duration: 1, ease: 'power1.out' },
-				'card-2',
-			)
-			.addLabel('card-3', 2.24)
-			.to(
-				firstStep,
-				{ autoAlpha: 0.84, x: -35, y: -30, scale: 0.94, duration: 0.88, ease: 'power1.inOut' },
-				'card-3',
-			)
-			.to(
-				secondStep,
-				{ autoAlpha: 0.94, x: -15, y: -15, scale: 0.97, duration: 0.88, ease: 'power1.inOut' },
-				'card-3',
-			)
-			.to(
-				thirdStep,
-				{ autoAlpha: 1, xPercent: 0, scale: 1, duration: 1, ease: 'power1.out' },
-				'card-3',
-			);
+			// 0 → 0.18 : card 1 alone (initial delay)
+			.to(second, { y: 0, duration: 0.3 }, CARD2_IN) // 0.18 → 0.48 : card 2 rises
+			.to(first, { boxShadow: SHADOW_OFF, duration: 0.3 }, CARD2_IN) // shadow hands over
+			.to(second, { boxShadow: SHADOW_ON, duration: 0.3 }, CARD2_IN);
+
+		if (tab1 && tab2 && tab3) {
+			timeline
+				.to(tab1, { opacity: 0.68, duration: 0.25 }, CARD2_IN)
+				.to(tab2, { opacity: 1, duration: 0.25 }, CARD2_IN)
+				.to(tab2, { opacity: 0.68, duration: 0.25 }, CARD3_IN)
+				.to(tab3, { opacity: 1, duration: 0.25 }, CARD3_IN);
+		}
+
+		timeline
+			// 0.48 → 0.56 : breath
+			.to(third, { y: 0, duration: 0.3 }, CARD3_IN) // 0.56 → 0.86 : card 3 rises
+			.to(second, { boxShadow: SHADOW_OFF, duration: 0.3 }, CARD3_IN)
+			.to(third, { boxShadow: SHADOW_ON, duration: 0.3 }, CARD3_IN)
+			// 0.86 → 1.0 : final breath before the pin releases
+			.to({}, { duration: 0.14 }, 0.86);
 
 		return () => {
+			ScrollTrigger.getById('methode-header-reveal')?.kill();
 			timeline.scrollTrigger?.kill();
 			timeline.kill();
-			gsap.set(steps, { clearProps: 'all' });
-		};
-	});
-
-	media.add('(prefers-reduced-motion: no-preference) and (max-width: 47.999rem)', () => {
-		gsap.set(steps, { autoAlpha: 0, y: 30, scale: 1 });
-
-		const tweens = steps.map((step, index) =>
-			gsap.to(step, {
-				autoAlpha: 1,
-				y: 0,
-				duration: 0.55,
-				ease: 'power2.out',
-				scrollTrigger: {
-					id: `methode-mobile-${index}`,
-					trigger: step,
-					start: 'top 85%',
-					toggleActions: 'play none none reverse',
-					invalidateOnRefresh: true,
-				},
-			}),
-		);
-
-		return () => {
-			tweens.forEach((tween) => {
-				tween.scrollTrigger?.kill();
-				tween.kill();
-			});
-			gsap.set(steps, { clearProps: 'all' });
+			gsap.set(cards, { clearProps: 'all' });
+			if (allTabs.length > 0) gsap.set(allTabs, { clearProps: 'all' });
+			if (revealItems.length > 0) gsap.set(revealItems, { clearProps: 'all' });
 		};
 	});
 
 	media.add('(prefers-reduced-motion: reduce)', () => {
-		gsap.set(steps, { clearProps: 'all' });
+		gsap.set(cards, { clearProps: 'all' });
+		if (revealItems.length > 0) gsap.set(revealItems, { clearProps: 'all' });
 	});
 
 	if (import.meta.hot) {
@@ -123,161 +152,19 @@ function initMethodeAnimation() {
 
 initMethodeAnimation();
 
-function initPracticalAnimation() {
-	const section = document.querySelector<HTMLElement>('[data-practical]');
-	if (!section) return;
 
-	const grid = section.querySelector<HTMLElement>('[data-practical-grid]');
-	const cards = gsap.utils.toArray<HTMLElement>('[data-practical-card]', section);
-	if (!grid || cards.length !== 4) return;
 
-	ScrollTrigger.getById('practical-cards')?.kill();
 
-	const media = gsap.matchMedia();
-	media.add('(prefers-reduced-motion: no-preference)', () => {
-		gsap.set(cards, { autoAlpha: 0, y: 25 });
 
-		const tween = gsap.to(cards, {
-			autoAlpha: 1,
-			y: 0,
-			duration: 0.65,
-			ease: 'power2.out',
-			stagger: 0.1,
-			scrollTrigger: {
-				id: 'practical-cards',
-				trigger: grid,
-				start: 'top 82%',
-				toggleActions: 'play none none reverse',
-				invalidateOnRefresh: true,
-			},
-		});
-
-		return () => {
-			tween.scrollTrigger?.kill();
-			tween.kill();
-			gsap.set(cards, { clearProps: 'all' });
-		};
-	});
-
-	media.add('(prefers-reduced-motion: reduce)', () => {
-		gsap.set(cards, { clearProps: 'all' });
-	});
-
-	if (import.meta.hot) {
-		import.meta.hot.dispose(() => media.revert());
-	}
+function initContactAnimation() {
+	ScrollTrigger.getById('contact-reveal')?.kill();
 }
 
-initPracticalAnimation();
+initContactAnimation();
 
-function initFaq() {
-	const section = document.querySelector<HTMLElement>('[data-faq]');
-	if (!section) return;
-
-	const list = section.querySelector<HTMLElement>('[data-faq-list]');
-	const items = gsap.utils.toArray<HTMLElement>('[data-faq-item]', section);
-	const revealBlocks = gsap.utils.toArray<HTMLElement>('[data-faq-reveal]', section);
-	if (!list || items.length !== 6 || revealBlocks.length !== 2) return;
-
-	ScrollTrigger.getById('faq-reveal')?.kill();
-	section.setAttribute('data-faq-ready', '');
-
-	let activeItem: HTMLElement | null = null;
-	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-	const controller = new AbortController();
-
-	const setItemState = (item: HTMLElement, open: boolean) => {
-		const trigger = item.querySelector<HTMLButtonElement>('[data-faq-trigger]');
-		const answer = item.querySelector<HTMLElement>('[data-faq-answer]');
-		const icon = item.querySelector<HTMLElement>('[data-faq-icon]');
-		if (!trigger || !answer || !icon) return;
-
-		trigger.setAttribute('aria-expanded', String(open));
-		answer.setAttribute('aria-hidden', String(!open));
-		gsap.killTweensOf([answer, icon]);
-
-		if (reduceMotion.matches) {
-			gsap.set(answer, {
-				height: open ? 'auto' : 0,
-				autoAlpha: open ? 1 : 0,
-			});
-			gsap.set(icon, { rotate: open ? 45 : 0 });
-			return;
-		}
-
-		gsap.to(answer, {
-			height: open ? 'auto' : 0,
-			autoAlpha: open ? 1 : 0,
-			duration: open ? 0.45 : 0.35,
-			ease: 'power2.inOut',
-			overwrite: true,
-		});
-		gsap.to(icon, {
-			rotate: open ? 45 : 0,
-			duration: 0.25,
-			ease: 'power2.out',
-			overwrite: true,
-		});
-	};
-
-	items.forEach((item) => {
-		const trigger = item.querySelector<HTMLButtonElement>('[data-faq-trigger]');
-		const answer = item.querySelector<HTMLElement>('[data-faq-answer]');
-		const icon = item.querySelector<HTMLElement>('[data-faq-icon]');
-		if (!trigger || !answer || !icon) return;
-
-		gsap.set(answer, { height: 0, autoAlpha: 0 });
-		gsap.set(icon, { rotate: 0 });
-
-		trigger.addEventListener('click', () => {
-			const shouldOpen = activeItem !== item;
-			if (activeItem) setItemState(activeItem, false);
-
-			if (shouldOpen) {
-				setItemState(item, true);
-				activeItem = item;
-			} else {
-				activeItem = null;
-			}
-		}, { signal: controller.signal });
-	});
-
-	const media = gsap.matchMedia();
-	media.add('(prefers-reduced-motion: no-preference)', () => {
-		gsap.set(revealBlocks, { autoAlpha: 0, y: 25 });
-
-		const tween = gsap.to(revealBlocks, {
-			autoAlpha: 1,
-			y: 0,
-			duration: 0.65,
-			ease: 'power2.out',
-			stagger: 0.12,
-			scrollTrigger: {
-				id: 'faq-reveal',
-				trigger: section,
-				start: 'top 82%',
-				toggleActions: 'play none none reverse',
-				invalidateOnRefresh: true,
-			},
-		});
-
-		return () => {
-			tween.scrollTrigger?.kill();
-			tween.kill();
-			gsap.set(revealBlocks, { clearProps: 'all' });
-		};
-	});
-
-	media.add('(prefers-reduced-motion: reduce)', () => {
-		gsap.set(revealBlocks, { clearProps: 'all' });
-	});
-
-	if (import.meta.hot) {
-		import.meta.hot.dispose(() => {
-			controller.abort();
-			media.revert();
-		});
-	}
+// Web fonts (Manrope headings) can load after first paint and shift layout,
+// which moves pinned/triggered start positions. Refresh once fonts are ready so
+// every section re-measures against the final layout.
+if (typeof document !== 'undefined' && document.fonts?.ready) {
+	document.fonts.ready.then(() => ScrollTrigger.refresh());
 }
-
-initFaq();
