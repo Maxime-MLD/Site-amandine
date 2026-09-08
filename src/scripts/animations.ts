@@ -639,14 +639,11 @@ function initMethodeAnimation() {
 
 	const media = gsap.matchMedia();
 
-	media.add('(prefers-reduced-motion: no-preference)', () => {
+	// Desktop (>= 1024px) : Pinned stack GSAP timeline (exact desktop scroll user likes)
+	media.add('(min-width: 64rem) and (prefers-reduced-motion: no-preference)', () => {
 		const [first, second, third] = cards;
-		const isMobileOrTablet = window.matchMedia('(max-width: 63.999rem)').matches;
 
-		// ==========================================
 		// 1. INTRO DE SECTION
-		// ==========================================
-		// 1.1 Label : opacity: 0 -> 1, y: 10px -> 0, duration: 0.6s
 		if (eyebrow) {
 			gsap.fromTo(
 				eyebrow,
@@ -667,11 +664,10 @@ function initMethodeAnimation() {
 			);
 		}
 
-		// 1.2 H2 : Reveal progressif lié au scroll (scrubbed). opacity: 0.2 -> 1, y: 24px (mobile 16px) -> 0
 		if (title) {
 			gsap.fromTo(
 				title,
-				{ opacity: 0.2, y: isMobileOrTablet ? 16 : 24 },
+				{ opacity: 0.2, y: 24 },
 				{
 					opacity: 1,
 					y: 0,
@@ -688,11 +684,10 @@ function initMethodeAnimation() {
 			);
 		}
 
-		// 1.3 Paragraphe : opacity: 0 -> 1, y: 16px (mobile 12px) -> 0, arrive avec l'en-tête
 		if (intro) {
 			gsap.fromTo(
 				intro,
-				{ opacity: 0, y: isMobileOrTablet ? 12 : 16 },
+				{ opacity: 0, y: 16 },
 				{
 					opacity: 1,
 					y: 0,
@@ -709,13 +704,12 @@ function initMethodeAnimation() {
 			);
 		}
 
-
 		const getTravelY = () => {
 			const deck = section.querySelector<HTMLElement>('[data-methode-deck]');
 			const tab = section.querySelector<HTMLElement>('.methode-card__tab');
 			const tabH = tab ? tab.offsetHeight : 42;
-			const padTop = isMobileOrTablet ? 104 : 96;
-			const padBottom = isMobileOrTablet ? 20 : 16;
+			const padTop = 96;
+			const padBottom = 16;
 			const availH = window.innerHeight - padTop - padBottom;
 			const deckH = deck ? deck.offsetHeight : Math.round(window.innerHeight * 0.72);
 			const deckTop = padTop + Math.max(0, (availH - deckH) / 2);
@@ -738,12 +732,10 @@ function initMethodeAnimation() {
 			gsap.set([tab2, tab3], { opacity: 0.68 });
 		}
 
-		// ==========================================
-		// 3. TRANSITION NATURELLE VERS CARD 1
-		// ==========================================
+		// Transition naturelle vers Card 1
 		gsap.fromTo(
 			first,
-			{ opacity: 0.6, y: isMobileOrTablet ? 18 : 32 },
+			{ opacity: 0.6, y: 32 },
 			{
 				opacity: 1,
 				y: 0,
@@ -759,15 +751,8 @@ function initMethodeAnimation() {
 			}
 		);
 
-		// ==========================================
-		// 4. PINNED TIMELINE — MÉCANIQUE EXACTE SHINTA / FRAMER
-		// ==========================================
-		// Desktop : 1 cran de souris = 100px de scroll.
-		// Card 2 : 12 crans de souris = exactement 1200px de scroll.
-		// Card 3 : 12 crans de souris = exactement 1200px de scroll.
-		// ZÉRO zone morte, ZÉRO pause à la fin : au 12ème cran, la carte est tout en haut (y: 0).
-		// Vitesse 100% linéaire et constante à chaque cran, sans ralentissement à l'arrivée.
-		const SCROLL_PER_CARD = isMobileOrTablet ? Math.round(window.innerHeight * 0.9) : 1200;
+		// Pinned timeline desktop
+		const SCROLL_PER_CARD = 1200;
 		const TOTAL_SCROLL = SCROLL_PER_CARD * 2;
 
 		const timeline = gsap.timeline({
@@ -789,10 +774,7 @@ function initMethodeAnimation() {
 			},
 		});
 
-		// 1. Card 2 monte et arrive en haut en exactement 12 crans de souris
 		timeline.to(second, { y: 0, duration: SCROLL_PER_CARD, ease: 'none', force3D: true }, 0);
-
-		// 2. Card 3 monte et arrive en haut immédiatement après, en exactement 12 crans de souris
 		timeline.to(third, { y: 0, duration: SCROLL_PER_CARD, ease: 'none', force3D: true }, SCROLL_PER_CARD);
 
 		if (tab1 && tab2 && tab3) {
@@ -817,6 +799,148 @@ function initMethodeAnimation() {
 			const allDescs = section.querySelectorAll<HTMLElement>('.methode-card__desc');
 			const allImgs = section.querySelectorAll<HTMLElement>('.methode-card__media img');
 			gsap.set([allBadges, allTitles, allDescs, allImgs], { clearProps: 'all' });
+			if (eyebrow) gsap.set(eyebrow, { clearProps: 'all' });
+			if (title) gsap.set(title, { clearProps: 'all' });
+			if (intro) gsap.set(intro, { clearProps: 'all' });
+		};
+	});
+
+	// Mobile & Tablet (< 1024px) : Lightweight, butter-smooth pinned card stack
+	media.add('(max-width: 63.999rem)', () => {
+		const [first, second, third] = cards;
+
+		// 1. Reveals légers one-shot de l'en-tête (once: true, aucun listener de scroll permanent)
+		if (eyebrow) {
+			gsap.fromTo(
+				eyebrow,
+				{ opacity: 0, y: 10 },
+				{
+					opacity: 1,
+					y: 0,
+					duration: 0.6,
+					ease: 'power3.out',
+					clearProps: 'transform,opacity',
+					scrollTrigger: {
+						id: 'methode-eyebrow-reveal-mob',
+						trigger: header || section,
+						start: 'top 85%',
+						once: true,
+					},
+				}
+			);
+		}
+
+		if (title) {
+			gsap.fromTo(
+				title,
+				{ opacity: 0.2, y: 16 },
+				{
+					opacity: 1,
+					y: 0,
+					duration: 0.75,
+					ease: 'power3.out',
+					clearProps: 'transform,opacity',
+					scrollTrigger: {
+						id: 'methode-title-reveal-mob',
+						trigger: header || section,
+						start: 'top 85%',
+						once: true,
+					},
+				}
+			);
+		}
+
+		if (intro) {
+			gsap.fromTo(
+				intro,
+				{ opacity: 0, y: 12 },
+				{
+					opacity: 1,
+					y: 0,
+					duration: 0.75,
+					ease: 'power3.out',
+					clearProps: 'transform,opacity',
+					scrollTrigger: {
+						id: 'methode-intro-reveal-mob',
+						trigger: header || section,
+						start: 'top 85%',
+						once: true,
+					},
+				}
+			);
+		}
+
+		// Distance exacte de masquage sous l'écran sur mobile
+		const getTravelYMob = () => {
+			const deck = section.querySelector<HTMLElement>('[data-methode-deck]');
+			const tab = section.querySelector<HTMLElement>('.methode-card__tab');
+			const tabH = tab ? tab.offsetHeight : 36;
+			const padTop = 104;
+			const padBottom = 20;
+			const availH = window.innerHeight - padTop - padBottom;
+			const deckH = deck ? deck.offsetHeight : 360;
+			const deckTop = padTop + Math.max(0, (availH - deckH) / 2);
+			return Math.round(window.innerHeight - deckTop + tabH);
+		};
+
+		const travelY = getTravelYMob();
+
+		const tab1 = first.querySelector<HTMLElement>('.methode-card__tab');
+		const tab2 = second.querySelector<HTMLElement>('.methode-card__tab');
+		const tab3 = third.querySelector<HTMLElement>('.methode-card__tab');
+		const allTabs = [tab1, tab2, tab3].filter(Boolean) as HTMLElement[];
+
+		// Position initiale : Card 1 en place dans le deck, Card 2 et 3 juste sous le bas de l'écran
+		gsap.set(first, { y: 0, force3D: true });
+		gsap.set([second, third], { y: travelY, force3D: true });
+
+		if (tab1 && tab2 && tab3) {
+			gsap.set(tab1, { opacity: 1 });
+			gsap.set([tab2, tab3], { opacity: 0.68 });
+		}
+
+		// Distance mobile calibrée : 400px par carte = 1 swipe naturel au pouce
+		const SCROLL_PER_CARD_MOB = 400;
+		const TOTAL_SCROLL_MOB = SCROLL_PER_CARD_MOB * 2;
+
+		const timelineMob = gsap.timeline({
+			defaults: { ease: 'none' },
+			scrollTrigger: {
+				id: 'methode-pin-mob',
+				trigger: pin,
+				start: 'top top',
+				end: () => `+=${TOTAL_SCROLL_MOB}`,
+				pin: true,
+				pinSpacing: true,
+				scrub: 0.35, // Lissage de 0.35s pour absorber les micro-saccades tactiles de Safari iOS
+				anticipatePin: 0, // Zéro à-coup à l'entrée
+				invalidateOnRefresh: true,
+				onRefresh: () => {
+					const freshY = getTravelYMob();
+					gsap.set([second, third], { y: freshY, force3D: true });
+				},
+			},
+		});
+
+		timelineMob.to(second, { y: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, 0);
+		timelineMob.to(third, { y: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, SCROLL_PER_CARD_MOB);
+
+		if (tab1 && tab2 && tab3) {
+			timelineMob
+				.to(tab1, { opacity: 0.68, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, 0)
+				.to(tab2, { opacity: 1, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, 0)
+				.to(tab2, { opacity: 0.68, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, SCROLL_PER_CARD_MOB)
+				.to(tab3, { opacity: 1, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, SCROLL_PER_CARD_MOB);
+		}
+
+		return () => {
+			ScrollTrigger.getById('methode-eyebrow-reveal-mob')?.kill();
+			ScrollTrigger.getById('methode-title-reveal-mob')?.kill();
+			ScrollTrigger.getById('methode-intro-reveal-mob')?.kill();
+			timelineMob.scrollTrigger?.kill();
+			timelineMob.kill();
+			gsap.set(cards, { clearProps: 'all' });
+			if (allTabs.length > 0) gsap.set(allTabs, { clearProps: 'all' });
 			if (eyebrow) gsap.set(eyebrow, { clearProps: 'all' });
 			if (title) gsap.set(title, { clearProps: 'all' });
 			if (intro) gsap.set(intro, { clearProps: 'all' });
