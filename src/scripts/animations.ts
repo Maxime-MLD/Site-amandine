@@ -3,6 +3,10 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+ScrollTrigger.config({
+	ignoreMobileResize: true,
+});
+
 /**
  * 1. NAVBAR, HERO & TRUST BAR — Master Opening Timeline
  * Smooth, photographic arrival on initial page load
@@ -803,36 +807,36 @@ function initMethodeAnimation() {
 		// ==========================================
 		// 4. PINNED TIMELINE (CARDS 2 & 3 STACKING)
 		// ==========================================
-		// Progression calibrée (total 1.0) :
-		// 0.00 -> 0.14 : Lecture Card 1 seule
-		// 0.14 -> 0.42 : Montée progressive de Card 2 (arrive à 0.42)
-		// 0.42 -> 0.58 : Lecture Card 2 active
-		// 0.58 -> 0.86 : Montée progressive de Card 3 (arrive à 0.86)
-		// 0.86 -> 1.00 : Respiration finale Card 3 avant libération du pin
-		const CARD2_START = 0.14;
-		const CARD2_END = 0.42;
-		const CARD2_ACTIVE = 0.40;
-		const CARD2_RESET = 0.20;
+		// Progression mobile continue & fluide (sans zones mortes bloquantes) :
+		// 0.00 -> 0.05 : Micro-amorce Card 1
+		// 0.05 -> 0.46 : Montée continue de Card 2 (glissement fluide sous le pouce)
+		// 0.46 -> 0.52 : Micro-transition Card 2
+		// 0.52 -> 0.93 : Montée continue de Card 3
+		// 0.93 -> 1.00 : Dénouement propre avant libération du pin
+		const CARD2_START = isMobileOrTablet ? 0.05 : 0.12;
+		const CARD2_END = isMobileOrTablet ? 0.46 : 0.44;
+		const CARD2_ACTIVE = isMobileOrTablet ? 0.40 : 0.40;
+		const CARD2_RESET = isMobileOrTablet ? 0.15 : 0.20;
 
-		const CARD3_START = 0.58;
-		const CARD3_END = 0.86;
-		const CARD3_ACTIVE = 0.84;
-		const CARD3_RESET = 0.62;
+		const CARD3_START = isMobileOrTablet ? 0.52 : 0.56;
+		const CARD3_END = isMobileOrTablet ? 0.93 : 0.88;
+		const CARD3_ACTIVE = isMobileOrTablet ? 0.88 : 0.84;
+		const CARD3_RESET = isMobileOrTablet ? 0.58 : 0.62;
 
 		let card2Awakened = false;
 		let card3Awakened = false;
 
 		const timeline = gsap.timeline({
-			defaults: { ease: 'power2.out' },
+			defaults: { ease: isMobileOrTablet ? 'none' : 'power2.out' },
 			scrollTrigger: {
 				id: 'methode-pin',
 				trigger: pin,
 				start: 'top top',
-				end: () => `+=${Math.round(window.innerHeight * (isMobileOrTablet ? 2.0 : 2.8))}`,
+				end: () => `+=${Math.round(window.innerHeight * (isMobileOrTablet ? 1.75 : 2.6))}`,
 				pin: true,
 				pinSpacing: true,
-				scrub: isMobileOrTablet ? 0.45 : 0.8,
-				anticipatePin: isMobileOrTablet ? 0 : 1,
+				scrub: isMobileOrTablet ? true : 0.6,
+				anticipatePin: 1,
 				invalidateOnRefresh: true,
 				onUpdate: (self) => {
 					if (!isMobileOrTablet) {
@@ -870,23 +874,27 @@ function initMethodeAnimation() {
 			},
 		});
 
+		const card2Duration = CARD2_END - CARD2_START;
+		const card3Duration = CARD3_END - CARD3_START;
+
 		timeline
-			// 0.14 -> 0.42 : Card 2 monte et recouvre Card 1 (GPU translation pure sans repaint de box-shadow)
-			.to(second, { y: 0, duration: 0.28, force3D: true }, CARD2_START);
+			// Card 2 monte et recouvre Card 1 (GPU translation pure, 1:1 sous le pouce sur mobile)
+			.to(second, { y: 0, duration: card2Duration, force3D: true, ease: isMobileOrTablet ? 'none' : 'power2.out' }, CARD2_START);
 
 		if (tab1 && tab2 && tab3) {
+			const tabDuration = card2Duration * 0.85;
 			timeline
-				.to(tab1, { opacity: 0.68, duration: 0.22 }, CARD2_START)
-				.to(tab2, { opacity: 1, duration: 0.22 }, CARD2_START)
-				.to(tab2, { opacity: 0.68, duration: 0.22 }, CARD3_START)
-				.to(tab3, { opacity: 1, duration: 0.22 }, CARD3_START);
+				.to(tab1, { opacity: 0.68, duration: tabDuration, ease: 'none' }, CARD2_START)
+				.to(tab2, { opacity: 1, duration: tabDuration, ease: 'none' }, CARD2_START)
+				.to(tab2, { opacity: 0.68, duration: tabDuration, ease: 'none' }, CARD3_START)
+				.to(tab3, { opacity: 1, duration: tabDuration, ease: 'none' }, CARD3_START);
 		}
 
 		timeline
-			// 0.58 -> 0.86 : Card 3 monte et recouvre Card 2 (GPU translation pure)
-			.to(third, { y: 0, duration: 0.28, force3D: true }, CARD3_START)
-			// 0.86 -> 1.00 : Respiration finale avant de relâcher le pin
-			.to({}, { duration: 0.14 }, CARD3_END);
+			// Card 3 monte et recouvre Card 2 (GPU translation pure, 1:1 sous le pouce sur mobile)
+			.to(third, { y: 0, duration: card3Duration, force3D: true, ease: isMobileOrTablet ? 'none' : 'power2.out' }, CARD3_START)
+			// Respiration finale avant de relâcher le pin
+			.to({}, { duration: 1 - CARD3_END }, CARD3_END);
 
 		return () => {
 			ScrollTrigger.getById('methode-eyebrow-reveal')?.kill();

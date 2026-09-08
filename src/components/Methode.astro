@@ -55,7 +55,7 @@ const cards = methodeSteps.map((step, index) => ({
 								height={800}
 								sizes="(max-width: 767px) calc(100vw - 64px), (max-width: 1023px) 42vw, 540px"
 								alt=""
-								loading="lazy"
+								loading="eager"
 								decoding="async"
 							/>
 						</div>
@@ -68,7 +68,7 @@ const cards = methodeSteps.map((step, index) => ({
 
 <style>
 	.methode {
-		overflow: clip;
+		position: relative;
 		background: var(--grain-image) 0 0 / 128px repeat, var(--bg-secondary);
 		padding-block: var(--section-padding-y) 0;
 	}
@@ -401,6 +401,9 @@ const cards = methodeSteps.map((step, index) => ({
 			min-height: 0;
 			padding: 1.15rem 1.15rem;
 			border-radius: 1.35rem;
+			background:
+				linear-gradient(145deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 65%),
+				var(--card-bg);
 		}
 
 		.methode-card__tab {
@@ -409,6 +412,9 @@ const cards = methodeSteps.map((step, index) => ({
 			font-size: 0.6875rem;
 			letter-spacing: 0.04em;
 			border-radius: 0.7rem 0.7rem 0 0;
+			background:
+				linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 70%),
+				var(--card-bg);
 		}
 
 		.methode-card__body {
