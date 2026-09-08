@@ -37,7 +37,7 @@ import { aboutContent } from '../data/content';
 
 			<p class="about__text">
 				{aboutContent.paragraph.map((segment) =>
-					segment.strong ? <strong>{segment.text}</strong> : <>{segment.text}</>
+					'strong' in segment && segment.strong ? <strong>{segment.text}</strong> : <>{segment.text}</>
 				)}
 			</p>
 		</div>

@@ -312,6 +312,10 @@ const cards = methodeSteps.map((step, index) => ({
 			height: min(72svh, 37.5rem);
 			margin-inline: auto;
 			padding-top: 0;
+			border-radius: 1.75rem;
+			box-shadow:
+				0 18px 45px rgba(18, 59, 74, 0.07),
+				0 4px 14px rgba(18, 59, 74, 0.03);
 		}
 
 		[data-methode-ready] .methode-card {
@@ -323,6 +327,7 @@ const cards = methodeSteps.map((step, index) => ({
 			-webkit-backface-visibility: hidden;
 			backface-visibility: hidden;
 			transform: translate3d(0, 0, 0);
+			box-shadow: none;
 		}
 
 		[data-methode-ready] .methode-card--ivory {
@@ -452,6 +457,7 @@ const cards = methodeSteps.map((step, index) => ({
 		[data-methode-ready] .methode__deck {
 			width: min(var(--container), calc(100% - 32px));
 			height: clamp(20.5rem, 48svh, 24.5rem);
+			border-radius: 1.35rem;
 		}
 	}
 </style>

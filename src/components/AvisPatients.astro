@@ -45,7 +45,7 @@ const getInitialSlot = (index: number) => {
 							class="review-card"
 							data-review-card
 							data-slot={slot}
-							aria-hidden={String(!isActive)}
+							aria-hidden={!isActive ? 'true' : 'false'}
 						>
 							{/* 1. Photo du patient dans un cercle propre */}
 							<div class="review-card__photo-wrap">

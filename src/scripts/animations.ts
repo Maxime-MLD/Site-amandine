@@ -643,13 +643,6 @@ function initMethodeAnimation() {
 		const [first, second, third] = cards;
 		const isMobileOrTablet = window.matchMedia('(max-width: 63.999rem)').matches;
 
-		const hideY = () => Math.round(window.innerHeight * 1.15);
-
-		const tab1 = first.querySelector<HTMLElement>('.methode-card__tab');
-		const tab2 = second.querySelector<HTMLElement>('.methode-card__tab');
-		const tab3 = third.querySelector<HTMLElement>('.methode-card__tab');
-		const allTabs = [tab1, tab2, tab3].filter(Boolean) as HTMLElement[];
-
 		// ==========================================
 		// 1. INTRO DE SECTION
 		// ==========================================
@@ -716,67 +709,29 @@ function initMethodeAnimation() {
 			);
 		}
 
-		// ==========================================
-		// 2. MICRO-ANIMATIONS DES CARDS (INTERNAL)
-		// ==========================================
-		function prepCard(card: HTMLElement) {
-			if (isMobileOrTablet) return; // Keep mobile ultra-light for 60fps GPU performance
-			const badge = card.querySelector<HTMLElement>('.methode-card__step-badge');
-			const cardTitle = card.querySelector<HTMLElement>('.methode-card__title');
-			const desc = card.querySelector<HTMLElement>('.methode-card__desc');
-			const img = card.querySelector<HTMLElement>('.methode-card__media img');
 
-			if (badge) gsap.set(badge, { opacity: 0.4, y: 5 });
-			if (cardTitle) gsap.set(cardTitle, { opacity: 0, y: 8 });
-			if (desc) gsap.set(desc, { opacity: 0, y: 8 });
-			if (img) gsap.set(img, { opacity: 0.9, scale: 1.015 });
-		}
+		const getTravelY = () => {
+			const deck = section.querySelector<HTMLElement>('[data-methode-deck]');
+			const tab = section.querySelector<HTMLElement>('.methode-card__tab');
+			const tabH = tab ? tab.offsetHeight : 42;
+			const padTop = isMobileOrTablet ? 104 : 96;
+			const padBottom = isMobileOrTablet ? 20 : 16;
+			const availH = window.innerHeight - padTop - padBottom;
+			const deckH = deck ? deck.offsetHeight : Math.round(window.innerHeight * 0.72);
+			const deckTop = padTop + Math.max(0, (availH - deckH) / 2);
+			return Math.round(window.innerHeight - deckTop + tabH);
+		};
 
-		function awakenCard(card: HTMLElement) {
-			if (isMobileOrTablet) return; // Keep mobile ultra-light
-			const badge = card.querySelector<HTMLElement>('.methode-card__step-badge');
-			const cardTitle = card.querySelector<HTMLElement>('.methode-card__title');
-			const desc = card.querySelector<HTMLElement>('.methode-card__desc');
-			const img = card.querySelector<HTMLElement>('.methode-card__media img');
+		const travelY = getTravelY();
 
-			const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+		const tab1 = first.querySelector<HTMLElement>('.methode-card__tab');
+		const tab2 = second.querySelector<HTMLElement>('.methode-card__tab');
+		const tab3 = third.querySelector<HTMLElement>('.methode-card__tab');
+		const allTabs = [tab1, tab2, tab3].filter(Boolean) as HTMLElement[];
 
-			if (badge) {
-				tl.to(
-					badge,
-					{ opacity: 1, y: 0, duration: 0.4, clearProps: 'transform,opacity' },
-					0
-				);
-			}
-			if (cardTitle) {
-				tl.to(
-					cardTitle,
-					{ opacity: 1, y: 0, duration: 0.4, clearProps: 'transform,opacity' },
-					0.04
-				);
-			}
-			if (desc) {
-				tl.to(
-					desc,
-					{ opacity: 1, y: 0, duration: 0.4, clearProps: 'transform,opacity' },
-					0.08
-				);
-			}
-			if (img) {
-				tl.to(
-					img,
-					{ opacity: 1, scale: 1, duration: 0.6, ease: 'power2.out', clearProps: 'transform,opacity' },
-					0.05
-				);
-			}
-			return tl;
-		}
-
-		// Initial card setup: Card 1 visible, Card 2 & 3 parked below (pure GPU-accelerated translate3d)
+		// Position initiale : Card 1 en place, Card 2 et 3 juste sous le bas de l'écran
 		gsap.set(first, { y: 0, force3D: true });
-		gsap.set([second, third], { y: hideY, force3D: true });
-		prepCard(second);
-		prepCard(third);
+		gsap.set([second, third], { y: travelY, force3D: true });
 
 		if (tab1 && tab2 && tab3) {
 			gsap.set(tab1, { opacity: 1 });
@@ -805,96 +760,48 @@ function initMethodeAnimation() {
 		);
 
 		// ==========================================
-		// 4. PINNED TIMELINE (CARDS 2 & 3 STACKING)
+		// 4. PINNED TIMELINE — MÉCANIQUE EXACTE SHINTA / FRAMER
 		// ==========================================
-		// Progression mobile continue & fluide (sans zones mortes bloquantes) :
-		// 0.00 -> 0.05 : Micro-amorce Card 1
-		// 0.05 -> 0.46 : Montée continue de Card 2 (glissement fluide sous le pouce)
-		// 0.46 -> 0.52 : Micro-transition Card 2
-		// 0.52 -> 0.93 : Montée continue de Card 3
-		// 0.93 -> 1.00 : Dénouement propre avant libération du pin
-		const CARD2_START = isMobileOrTablet ? 0.05 : 0.12;
-		const CARD2_END = isMobileOrTablet ? 0.46 : 0.44;
-		const CARD2_ACTIVE = isMobileOrTablet ? 0.40 : 0.40;
-		const CARD2_RESET = isMobileOrTablet ? 0.15 : 0.20;
-
-		const CARD3_START = isMobileOrTablet ? 0.52 : 0.56;
-		const CARD3_END = isMobileOrTablet ? 0.93 : 0.88;
-		const CARD3_ACTIVE = isMobileOrTablet ? 0.88 : 0.84;
-		const CARD3_RESET = isMobileOrTablet ? 0.58 : 0.62;
-
-		let card2Awakened = false;
-		let card3Awakened = false;
+		// Desktop : 1 cran de souris = 100px de scroll.
+		// Card 2 : 12 crans de souris = exactement 1200px de scroll.
+		// Card 3 : 12 crans de souris = exactement 1200px de scroll.
+		// ZÉRO zone morte, ZÉRO pause à la fin : au 12ème cran, la carte est tout en haut (y: 0).
+		// Vitesse 100% linéaire et constante à chaque cran, sans ralentissement à l'arrivée.
+		const SCROLL_PER_CARD = isMobileOrTablet ? Math.round(window.innerHeight * 0.9) : 1200;
+		const TOTAL_SCROLL = SCROLL_PER_CARD * 2;
 
 		const timeline = gsap.timeline({
-			defaults: { ease: isMobileOrTablet ? 'none' : 'power2.out' },
+			defaults: { ease: 'none' },
 			scrollTrigger: {
 				id: 'methode-pin',
 				trigger: pin,
 				start: 'top top',
-				end: () => `+=${Math.round(window.innerHeight * (isMobileOrTablet ? 1.75 : 2.6))}`,
+				end: () => `+=${TOTAL_SCROLL}`,
 				pin: true,
 				pinSpacing: true,
-				scrub: isMobileOrTablet ? true : 0.6,
+				scrub: true,
 				anticipatePin: 1,
 				invalidateOnRefresh: true,
-				onUpdate: (self) => {
-					if (!isMobileOrTablet) {
-						// Éveil de Card 2 quand elle arrive en position active (desktop uniquement)
-						if (self.progress >= CARD2_ACTIVE && !card2Awakened) {
-							card2Awakened = true;
-							awakenCard(second);
-						} else if (self.progress < CARD2_RESET && card2Awakened && self.direction === -1) {
-							card2Awakened = false;
-							prepCard(second);
-						}
-
-						// Éveil de Card 3 quand elle arrive en position active (desktop uniquement)
-						if (self.progress >= CARD3_ACTIVE && !card3Awakened) {
-							card3Awakened = true;
-							awakenCard(third);
-						} else if (self.progress < CARD3_RESET && card3Awakened && self.direction === -1) {
-							card3Awakened = false;
-							prepCard(third);
-						}
-					}
-				},
-				onRefresh: (self) => {
-					if (self.progress < CARD2_START) {
-						gsap.set(second, { y: hideY(), force3D: true });
-						card2Awakened = false;
-						prepCard(second);
-					}
-					if (self.progress < CARD3_START) {
-						gsap.set(third, { y: hideY(), force3D: true });
-						card3Awakened = false;
-						prepCard(third);
-					}
+				onRefresh: () => {
+					const freshY = getTravelY();
+					gsap.set([second, third], { y: freshY, force3D: true });
 				},
 			},
 		});
 
-		const card2Duration = CARD2_END - CARD2_START;
-		const card3Duration = CARD3_END - CARD3_START;
+		// 1. Card 2 monte et arrive en haut en exactement 12 crans de souris
+		timeline.to(second, { y: 0, duration: SCROLL_PER_CARD, ease: 'none', force3D: true }, 0);
 
-		timeline
-			// Card 2 monte et recouvre Card 1 (GPU translation pure, 1:1 sous le pouce sur mobile)
-			.to(second, { y: 0, duration: card2Duration, force3D: true, ease: isMobileOrTablet ? 'none' : 'power2.out' }, CARD2_START);
+		// 2. Card 3 monte et arrive en haut immédiatement après, en exactement 12 crans de souris
+		timeline.to(third, { y: 0, duration: SCROLL_PER_CARD, ease: 'none', force3D: true }, SCROLL_PER_CARD);
 
 		if (tab1 && tab2 && tab3) {
-			const tabDuration = card2Duration * 0.85;
 			timeline
-				.to(tab1, { opacity: 0.68, duration: tabDuration, ease: 'none' }, CARD2_START)
-				.to(tab2, { opacity: 1, duration: tabDuration, ease: 'none' }, CARD2_START)
-				.to(tab2, { opacity: 0.68, duration: tabDuration, ease: 'none' }, CARD3_START)
-				.to(tab3, { opacity: 1, duration: tabDuration, ease: 'none' }, CARD3_START);
+				.to(tab1, { opacity: 0.68, duration: SCROLL_PER_CARD, ease: 'none' }, 0)
+				.to(tab2, { opacity: 1, duration: SCROLL_PER_CARD, ease: 'none' }, 0)
+				.to(tab2, { opacity: 0.68, duration: SCROLL_PER_CARD, ease: 'none' }, SCROLL_PER_CARD)
+				.to(tab3, { opacity: 1, duration: SCROLL_PER_CARD, ease: 'none' }, SCROLL_PER_CARD);
 		}
-
-		timeline
-			// Card 3 monte et recouvre Card 2 (GPU translation pure, 1:1 sous le pouce sur mobile)
-			.to(third, { y: 0, duration: card3Duration, force3D: true, ease: isMobileOrTablet ? 'none' : 'power2.out' }, CARD3_START)
-			// Respiration finale avant de relâcher le pin
-			.to({}, { duration: 1 - CARD3_END }, CARD3_END);
 
 		return () => {
 			ScrollTrigger.getById('methode-eyebrow-reveal')?.kill();
