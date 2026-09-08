@@ -639,10 +639,7 @@ function initMethodeAnimation() {
 		const [first, second, third] = cards;
 		const isMobileOrTablet = window.matchMedia('(max-width: 63.999rem)').matches;
 
-		const SHADOW_ON = '0 18px 45px rgba(18, 59, 74, 0.08), 0 4px 14px rgba(18, 59, 74, 0.04)';
-		const SHADOW_OFF = '0 18px 45px rgba(18, 59, 74, 0), 0 4px 14px rgba(18, 59, 74, 0)';
-
-		const hideY = () => window.innerHeight + 120;
+		const hideY = () => Math.round(window.innerHeight * 1.15);
 
 		const tab1 = first.querySelector<HTMLElement>('.methode-card__tab');
 		const tab2 = second.querySelector<HTMLElement>('.methode-card__tab');
@@ -719,6 +716,7 @@ function initMethodeAnimation() {
 		// 2. MICRO-ANIMATIONS DES CARDS (INTERNAL)
 		// ==========================================
 		function prepCard(card: HTMLElement) {
+			if (isMobileOrTablet) return; // Keep mobile ultra-light for 60fps GPU performance
 			const badge = card.querySelector<HTMLElement>('.methode-card__step-badge');
 			const cardTitle = card.querySelector<HTMLElement>('.methode-card__title');
 			const desc = card.querySelector<HTMLElement>('.methode-card__desc');
@@ -731,6 +729,7 @@ function initMethodeAnimation() {
 		}
 
 		function awakenCard(card: HTMLElement) {
+			if (isMobileOrTablet) return; // Keep mobile ultra-light
 			const badge = card.querySelector<HTMLElement>('.methode-card__step-badge');
 			const cardTitle = card.querySelector<HTMLElement>('.methode-card__title');
 			const desc = card.querySelector<HTMLElement>('.methode-card__desc');
@@ -748,15 +747,15 @@ function initMethodeAnimation() {
 			if (cardTitle) {
 				tl.to(
 					cardTitle,
-					{ opacity: 1, y: 0, duration: 0.5, clearProps: 'transform,opacity' },
+					{ opacity: 1, y: 0, duration: 0.4, clearProps: 'transform,opacity' },
 					0.04
 				);
 			}
 			if (desc) {
 				tl.to(
 					desc,
-					{ opacity: 1, y: 0, duration: 0.5, clearProps: 'transform,opacity' },
-					0.1
+					{ opacity: 1, y: 0, duration: 0.4, clearProps: 'transform,opacity' },
+					0.08
 				);
 			}
 			if (img) {
@@ -769,9 +768,9 @@ function initMethodeAnimation() {
 			return tl;
 		}
 
-		// Initial card setup: Card 1 visible, Card 2 & 3 parked below and prepped
-		gsap.set(first, { y: 0, boxShadow: SHADOW_ON });
-		gsap.set([second, third], { y: hideY, boxShadow: SHADOW_OFF });
+		// Initial card setup: Card 1 visible, Card 2 & 3 parked below (pure GPU-accelerated translate3d)
+		gsap.set(first, { y: 0, force3D: true });
+		gsap.set([second, third], { y: hideY, force3D: true });
 		prepCard(second);
 		prepCard(third);
 
@@ -783,11 +782,9 @@ function initMethodeAnimation() {
 		// ==========================================
 		// 3. TRANSITION NATURELLE VERS CARD 1
 		// ==========================================
-		// Card 1 : opacity: 0.6 -> 1, y: 32px (ou 22px sur mobile) -> 0, durée 0.8s, power3.out
-		// Arrive sans saut avant que le pin commence
 		gsap.fromTo(
 			first,
-			{ opacity: 0.6, y: isMobileOrTablet ? 22 : 32 },
+			{ opacity: 0.6, y: isMobileOrTablet ? 18 : 32 },
 			{
 				opacity: 1,
 				y: 0,
@@ -831,41 +828,41 @@ function initMethodeAnimation() {
 				id: 'methode-pin',
 				trigger: pin,
 				start: 'top top',
-				end: () => `+=${Math.round(window.innerHeight * 2.8)}`,
+				end: () => `+=${Math.round(window.innerHeight * (isMobileOrTablet ? 2.0 : 2.8))}`,
 				pin: true,
 				pinSpacing: true,
-				scrub: 1,
-				anticipatePin: 1,
+				scrub: isMobileOrTablet ? 0.45 : 0.8,
+				anticipatePin: isMobileOrTablet ? 0 : 1,
 				invalidateOnRefresh: true,
 				onUpdate: (self) => {
-					// Éveil de Card 2 quand elle arrive en position active
-					if (self.progress >= CARD2_ACTIVE && !card2Awakened) {
-						card2Awakened = true;
-						awakenCard(second);
-					} else if (self.progress < CARD2_RESET && card2Awakened && self.direction === -1) {
-						// Réinitialisation discrète uniquement quand Card 2 est complètement hors-champ en bas
-						card2Awakened = false;
-						prepCard(second);
-					}
+					if (!isMobileOrTablet) {
+						// Éveil de Card 2 quand elle arrive en position active (desktop uniquement)
+						if (self.progress >= CARD2_ACTIVE && !card2Awakened) {
+							card2Awakened = true;
+							awakenCard(second);
+						} else if (self.progress < CARD2_RESET && card2Awakened && self.direction === -1) {
+							card2Awakened = false;
+							prepCard(second);
+						}
 
-					// Éveil de Card 3 quand elle arrive en position active
-					if (self.progress >= CARD3_ACTIVE && !card3Awakened) {
-						card3Awakened = true;
-						awakenCard(third);
-					} else if (self.progress < CARD3_RESET && card3Awakened && self.direction === -1) {
-						// Réinitialisation discrète uniquement quand Card 3 est complètement hors-champ en bas
-						card3Awakened = false;
-						prepCard(third);
+						// Éveil de Card 3 quand elle arrive en position active (desktop uniquement)
+						if (self.progress >= CARD3_ACTIVE && !card3Awakened) {
+							card3Awakened = true;
+							awakenCard(third);
+						} else if (self.progress < CARD3_RESET && card3Awakened && self.direction === -1) {
+							card3Awakened = false;
+							prepCard(third);
+						}
 					}
 				},
 				onRefresh: (self) => {
 					if (self.progress < CARD2_START) {
-						gsap.set(second, { y: hideY() });
+						gsap.set(second, { y: hideY(), force3D: true });
 						card2Awakened = false;
 						prepCard(second);
 					}
 					if (self.progress < CARD3_START) {
-						gsap.set(third, { y: hideY() });
+						gsap.set(third, { y: hideY(), force3D: true });
 						card3Awakened = false;
 						prepCard(third);
 					}
@@ -874,10 +871,8 @@ function initMethodeAnimation() {
 		});
 
 		timeline
-			// 0.14 -> 0.42 : Card 2 monte et recouvre Card 1
-			.to(second, { y: 0, duration: 0.28 }, CARD2_START)
-			.to(first, { boxShadow: SHADOW_OFF, duration: 0.28 }, CARD2_START)
-			.to(second, { boxShadow: SHADOW_ON, duration: 0.28 }, CARD2_START);
+			// 0.14 -> 0.42 : Card 2 monte et recouvre Card 1 (GPU translation pure sans repaint de box-shadow)
+			.to(second, { y: 0, duration: 0.28, force3D: true }, CARD2_START);
 
 		if (tab1 && tab2 && tab3) {
 			timeline
@@ -888,10 +883,8 @@ function initMethodeAnimation() {
 		}
 
 		timeline
-			// 0.58 -> 0.86 : Card 3 monte et recouvre Card 2
-			.to(third, { y: 0, duration: 0.28 }, CARD3_START)
-			.to(second, { boxShadow: SHADOW_OFF, duration: 0.28 }, CARD3_START)
-			.to(third, { boxShadow: SHADOW_ON, duration: 0.28 }, CARD3_START)
+			// 0.58 -> 0.86 : Card 3 monte et recouvre Card 2 (GPU translation pure)
+			.to(third, { y: 0, duration: 0.28, force3D: true }, CARD3_START)
 			// 0.86 -> 1.00 : Respiration finale avant de relâcher le pin
 			.to({}, { duration: 0.14 }, CARD3_END);
 

@@ -292,20 +292,24 @@ const cards = methodeSteps.map((step, index) => ({
 	/* -- Pinned stack (all widths, motion allowed, JS ready) -- */
 	@media (prefers-reduced-motion: no-preference) {
 		[data-methode-ready] .methode__pin {
-			display: grid;
-			place-items: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
 			width: 100%;
 			height: 100svh;
-			margin-top: clamp(2rem, 3vw, 3rem);
-			padding-bottom: 0;
+			margin-top: clamp(1.5rem, 3vw, 2.5rem);
+			padding-top: 96px;
+			padding-bottom: 1rem;
 			overflow: hidden;
+			box-sizing: border-box;
 		}
 
 		[data-methode-ready] .methode__deck {
 			display: block;
 			position: relative;
 			width: min(76%, 66rem);
-			height: min(75svh, 38.5rem);
+			height: min(72svh, 37.5rem);
 			margin-inline: auto;
 			padding-top: 0;
 		}
@@ -316,6 +320,9 @@ const cards = methodeSteps.map((step, index) => ({
 			height: 100%;
 			min-height: 0;
 			will-change: transform;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+			transform: translate3d(0, 0, 0);
 		}
 
 		[data-methode-ready] .methode-card--ivory {
@@ -343,19 +350,19 @@ const cards = methodeSteps.map((step, index) => ({
 
 		[data-methode-ready] .methode__deck {
 			width: min(88%, calc(100% - 48px));
-			height: min(75svh, 35.5rem);
+			height: min(66svh, 32rem);
 		}
 
 		.methode-card {
-			padding: 2.25rem 2rem;
+			padding: 2rem 1.75rem;
 		}
 
 		.methode-card__body {
-			gap: 1.75rem;
+			gap: 1.5rem;
 		}
 
 		.methode-card__media {
-			height: clamp(15.5rem, 26vw, 19.5rem);
+			height: clamp(13rem, 23vw, 17rem);
 		}
 
 		.methode-card__desc {
@@ -363,10 +370,17 @@ const cards = methodeSteps.map((step, index) => ({
 		}
 	}
 
+	@media (prefers-reduced-motion: no-preference) and (max-width: 63.999rem) {
+		[data-methode-ready] .methode__pin {
+			padding-top: calc(84px + 1.25rem);
+			padding-bottom: 1.25rem;
+		}
+	}
+
 	/* -- Mobile -- */
 	@media (max-width: 47.999rem) {
 		.methode {
-			padding-top: 4rem;
+			padding-top: 3.5rem;
 		}
 
 		.methode__title {
@@ -385,7 +399,7 @@ const cards = methodeSteps.map((step, index) => ({
 
 		.methode-card {
 			min-height: 0;
-			padding: 1.6rem 1.35rem;
+			padding: 1.15rem 1.15rem;
 			border-radius: 1.35rem;
 		}
 
@@ -399,7 +413,7 @@ const cards = methodeSteps.map((step, index) => ({
 
 		.methode-card__body {
 			grid-template-columns: 1fr;
-			gap: 1.1rem;
+			gap: 0.65rem;
 		}
 
 		.methode-card__step-badge {
@@ -407,25 +421,31 @@ const cards = methodeSteps.map((step, index) => ({
 		}
 
 		.methode-card__media {
-			height: clamp(12rem, 46vw, 15.5rem);
+			height: clamp(7.5rem, 24vw, 9.5rem);
 			border-radius: 0.85rem;
 		}
 
 		.methode-card__title {
-			font-size: clamp(1.5rem, 6.2vw, 1.95rem);
+			font-size: clamp(1.25rem, 5vw, 1.55rem);
+			line-height: 1.15;
 		}
 
 		.methode-card__desc {
-			margin-top: 0.5rem;
-			font-size: 0.98rem;
-			line-height: 1.5;
+			margin-top: 0.3rem;
+			font-size: clamp(0.85rem, 3.3vw, 0.92rem);
+			line-height: 1.42;
 		}
 	}
 
 	@media (prefers-reduced-motion: no-preference) and (max-width: 47.999rem) {
+		[data-methode-ready] .methode__pin {
+			padding-top: calc(84px + 1.25rem);
+			padding-bottom: 1.25rem;
+		}
+
 		[data-methode-ready] .methode__deck {
 			width: min(var(--container), calc(100% - 32px));
-			height: min(85svh, 35.5rem);
+			height: clamp(20.5rem, 48svh, 24.5rem);
 		}
 	}
 </style>
