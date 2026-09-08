@@ -17,16 +17,16 @@ const cards = methodeSteps.map((step, index) => ({
 <section class="methode" id="methode" aria-labelledby="methode-title" data-methode>
 	<div class="site-container">
 		<header class="methode__header" data-methode-header>
-			<p class="methode__eyebrow" data-methode-reveal>
+			<p class="methode__eyebrow">
 				{methodeContent.eyebrow}
 			</p>
 			<h2 id="methode-title" class="methode__title">
-				<span class="methode__title-line" data-methode-reveal>Comment se déroule</span>
-				<span class="methode__title-line" data-methode-reveal>
+				<span class="methode__title-line">Comment se déroule</span>
+				<span class="methode__title-line">
 					votre <em class="methode__title-accent">accompagnement</em> ?
 				</span>
 			</h2>
-			<p class="methode__intro" data-methode-reveal>{methodeContent.intro}</p>
+			<p class="methode__intro">{methodeContent.intro}</p>
 		</header>
 	</div>
 
@@ -69,8 +69,8 @@ const cards = methodeSteps.map((step, index) => ({
 <style>
 	.methode {
 		overflow: clip;
-		background: var(--grain-image) 0 0 / 128px repeat, #faf8f4;
-		padding-block: clamp(5rem, 8vw, 7.5rem) 0;
+		background: var(--grain-image) 0 0 / 128px repeat, var(--bg-secondary);
+		padding-block: var(--section-padding-y) 0;
 	}
 
 	.methode__header {
@@ -80,8 +80,8 @@ const cards = methodeSteps.map((step, index) => ({
 	}
 
 	.methode__eyebrow {
-		margin-bottom: clamp(1rem, 1.6vw, 1.35rem);
-		color: var(--c-amber, #d99a3e);
+		margin-bottom: var(--space-label-h2);
+		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: var(--text-small);
 		font-weight: 750;
@@ -90,12 +90,12 @@ const cards = methodeSteps.map((step, index) => ({
 	}
 
 	.methode__title {
-		color: var(--c-petrol, #123b4a);
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: clamp(2.75rem, 5.8vw, 5.25rem);
 		font-weight: 680;
 		letter-spacing: -0.04em;
-		line-height: 0.98;
+		line-height: 1.08;
 		text-wrap: balance;
 	}
 
@@ -105,47 +105,39 @@ const cards = methodeSteps.map((step, index) => ({
 
 	.methode__title-accent {
 		display: inline-block;
-		color: var(--c-amber, #d99a3e);
+		color: var(--c-amber);
+		background: var(--gradient-amber);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 		font-family: var(--font-accent);
 		font-size: 1.08em;
 		font-style: italic;
 		font-weight: 600;
 		letter-spacing: -0.02em;
+		line-height: 1.15;
 		text-decoration: none;
 		border: none;
 		margin-left: 0.02em;
+		padding-right: 0.08em;
+		padding-bottom: 0.28em;
+		margin-bottom: -0.28em;
 	}
 
 	.methode__intro {
-		max-width: 620px;
-		margin: clamp(1.6rem, 2.4vw, 2.25rem) auto 0;
-		color: var(--c-steel, #52798a);
+		max-width: var(--intro-max-width, 38rem);
+		margin: var(--heading-paragraph-gap, clamp(1.25rem, 0.93rem + 1.43vw, 2rem)) auto 0;
+		color: var(--c-steel);
 		font-family: var(--font-heading);
 		font-size: clamp(1.125rem, 1.4vw, 1.3rem);
 		line-height: 1.6;
 		text-wrap: balance;
 	}
 
-	/* Initial opacity for scroll reveal when animations are active */
-	[data-methode-reveal] {
-		opacity: 1;
-	}
-
-	[data-methode-ready] [data-methode-reveal] {
-		opacity: 0.22;
-		will-change: opacity;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		[data-methode-ready] [data-methode-reveal] {
-			opacity: 1 !important;
-		}
-	}
-
 	/* -- Deck: base = normal flow (no-JS / reduced-motion fallback) -- */
 	.methode__pin {
 		margin-top: clamp(2.5rem, 4vw, 3.5rem);
-		padding-bottom: clamp(5rem, 8vw, 7.5rem);
+		padding-bottom: var(--section-padding-y);
 	}
 
 	.methode__deck {
@@ -180,22 +172,22 @@ const cards = methodeSteps.map((step, index) => ({
 	}
 
 	.methode-card--ivory {
-		--card-bg: #f4efe7;
-		--card-text: #123b4a;
+		--card-bg: var(--c-ivory);
+		--card-text: var(--c-petrol);
 		--card-muted: #3a5460;
 		--tab-left: var(--tab-1);
 	}
 
 	.methode-card--offwhite {
-		--card-bg: #fffdf9;
-		--card-text: #123b4a;
+		--card-bg: var(--c-offwhite);
+		--card-text: var(--c-petrol);
 		--card-muted: #3a5460;
 		--tab-left: var(--tab-2);
 	}
 
 	.methode-card--sand {
 		--card-bg: #eae3d6;
-		--card-text: #123b4a;
+		--card-text: var(--c-petrol);
 		--card-muted: #3a5460;
 		--tab-left: var(--tab-3);
 	}
@@ -228,12 +220,12 @@ const cards = methodeSteps.map((step, index) => ({
 	}
 
 	.methode-card__tab-sep {
-		color: #52798a;
+		color: var(--c-steel);
 		opacity: 0.6;
 	}
 
 	.methode-card__tab-num {
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-weight: 800;
 	}
 
@@ -252,7 +244,7 @@ const cards = methodeSteps.map((step, index) => ({
 	.methode-card__step-badge {
 		display: block;
 		margin-bottom: 0.35rem;
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-family: var(--font-accent);
 		font-size: 1.18rem;
 		font-style: italic;

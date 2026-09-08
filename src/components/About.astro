@@ -9,17 +9,19 @@ import { aboutContent } from '../data/content';
 		<div class="about__visual">
 			<div class="about__block" aria-hidden="true"></div>
 			<div class="about__photo-frame">
-				<Image
-					class="about__photo"
-					src={amandinePortrait}
-					width={1024}
-					height={1536}
-					sizes="(max-width: 47.999rem) 60vw, (max-width: 63.999rem) 34vw, 24rem"
-					alt={aboutContent.imageAlt}
-					loading="lazy"
-					decoding="async"
-					draggable="false"
-				/>
+				<div class="about__photo-reveal">
+					<Image
+						class="about__photo"
+						src={amandinePortrait}
+						width={1024}
+						height={1536}
+						sizes="(max-width: 47.999rem) 60vw, (max-width: 63.999rem) 34vw, 24rem"
+						alt={aboutContent.imageAlt}
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+					/>
+				</div>
 			</div>
 		</div>
 
@@ -45,9 +47,9 @@ import { aboutContent } from '../data/content';
 <style>
 	.about {
 		overflow: clip;
-		padding-block: clamp(3.5rem, 5.5vw, 6rem);
+		padding-block: var(--section-padding-y);
 		scroll-margin-top: 6rem;
-		background: var(--grain-image) 0 0 / 128px repeat, var(--c-offwhite);
+		background: var(--grain-image) 0 0 / 128px repeat, var(--bg-secondary);
 		color: var(--c-petrol);
 	}
 
@@ -55,11 +57,7 @@ import { aboutContent } from '../data/content';
 		display: grid;
 		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
 		align-items: center;
-		gap: clamp(2.25rem, 3.5vw, 3.75rem);
-		/* Keep both columns as one compact, centred group inside the wide container
-		   instead of letting them drift to the far edges. */
-		max-width: 68rem;
-		margin-inline: auto;
+		gap: clamp(4rem, 6.5vw, 7rem);
 	}
 
 	/* --- Left: graphic composition (large petrol block as a graphic backdrop with
@@ -80,7 +78,9 @@ import { aboutContent } from '../data/content';
 		/* Same size as the photo, offset to the top-left (peeks out top + left). */
 		inset: 0 var(--about-offset) var(--about-offset) 0;
 		border-radius: 24px;
-		background: var(--grain-image) 0 0 / 120px repeat, var(--c-petrol);
+		background:
+			var(--grain-image) 0 0 / 120px repeat,
+			linear-gradient(to bottom right, #215e75 0%, #174556 35%, var(--c-petrol) 65%, #0a222c 100%);
 		box-shadow: 0 24px 50px rgb(18 59 74 / 16%);
 	}
 
@@ -92,6 +92,12 @@ import { aboutContent } from '../data/content';
 		border-radius: 24px;
 		background: var(--c-ivory);
 		box-shadow: 0 26px 52px rgb(18 59 74 / 24%);
+	}
+
+	.about__photo-reveal {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
 	}
 
 	.about__photo {
@@ -109,7 +115,7 @@ import { aboutContent } from '../data/content';
 	}
 
 	.about__eyebrow {
-		margin-bottom: 1rem;
+		margin-bottom: var(--space-label-h2);
 		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: 0.8rem;
@@ -121,36 +127,38 @@ import { aboutContent } from '../data/content';
 	.about__title {
 		color: var(--c-petrol);
 		font-family: var(--font-heading);
-		font-size: clamp(2.3rem, 3.15vw, 3.3rem);
+		font-size: clamp(2.75rem, 4.25vw, 4.5rem);
 		font-weight: 680;
-		letter-spacing: -0.035em;
+		letter-spacing: -0.045em;
 		line-height: 1.08;
+		text-wrap: balance;
 	}
 
 	.about__title-line {
 		display: block;
 	}
 
-	/* Keep "Je suis Amandine Gauthier," on a single line (never split the name). */
-	.about__title-line--lead {
-		white-space: nowrap;
-	}
-
 	.about__accent {
+		display: inline-block;
 		color: var(--c-amber);
+		background: var(--gradient-amber);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 		font-family: var(--font-accent);
 		font-size: 1em;
 		font-style: italic;
-		font-weight: 500;
-		letter-spacing: 0;
+		font-weight: 700;
+		letter-spacing: -0.025em;
+		padding-right: 0.06em;
 		/* Playfair italic carries a wider left side-bearing than Manrope, so pull
 		   it back a touch to keep "votre infirmière" reading as one phrase. */
 		margin-left: -0.05em;
 	}
 
 	.about__text {
-		max-width: 50ch;
-		margin-top: clamp(1.5rem, 2.2vw, 1.9rem);
+		max-width: var(--intro-max-width, 38rem);
+		margin-top: var(--heading-paragraph-gap, clamp(1.25rem, 0.93rem + 1.43vw, 2rem));
 		color: color-mix(in srgb, var(--c-steel) 90%, var(--c-petrol));
 		font-size: clamp(1.08rem, 1.25vw, 1.22rem);
 		line-height: 1.8;
@@ -164,7 +172,7 @@ import { aboutContent } from '../data/content';
 	@media (max-width: 63.999rem) {
 		.about__inner {
 			grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-			gap: clamp(1.75rem, 3vw, 2.5rem);
+			gap: clamp(2.75rem, 4.5vw, 4rem);
 		}
 
 		.about__visual {
@@ -177,13 +185,9 @@ import { aboutContent } from '../data/content';
 	}
 
 	@media (max-width: 47.999rem) {
-		.about {
-			padding-block: 3.5rem;
-		}
-
 		.about__inner {
 			grid-template-columns: 1fr;
-			gap: clamp(2.25rem, 7vw, 3rem);
+			gap: clamp(2.75rem, 8vw, 3.75rem);
 		}
 
 		.about__visual {
@@ -207,7 +211,8 @@ import { aboutContent } from '../data/content';
 		/* Keep the title on exactly two lines (name never split): size line 1 to the
 		   viewport so "Je suis Amandine Gauthier," always fits on one line. */
 		.about__title {
-			font-size: clamp(1.3rem, 6.5vw, 1.9rem);
+			font-size: clamp(1.85rem, 8vw, 2.5rem);
+			line-height: 1.15;
 		}
 
 		.about__text {

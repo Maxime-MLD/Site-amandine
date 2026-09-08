@@ -1,5 +1,6 @@
+import type { ImageMetadata } from "astro";
 import { siteConfig } from "../config/site";
-import servicePansements from "../assets/images/services/service-pansements.webp";
+import servicePansements from "../assets/images/services/pansements.webp";
 import servicePriseSang from "../assets/images/services/prise-sang.webp";
 import serviceInjections from "../assets/images/services/injections.webp";
 import serviceDiabete from "../assets/images/services/diabete.webp";
@@ -11,6 +12,10 @@ import patientAvatar3 from "../assets/images/reviews/patient-3.svg";
 import patientAvatar4 from "../assets/images/reviews/patient-4.svg";
 import patientAvatar5 from "../assets/images/reviews/patient-5.svg";
 import patientAvatar6 from "../assets/images/reviews/patient-6.svg";
+import situationPersonnesAgees from "../assets/images/pour qui/perosnne-age.webp";
+import situationHopital from "../assets/images/pour qui/hopital.webp";
+import situationDiabete from "../assets/images/pour qui/diabete-qui.webp";
+import situationMobilite from "../assets/images/pour qui/mobilite.webp";
 
 export interface NavigationItem {
   label: string;
@@ -31,7 +36,7 @@ export const navigation: readonly NavigationItem[] = [
   { label: "Accueil", href: "#accueil" },
   { label: "Soins", href: "#soins" },
   { label: "À propos", href: "#a-propos" },
-  { label: "Zone d’intervention", href: "#zone-intervention" },
+  { label: "Pour qui ?", href: "#pour-qui" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -42,7 +47,7 @@ export const heroContent = {
     accent: "Montagny",
   },
   subtitle:
-    "Soins à domicile dans un rayon d’environ 10 km, et soins au cabinet sur rendez-vous.",
+    "Soins à domicile dans un rayon d’environ 10 km autours de Montagny, et soins au cabinet uniquement sur rendez-vous.",
   actions: {
     primary: { label: "Prendre rendez-vous", href: "#contact" },
     secondary: { label: "Découvrir les soins", href: "#soins" },
@@ -158,6 +163,62 @@ export const serviceAreas = [
   "[Commune à compléter]",
 ] as const;
 
+export interface SituationItem {
+  number: string;
+  category: string;
+  title: string;
+  text: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+}
+
+export const situationsContent = {
+  eyebrow: "POUR VOUS ACCOMPAGNER",
+  title: {
+    lead: "Des soins adaptés à chaque",
+    accent: "situation",
+  },
+  intro:
+    "Chaque situation est différente. Les soins à domicile permettent d’assurer une prise en charge adaptée lorsque se déplacer devient difficile ou lorsqu’un suivi régulier est nécessaire.",
+} as const;
+
+export const situationsData: readonly SituationItem[] = [
+  {
+    number: "01",
+    category: "PERSONNES ÂGÉES",
+    title: "Continuer à être accompagné chez soi.",
+    text: "Les soins à domicile peuvent faciliter le maintien à domicile tout en assurant les soins prescrits dans un environnement familier et rassurant.",
+    image: situationPersonnesAgees,
+    imageAlt: "Accompagnement et soins d’une personne âgée à domicile",
+  },
+  {
+    number: "02",
+    category: "RETOUR D’HOSPITALISATION",
+    title: "Retrouver son quotidien en toute sérénité.",
+    text: "Après une hospitalisation ou une intervention, les soins infirmiers permettent d’assurer la continuité de la prise en charge une fois de retour à domicile.",
+    image: situationHopital,
+    imageAlt:
+      "Suivi infirmier et convalescence à domicile après une hospitalisation",
+  },
+  {
+    number: "03",
+    category: "MALADIE CHRONIQUE",
+    title: "Un suivi régulier au fil du temps.",
+    text: "Certaines situations nécessitent des soins réguliers et une surveillance dans la durée, notamment dans le cadre du diabète, de traitements prescrits ou de soins techniques.",
+    image: situationDiabete,
+    imageAlt:
+      "Suivi régulier d’une maladie chronique et contrôle médical à domicile",
+  },
+  {
+    number: "04",
+    category: "MOBILITÉ RÉDUITE",
+    title: "Quand se déplacer devient difficile.",
+    text: "Une perte de mobilité, qu’elle soit temporaire ou durable, peut rendre les déplacements jusqu’au cabinet compliqués. Les soins peuvent alors être réalisés directement à domicile.",
+    image: situationMobilite,
+    imageAlt: "Soins infirmiers à domicile pour personne à mobilité réduite",
+  },
+];
+
 export const zoneContent = {
   eyebrow: "Zone d’intervention",
   title: {
@@ -211,7 +272,8 @@ export const reviewsContent = {
     scale: "/ 5",
     stars: 5,
     label: "Avis patients",
-    caption: "Des soins réalisés avec attention, disponibilité et bienveillance.",
+    caption:
+      "Des soins réalisés avec attention, disponibilité et bienveillance.",
   },
 } as const;
 
@@ -355,6 +417,5 @@ export const finalCtaContent = {
       ? "#contact"
       : `tel:${siteConfig.phone.replace(/\s+/g, "")}`,
   },
-  portraitAlt:
-    "Portrait d’Amandine, infirmière souriante",
+  portraitAlt: "Portrait d’Amandine, infirmière souriante",
 } as const;

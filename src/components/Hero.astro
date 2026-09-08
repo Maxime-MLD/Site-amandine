@@ -51,7 +51,7 @@ import { heroContent } from '../data/content';
 		position: relative;
 		isolation: isolate;
 		overflow: hidden;
-		background: var(--grain-image) 0 0 / 128px repeat, var(--c-ivory);
+		background: var(--grain-image) 0 0 / 128px repeat, var(--bg-secondary);
 		color: var(--c-petrol);
 	}
 
@@ -107,20 +107,28 @@ import { heroContent } from '../data/content';
 	}
 
 	.hero__place {
+		display: inline-block;
 		width: fit-content;
 		margin-top: -0.045em;
 		color: var(--c-amber);
+		background: var(--gradient-amber);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 		font-family: var(--font-accent);
 		font-size: 1.06em;
 		font-style: italic;
 		font-weight: 700;
 		letter-spacing: -0.035em;
-		line-height: 0.88;
+		line-height: 1.05;
+		padding-bottom: 0.25em;
+		margin-bottom: -0.25em;
+		padding-right: 0.08em;
 	}
 
 	.hero__lead {
-		max-width: 600px;
-		margin-top: clamp(1.6rem, 2.4vw, 2.4rem);
+		max-width: var(--intro-max-width, 38rem);
+		margin-top: var(--heading-paragraph-gap, clamp(1.25rem, 0.93rem + 1.43vw, 2rem));
 		color: color-mix(in srgb, var(--c-petrol) 76%, var(--c-offwhite));
 		font-size: clamp(1.15rem, 1.45vw, 1.35rem);
 		line-height: 1.55;
@@ -136,11 +144,11 @@ import { heroContent } from '../data/content';
 
 	.hero-button {
 		display: inline-flex;
-		min-height: 56px;
+		min-height: 54px;
 		align-items: center;
 		justify-content: center;
 		border: 1px solid var(--c-petrol);
-		border-radius: 14px;
+		border-radius: var(--radius-btn, 14px);
 		padding: 0.95rem 1.55rem;
 		font-weight: 680;
 		line-height: 1;
@@ -197,46 +205,231 @@ import { heroContent } from '../data/content';
 		object-position: center 24%;
 	}
 
-	@media (max-width: 75rem) {
+	/* ========================================================
+	   PALIERS TABLETTE (768px à 1199px)
+	   ======================================================== */
+
+	/* --- Large Tablette : 1024px – 1199px (2 colonnes équilibré, image ~420–460px) --- */
+	@media (min-width: 64rem) and (max-width: 74.999rem) {
 		.hero__panel {
-			min-height: calc(100vh - 96px);
-			min-height: calc(100svh - 96px);
-			grid-template-columns: minmax(0, 0.98fr) minmax(390px, 1.02fr);
-			gap: clamp(2.5rem, 4.2vw, 4.5rem);
+			display: grid;
+			grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+			align-items: center;
+			min-height: auto;
+			gap: clamp(2.5rem, 4vw, 4.5rem);
+			padding-top: clamp(2rem, 3.2vw, 3rem);
+			padding-bottom: clamp(2.25rem, 3.5vw, 3.25rem);
+		}
+
+		.hero__content {
+			max-width: 640px;
+			padding-left: 0;
+		}
+
+		.hero__eyebrow {
+			font-size: 0.76rem;
+			letter-spacing: 0.15em;
 		}
 
 		.hero h1 {
-			font-size: clamp(3.75rem, 5.8vw, 5.25rem);
-		}
-
-		.hero__visual {
-			min-height: 525px;
-		}
-	}
-
-	@media (max-width: 63.999rem) {
-		.hero__panel {
-			min-height: calc(100vh - 84px);
-			min-height: calc(100svh - 84px);
-			grid-template-columns: minmax(0, 1fr) minmax(330px, 0.9fr);
-			gap: 2.5rem;
-			padding-block: 2.5rem 4rem;
-		}
-
-		.hero h1 {
-			font-size: clamp(3.35rem, 6.8vw, 4.5rem);
+			margin-top: 1.25rem;
+			font-size: clamp(3.5rem, 5vw, 4.6rem);
+			letter-spacing: -0.06em;
+			line-height: 0.88;
 		}
 
 		.hero__lead {
-			font-size: 1.1rem;
+			margin-top: 1.35rem;
+			max-width: min(44ch, 580px);
+			font-size: 1.18rem;
+			line-height: 1.55;
+		}
+
+		.hero__actions {
+			margin-top: 1.85rem;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 0.9rem;
 		}
 
 		.hero__visual {
-			min-height: 480px;
+			position: relative;
+			align-self: center;
+			justify-self: end;
+			width: 100%;
+			max-width: clamp(420px, 37vw, 460px);
+			aspect-ratio: 1122 / 1402;
+			min-height: 0;
+			max-height: 560px;
+			margin-inline: 0;
+		}
+
+		.hero__image-frame {
+			border-radius: 44px 44px 44px 110px;
+			box-shadow: 0 22px 55px rgb(18 59 74 / 11%);
+		}
+	}
+
+	/* --- Tablette 2 : 821px – 1023px (Stack vertical iPad Air, image ~58–65%) --- */
+	@media (min-width: 51.251rem) and (max-width: 63.999rem) {
+		.hero__panel {
+			display: flex;
+			flex-direction: column;
+			min-height: auto;
+			gap: clamp(2rem, 3.2vw, 2.6rem);
+			padding-top: clamp(1.5rem, 2.5vw, 2.15rem);
+			padding-bottom: calc(0.5 * clamp(4.1rem, 5.6vw, 4.75rem) + 24px);
+		}
+
+		.hero__content {
+			max-width: 680px;
+			width: 100%;
+			padding-left: 0;
+			margin-inline: auto;
+			text-align: center;
+		}
+
+		.hero__eyebrow {
+			font-size: 0.76rem;
+			letter-spacing: 0.15em;
+			justify-content: center;
+		}
+
+		.hero h1 {
+			margin-top: 1.15rem;
+			font-size: clamp(3.4rem, 5.8vw, 4.25rem);
+			letter-spacing: -0.055em;
+			line-height: 0.9;
+			max-width: 100%;
+			width: 100%;
+			text-align: center;
+		}
+
+		.hero__title-main {
+			text-align: center;
+		}
+
+		.hero__place {
+			display: inline-block;
+			width: fit-content;
+			margin-inline: auto;
+			text-align: center;
+		}
+
+		.hero__lead {
+			margin-top: 1.25rem;
+			max-width: 100%;
+			width: 100%;
+			font-size: clamp(1.1rem, 1.35vw, 1.22rem);
+			line-height: 1.55;
+			margin-inline: auto;
+			text-align: center;
+		}
+
+		.hero__actions {
+			margin-top: 1.65rem;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 0.9rem;
+			justify-content: center;
+		}
+
+		.hero__visual {
+			position: relative;
+			align-self: center;
+			width: clamp(400px, 62%, 520px);
+			aspect-ratio: 1122 / 1380;
+			min-height: 0;
+			max-height: 520px;
+			margin-inline: auto;
 		}
 
 		.hero__image-frame {
 			border-radius: 38px 38px 38px 100px;
+			box-shadow: 0 20px 50px rgb(18 59 74 / 12%);
+		}
+	}
+
+	/* --- Tablette 1 : 768px – 820px (Stack vertical compact iPad mini, image ~65–70%) --- */
+	@media (min-width: 48rem) and (max-width: 51.25rem) {
+		.hero__panel {
+			display: flex;
+			flex-direction: column;
+			min-height: auto;
+			gap: 1.75rem;
+			padding-top: 1.25rem;
+			padding-bottom: calc(0.5 * clamp(4.1rem, 5.6vw, 4.75rem) + 24px);
+		}
+
+		.hero__content {
+			max-width: 680px;
+			width: 100%;
+			padding-left: 0;
+			margin-inline: auto;
+			text-align: center;
+		}
+
+		.hero__eyebrow {
+			font-size: 0.74rem;
+			letter-spacing: 0.14em;
+			justify-content: center;
+		}
+
+		.hero h1 {
+			margin-top: 1rem;
+			font-size: clamp(3rem, 7vw, 3.65rem);
+			letter-spacing: -0.055em;
+			line-height: 0.92;
+			max-width: 100%;
+			width: 100%;
+			text-align: center;
+		}
+
+		.hero__title-main {
+			text-align: center;
+		}
+
+		.hero__place {
+			display: inline-block;
+			width: fit-content;
+			margin-inline: auto;
+			text-align: center;
+		}
+
+		.hero__lead {
+			margin-top: 1rem;
+			max-width: 100%;
+			width: 100%;
+			font-size: 1.08rem;
+			line-height: 1.5;
+			margin-inline: auto;
+			text-align: center;
+		}
+
+		.hero__actions {
+			margin-top: 1.4rem;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+			justify-content: center;
+		}
+
+		.hero__visual {
+			position: relative;
+			align-self: center;
+			width: clamp(340px, 68%, 510px);
+			aspect-ratio: 1122 / 1380;
+			min-height: 0;
+			max-height: 480px;
+			margin-inline: auto;
+		}
+
+		.hero__image-frame {
+			border-radius: 38px 38px 38px 100px;
+			box-shadow: 0 18px 45px rgb(18 59 74 / 12%);
 		}
 	}
 

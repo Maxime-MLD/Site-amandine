@@ -20,10 +20,10 @@ import { practicalContent } from '../data/content';
 				{/* Background abstract clock / dial at 5-8% opacity */}
 				<div class="bento-card__bg-decor" aria-hidden="true">
 					<svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<circle cx="120" cy="120" r="100" stroke="#123B4A" stroke-width="2" stroke-dasharray="4 8" />
-						<circle cx="120" cy="120" r="70" stroke="#123B4A" stroke-width="1.5" />
-						<path d="M120 50V120L165 145" stroke="#123B4A" stroke-width="2.5" stroke-linecap="round" />
-						<circle cx="120" cy="120" r="5" fill="#123B4A" />
+						<circle cx="120" cy="120" r="100" stroke="var(--c-petrol)" stroke-width="2" stroke-dasharray="4 8" />
+						<circle cx="120" cy="120" r="70" stroke="var(--c-petrol)" stroke-width="1.5" />
+						<path d="M120 50V120L165 145" stroke="var(--c-petrol)" stroke-width="2.5" stroke-linecap="round" />
+						<circle cx="120" cy="120" r="5" fill="var(--c-petrol)" />
 					</svg>
 				</div>
 
@@ -122,8 +122,8 @@ import { practicalContent } from '../data/content';
 	.practical {
 		position: relative;
 		overflow: clip;
-		background: #fffdf9;
-		padding-block: clamp(5.5rem, 8vw, 8.5rem);
+		background: var(--bg-secondary);
+		padding-block: var(--section-padding-y);
 	}
 
 	.practical__header {
@@ -131,8 +131,8 @@ import { practicalContent } from '../data/content';
 	}
 
 	.practical__eyebrow {
-		margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
-		color: #d99a3e;
+		margin-bottom: var(--space-label-h2);
+		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: var(--text-small);
 		font-weight: 750;
@@ -141,11 +141,11 @@ import { practicalContent } from '../data/content';
 	}
 
 	.practical__title {
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
-		font-size: clamp(2.35rem, 4.4vw, 3.85rem);
+		font-size: clamp(2.75rem, 4.25vw, 4.5rem);
 		font-weight: 700;
-		letter-spacing: -0.035em;
+		letter-spacing: -0.045em;
 		line-height: 1.15;
 		text-wrap: balance;
 		max-width: 22ch;
@@ -153,15 +153,21 @@ import { practicalContent } from '../data/content';
 
 	.practical__title-accent {
 		display: inline-block;
-		color: #d99a3e;
+		color: var(--c-amber);
+		background: var(--gradient-amber);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 		font-family: var(--font-accent);
-		font-size: 1.05em;
+		font-size: 1em;
 		font-style: italic;
-		font-weight: 600;
-		letter-spacing: -0.02em;
+		font-weight: 700;
+		letter-spacing: -0.025em;
 		text-decoration: none;
 		border: none;
 		margin-left: 0.04em;
+		padding-right: 0.06em;
+		margin-right: -0.02em;
 	}
 
 	/* Bento Grid Layout */
@@ -170,7 +176,7 @@ import { practicalContent } from '../data/content';
 		display: grid;
 		grid-template-columns: 1.18fr 1fr 1fr;
 		gap: clamp(1.25rem, 2vw, 1.75rem);
-		margin-top: clamp(2.75rem, 4vw, 3.75rem);
+		margin-top: var(--space-header-content);
 	}
 
 	/* Base Card: quiet, light, clean borders & subtle tactile grain */
@@ -227,7 +233,7 @@ import { practicalContent } from '../data/content';
 	.bento-card--availability {
 		grid-column: 1;
 		grid-row: 1 / span 2;
-		background: linear-gradient(135deg, #ffffff 0%, #fffdf9 55%, #fcf8f0 100%);
+		background: linear-gradient(135deg, var(--color-background) 0%, var(--c-offwhite) 55%, #fcf8f0 100%);
 		min-height: 28rem;
 	}
 
@@ -255,7 +261,7 @@ import { practicalContent } from '../data/content';
 
 	.bento-card__tag {
 		display: inline-block;
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: 0.85rem;
 		font-weight: 750;
@@ -264,7 +270,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-card__title {
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: clamp(1.25rem, 1.5vw, 1.45rem);
 		font-weight: 700;
@@ -281,7 +287,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-card__desc {
-		color: #52798a;
+		color: var(--c-steel);
 		font-family: var(--font-heading);
 		font-size: clamp(0.96rem, 1.1vw, 1.05rem);
 		line-height: 1.6;
@@ -306,7 +312,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-availability__stat {
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: clamp(2.15rem, 3.2vw, 2.9rem);
 		font-weight: 750;
@@ -317,7 +323,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-availability__sep {
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-size: clamp(1.8rem, 2.8vw, 2.4rem);
 		font-weight: 700;
 		line-height: 1;
@@ -328,7 +334,7 @@ import { practicalContent } from '../data/content';
 		display: inline-flex;
 		align-items: flex-start;
 		gap: 0.5rem;
-		color: #52798a;
+		color: var(--c-steel);
 		font-family: var(--font-heading);
 		font-size: 0.9rem;
 		font-weight: 500;
@@ -340,7 +346,7 @@ import { practicalContent } from '../data/content';
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: #d99a3e;
+		background: var(--c-amber);
 		flex-shrink: 0;
 		margin-top: 0.35rem;
 	}
@@ -349,7 +355,7 @@ import { practicalContent } from '../data/content';
 	.bento-card--documents {
 		grid-column: 2;
 		grid-row: 1;
-		background: linear-gradient(135deg, #f8f4ed 0%, #f4efe7 60%, #ece4d7 100%);
+		background: linear-gradient(135deg, #f8f4ed 0%, var(--c-ivory) 60%, #ece4d7 100%);
 	}
 
 	/* Enhanced grain on light cards */
@@ -370,7 +376,7 @@ import { practicalContent } from '../data/content';
 		display: flex;
 		align-items: baseline;
 		gap: 0.65rem;
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: 0.95rem;
 		font-weight: 550;
@@ -378,7 +384,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-documents__dash {
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-weight: 700;
 		flex-shrink: 0;
 		user-select: none;
@@ -388,7 +394,7 @@ import { practicalContent } from '../data/content';
 	.bento-card--cabinet {
 		grid-column: 3;
 		grid-row: 1;
-		background: linear-gradient(135deg, #174557 0%, #123b4a 60%, #0d2c37 100%);
+		background: linear-gradient(135deg, #174557 0%, var(--c-petrol) 60%, #0d2c37 100%);
 		border-color: rgba(244, 239, 231, 0.12);
 	}
 
@@ -397,11 +403,11 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-card__tag--amber {
-		color: #d99a3e;
+		color: var(--c-amber);
 	}
 
 	.bento-card__title--light {
-		color: #f4efe7;
+		color: var(--c-ivory);
 		margin-top: 0.5rem;
 	}
 
@@ -413,7 +419,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-cabinet__location {
-		color: #f4efe7;
+		color: var(--c-ivory);
 		font-family: var(--font-heading);
 		font-size: 0.92rem;
 		font-weight: 600;
@@ -427,7 +433,7 @@ import { practicalContent } from '../data/content';
 	.bento-card--cta {
 		grid-column: 2 / span 2;
 		grid-row: 2;
-		background: linear-gradient(135deg, #e4ac59 0%, #d99a3e 50%, #c48227 100%);
+		background: linear-gradient(135deg, #e4ac59 0%, var(--c-amber) 50%, #c48227 100%);
 		border-color: rgba(18, 59, 74, 0.1);
 		display: flex;
 		flex-direction: row;
@@ -435,7 +441,7 @@ import { practicalContent } from '../data/content';
 		justify-content: space-between;
 		gap: 1.5rem;
 		text-decoration: none;
-		color: #123b4a;
+		color: var(--c-petrol);
 		cursor: pointer;
 	}
 
@@ -450,7 +456,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-card--cta:focus-visible {
-		outline: 2px solid #123b4a;
+		outline: 2px solid var(--c-petrol);
 		outline-offset: 3px;
 	}
 
@@ -460,7 +466,7 @@ import { practicalContent } from '../data/content';
 	}
 
 	.bento-cta__title {
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: clamp(1.55rem, 2.2vw, 2.05rem);
 		font-weight: 750;
@@ -485,8 +491,8 @@ import { practicalContent } from '../data/content';
 		gap: 0.75rem;
 		padding: 0.75rem 1.35rem;
 		border-radius: 999px;
-		background: #123b4a;
-		color: #fffdf9;
+		background: var(--c-petrol);
+		color: var(--c-offwhite);
 		font-family: var(--font-heading);
 		font-size: 0.95rem;
 		font-weight: 700;
@@ -547,7 +553,7 @@ import { practicalContent } from '../data/content';
 		}
 
 		.practical__title {
-			font-size: clamp(2.15rem, 8.5vw, 2.85rem);
+			font-size: clamp(2.35rem, 11vw, 3.35rem);
 		}
 
 		.bento-grid {

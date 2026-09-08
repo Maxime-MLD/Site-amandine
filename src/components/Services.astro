@@ -4,7 +4,7 @@ import { services, servicesContent } from '../data/content';
 ---
 
 <section class="services" id="soins" aria-labelledby="services-title" data-services-carousel>
-	<div class="services__inner site-container">
+	<div class="site-container">
 		<header class="services__header">
 			<div class="services__heading">
 				<p class="services__eyebrow">{servicesContent.eyebrow}</p>
@@ -12,56 +12,55 @@ import { services, servicesContent } from '../data/content';
 					{servicesContent.title.beforeAccent}{' '}
 					<span class="services__accent">{servicesContent.title.accent}</span>.
 				</h2>
-			</div>
-
-			<div class="services__aside">
 				<p class="services__intro" id="services-description">{servicesContent.intro}</p>
 			</div>
 		</header>
+	</div>
 
-		<div
-			class="services__viewport"
-			role="region"
-			aria-roledescription="carrousel"
-			aria-label="Galerie des soins proposés"
-			aria-describedby="services-description"
-			tabindex="0"
-			data-carousel-viewport
-		>
-			<div class="services__track">
-				{services.map((service, index) => (
-					<article
-						class="service-card"
-						aria-label={`${index + 1} sur ${services.length} : ${service.title}`}
-						data-carousel-card
-					>
-						<div class="service-card__media">
-							<Image
-								class="service-card__image"
-								src={service.image}
-								width={900}
-								height={675}
-								sizes="(max-width: 767px) 74vw, (max-width: 1199px) 54vw, 570px"
-								alt={service.alt}
-								loading="lazy"
-								decoding="async"
-								draggable="false"
-							/>
-						</div>
+	<div
+		class="services__viewport"
+		role="region"
+		aria-roledescription="carrousel"
+		aria-label="Galerie des soins proposés"
+		aria-describedby="services-description"
+		tabindex="0"
+		data-carousel-viewport
+	>
+		<div class="services__track">
+			{services.map((service, index) => (
+				<article
+					class="service-card"
+					aria-label={`${index + 1} sur ${services.length} : ${service.title}`}
+					data-carousel-card
+				>
+					<div class="service-card__media">
+						<Image
+							class="service-card__image"
+							src={service.image}
+							width={900}
+							height={675}
+							sizes="(max-width: 767px) 74vw, (max-width: 1199px) 54vw, 570px"
+							alt={service.alt}
+							loading="lazy"
+							decoding="async"
+							draggable="false"
+						/>
+					</div>
 
-						<div class="service-card__content">
-							<p class="service-card__number">{String(index + 1).padStart(2, '0')}</p>
-							<h3>{service.title}</h3>
-							<p class="service-card__description">{service.description}</p>
-						</div>
-					</article>
-				))}
-			</div>
+					<div class="service-card__content">
+						<p class="service-card__number">{String(index + 1).padStart(2, '0')}</p>
+						<h3>{service.title}</h3>
+						<p class="service-card__description">{service.description}</p>
+					</div>
+				</article>
+			))}
 		</div>
+	</div>
 
+	<div class="site-container">
 		<div class="services__controls">
 			<span class="services__position" aria-hidden="true">
-				<span data-carousel-current>01</span>
+				<span data-carousel-current>03</span>
 				<span class="services__position-separator">/</span>
 				<span>06</span>
 			</span>
@@ -88,13 +87,15 @@ import { services, servicesContent } from '../data/content';
 						<path d="m7.25 4.5 5.5 5.5-5.5 5.5M12.5 10h-8" />
 					</svg>
 				</button>
-				<span class="sr-only" aria-live="polite" data-carousel-status>Soin 1 sur 6</span>
+				<span class="sr-only" aria-live="polite" data-carousel-status>Soin 3 sur 6</span>
 			</div>
 		</div>
 	</div>
 </section>
 
 <script>
+	import gsap from 'gsap';
+
 	const carousels = document.querySelectorAll<HTMLElement>('[data-services-carousel]');
 
 	carousels.forEach((carousel) => {
@@ -107,123 +108,326 @@ import { services, servicesContent } from '../data/content';
 
 		if (!viewport || !previous || !next || !current || !status || cards.length === 0) return;
 
-		let updateFrame = 0;
-		let activePointer: number | null = null;
+		let activeTween: gsap.core.Tween | null = null;
+		let pendingTarget: number | null = null;
+		let scrollTicking = false;
+
+		// Mouse drag state (touch devices use native momentum scrolling)
+		let isPointerDown = false;
+		let isDragging = false;
+		let activePointerId: number | null = null;
 		let dragStartX = 0;
 		let dragStartScroll = 0;
+		let lastX = 0;
+		let lastTime = 0;
+		let velocity = 0; // px/ms
+		let dragJustFinished = false;
 
 		const getStep = () => {
 			if (cards.length < 2) return cards[0].getBoundingClientRect().width;
 			return cards[1].offsetLeft - cards[0].offsetLeft;
 		};
 
+		const getMaxScroll = () => {
+			return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+		};
+
 		const getVisibleCount = () => {
+			const maxScroll = getMaxScroll();
+			const currentScroll = viewport.scrollLeft;
+
+			if (currentScroll >= maxScroll - 4) {
+				return cards.length;
+			}
+
 			const viewportRight = viewport.getBoundingClientRect().right;
 			let count = 0;
 			for (const card of cards) {
-				if (card.getBoundingClientRect().right <= viewportRight + 2) count += 1;
+				if (card.getBoundingClientRect().left < viewportRight - 35) {
+					count += 1;
+				}
 			}
+
+			const isDesktop = window.matchMedia('(min-width: 64rem)').matches;
+			if (isDesktop && currentScroll <= 4) {
+				return Math.max(3, count);
+			}
+
 			return Math.min(cards.length, Math.max(1, count));
 		};
 
 		const updateNavigation = () => {
-			const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+			const maxScroll = getMaxScroll();
+			const currentScroll = viewport.scrollLeft;
+
+			// Update arrow disabled state based on real scroll bounds
+			previous.disabled = currentScroll <= 4;
+			next.disabled = currentScroll >= maxScroll - 4;
+
+			// Update counter and accessible aria-live status
 			const visibleCount = getVisibleCount();
-			const activeIndex = visibleCount - 1;
-			previous.disabled = viewport.scrollLeft <= 2;
-			next.disabled = viewport.scrollLeft >= maxScroll - 2;
 			current.textContent = String(visibleCount).padStart(2, '0');
-			status.textContent = `Soin ${activeIndex + 1} sur ${cards.length} : ${cards[activeIndex].querySelector('h3')?.textContent ?? ''}`;
+			const activeIndex = Math.min(cards.length - 1, Math.max(0, visibleCount - 1));
+			const cardTitle = cards[activeIndex]?.querySelector('h3')?.textContent ?? '';
+			status.textContent = `Soin ${visibleCount} sur ${cards.length} : ${cardTitle}`;
 		};
 
-		const requestNavigationUpdate = () => {
-			cancelAnimationFrame(updateFrame);
-			updateFrame = requestAnimationFrame(updateNavigation);
+		const onScroll = () => {
+			if (!scrollTicking) {
+				scrollTicking = true;
+				requestAnimationFrame(() => {
+					updateNavigation();
+					scrollTicking = false;
+				});
+			}
 		};
 
-		const scrollByCard = (direction: -1 | 1) => {
-			viewport.scrollBy({ left: getStep() * direction, behavior: 'smooth' });
+		const animateTo = (targetScroll: number, duration = 0.58) => {
+			const maxScroll = getMaxScroll();
+			const clamped = Math.max(0, Math.min(maxScroll, Math.round(targetScroll)));
+			pendingTarget = clamped;
+
+			const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (prefersReduced) {
+				viewport.scrollTo({ left: clamped, behavior: 'auto' });
+				viewport.style.scrollSnapType = '';
+				viewport.style.scrollBehavior = '';
+				pendingTarget = null;
+				updateNavigation();
+				return;
+			}
+
+			// Temporarily disable CSS scroll snap during programmatic animation
+			viewport.style.scrollSnapType = 'none';
+			viewport.style.scrollBehavior = 'auto';
+
+			if (activeTween) activeTween.kill();
+
+			activeTween = gsap.to(viewport, {
+				scrollLeft: clamped,
+				duration,
+				ease: 'power3.out',
+				overwrite: 'auto',
+				onUpdate: () => {
+					updateNavigation();
+				},
+				onComplete: () => {
+					viewport.style.scrollSnapType = '';
+					viewport.style.scrollBehavior = '';
+					pendingTarget = null;
+					activeTween = null;
+					updateNavigation();
+				},
+				onInterrupt: () => {
+					viewport.style.scrollSnapType = '';
+					viewport.style.scrollBehavior = '';
+					pendingTarget = null;
+					activeTween = null;
+				},
+			});
 		};
 
-		previous.addEventListener('click', () => scrollByCard(-1));
-		next.addEventListener('click', () => scrollByCard(1));
-		viewport.addEventListener('scroll', requestNavigationUpdate, { passive: true });
+		const scrollByStep = (direction: -1 | 1) => {
+			const step = getStep();
+			const maxScroll = getMaxScroll();
+			if (maxScroll <= 0) return;
+
+			let target: number;
+
+			if (activeTween && activeTween.isActive() && pendingTarget !== null) {
+				// Consecutive clicks: advance fluidly from the pending target
+				target = pendingTarget + direction * step;
+			} else {
+				// Free-scroll alignment: advance from current position towards next/previous card
+				const currentScroll = viewport.scrollLeft;
+				const currentIndex = currentScroll / step;
+
+				if (direction > 0) {
+					const nextIndex = Math.floor(currentIndex + 0.08) + 1;
+					target = nextIndex * step;
+				} else {
+					const prevIndex = Math.ceil(currentIndex - 0.08) - 1;
+					target = prevIndex * step;
+				}
+			}
+
+			animateTo(target, 0.58);
+		};
+
+		previous.addEventListener('click', () => scrollByStep(-1));
+		next.addEventListener('click', () => scrollByStep(1));
+		viewport.addEventListener('scroll', onScroll, { passive: true });
 
 		viewport.addEventListener('keydown', (event) => {
 			if (event.key === 'ArrowLeft') {
 				event.preventDefault();
-				scrollByCard(-1);
-			}
-
-			if (event.key === 'ArrowRight') {
+				scrollByStep(-1);
+			} else if (event.key === 'ArrowRight') {
 				event.preventDefault();
-				scrollByCard(1);
-			}
-
-			if (event.key === 'Home') {
+				scrollByStep(1);
+			} else if (event.key === 'Home') {
 				event.preventDefault();
-				viewport.scrollTo({ left: 0, behavior: 'smooth' });
-			}
-
-			if (event.key === 'End') {
+				animateTo(0, 0.58);
+			} else if (event.key === 'End') {
 				event.preventDefault();
-				viewport.scrollTo({ left: viewport.scrollWidth, behavior: 'smooth' });
+				animateTo(getMaxScroll(), 0.58);
 			}
 		});
 
+		// Prevent clicking on child cards right after a drag action
+		viewport.addEventListener(
+			'click',
+			(event) => {
+				if (dragJustFinished) {
+					event.preventDefault();
+					event.stopPropagation();
+				}
+			},
+			true
+		);
+
+		// Mouse Drag Navigation (touch devices use native momentum scrolling)
 		viewport.addEventListener('pointerdown', (event) => {
 			if (event.pointerType !== 'mouse' || event.button !== 0) return;
-			activePointer = event.pointerId;
+
+			// Stop any ongoing animation so the user catches the carousel in flight
+			if (activeTween) {
+				activeTween.kill();
+				activeTween = null;
+				pendingTarget = null;
+			}
+
+			isPointerDown = true;
+			isDragging = false;
+			activePointerId = event.pointerId;
 			dragStartX = event.clientX;
 			dragStartScroll = viewport.scrollLeft;
-			viewport.setPointerCapture(event.pointerId);
-			viewport.classList.add('is-dragging');
+			lastX = event.clientX;
+			lastTime = performance.now();
+			velocity = 0;
 		});
 
 		viewport.addEventListener('pointermove', (event) => {
-			if (activePointer !== event.pointerId) return;
-			event.preventDefault();
-			viewport.scrollLeft = dragStartScroll - (event.clientX - dragStartX);
+			if (!isPointerDown || event.pointerId !== activePointerId) return;
+
+			const deltaX = event.clientX - dragStartX;
+
+			if (!isDragging) {
+				// Movement threshold (6px) before engaging drag
+				if (Math.abs(deltaX) > 6) {
+					isDragging = true;
+					viewport.setPointerCapture(event.pointerId);
+					viewport.classList.add('is-dragging');
+					viewport.style.scrollSnapType = 'none';
+					viewport.style.scrollBehavior = 'auto';
+				}
+			}
+
+			if (isDragging) {
+				event.preventDefault();
+
+				const now = performance.now();
+				const dt = now - lastTime;
+				if (dt > 8) {
+					const instantVelocity = (event.clientX - lastX) / dt; // px/ms
+					velocity = velocity * 0.4 + instantVelocity * 0.6;
+					lastX = event.clientX;
+					lastTime = now;
+				}
+
+				viewport.scrollLeft = dragStartScroll - deltaX;
+			}
 		});
 
 		const endDrag = (event: PointerEvent) => {
-			if (activePointer !== event.pointerId) return;
-			if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
-			activePointer = null;
+			if (!isPointerDown || event.pointerId !== activePointerId) return;
+
+			if (viewport.hasPointerCapture(event.pointerId)) {
+				viewport.releasePointerCapture(event.pointerId);
+			}
+
+			isPointerDown = false;
+			activePointerId = null;
+
+			if (!isDragging) return;
+
+			isDragging = false;
 			viewport.classList.remove('is-dragging');
-			const target = Math.round(viewport.scrollLeft / getStep()) * getStep();
-			viewport.scrollTo({ left: target, behavior: 'smooth' });
+
+			// Flag click suppression for 80ms
+			dragJustFinished = true;
+			setTimeout(() => {
+				dragJustFinished = false;
+			}, 80);
+
+			// If pointer remained stationary before release, cancel residual velocity
+			const timeSinceLastMove = performance.now() - lastTime;
+			if (timeSinceLastMove > 75) {
+				velocity = 0;
+			}
+
+			const maxScroll = getMaxScroll();
+			const step = getStep();
+			const currentScroll = viewport.scrollLeft;
+			const scrollVelocity = -velocity; // px/ms (positive = scrolling right)
+
+			if (Math.abs(scrollVelocity) > 0.15) {
+				// Natural inertia with projected momentum distance
+				const momentumDistance = scrollVelocity * 280; // px
+				const projected = currentScroll + momentumDistance;
+				const nearestCard = Math.round(projected / step) * step;
+				const target = Math.max(0, Math.min(maxScroll, nearestCard));
+				const distance = Math.abs(target - currentScroll);
+				const duration = Math.min(0.65, Math.max(0.4, 0.32 + (distance / step) * 0.2));
+
+				animateTo(target, duration);
+			} else {
+				// Gentle settle if within 18% of a card step, otherwise free release with proximity snap
+				const nearestCard = Math.round(currentScroll / step) * step;
+				const diff = Math.abs(currentScroll - nearestCard);
+
+				if (diff < step * 0.18) {
+					animateTo(nearestCard, 0.32);
+				} else {
+					viewport.style.scrollSnapType = '';
+					viewport.style.scrollBehavior = '';
+					updateNavigation();
+				}
+			}
 		};
 
 		viewport.addEventListener('pointerup', endDrag);
 		viewport.addEventListener('pointercancel', endDrag);
-		new ResizeObserver(requestNavigationUpdate).observe(viewport);
+
+		new ResizeObserver(() => {
+			updateNavigation();
+		}).observe(viewport);
+
 		updateNavigation();
 	});
 </script>
 
 <style>
 	.services {
+		position: relative;
+		margin-top: -3px;
 		overflow: clip;
-		padding-block: clamp(5.5rem, 8vw, 8rem);
+		padding-block: var(--section-padding-y);
 		scroll-margin-top: 6rem;
-		background: #f4efe7;
-	}
-
-	.services__header {
-		display: grid;
-		grid-template-columns: minmax(0, 1.35fr) minmax(19rem, 0.65fr);
-		gap: clamp(3rem, 7vw, 7.5rem);
-		align-items: end;
-	}
-
-	.services__inner {
+		background: var(--bg-primary);
+		container-type: inline-size;
+		--container-gutter: max(24px, calc((100vw - var(--container, 1480px)) / 2));
+		--container-gutter: max(24px, calc((100cqw - var(--container, 1480px)) / 2));
 		--services-card-width: min(calc(40vw - 3rem), 35.5rem);
 	}
 
+	.services__header {
+		max-width: 52rem;
+	}
+
 	.services__eyebrow {
-		margin-bottom: 1rem;
-		color: #d99a3e;
+		margin-bottom: var(--space-label-h2);
+		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: 0.82rem;
 		font-weight: 700;
@@ -233,31 +437,33 @@ import { services, servicesContent } from '../data/content';
 
 	.services__heading h2 {
 		max-width: 850px;
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-size: clamp(2.75rem, 4.25vw, 4.5rem);
 		letter-spacing: -0.045em;
 	}
 
 	.services__accent {
 		display: inline-block;
-		color: #d99a3e;
+		color: var(--c-amber);
+		background: var(--gradient-amber);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 		font-family: var(--font-accent);
 		font-style: italic;
 		font-weight: 700;
 		letter-spacing: -0.025em;
-	}
-
-	.services__aside {
-		display: grid;
-		gap: 1.75rem;
-		justify-items: start;
+		padding-right: 0.06em;
+		margin-right: -0.02em;
 	}
 
 	.services__intro {
-		max-width: 32rem;
-		color: #52798a;
+		max-width: var(--intro-max-width, 38rem);
+		margin-top: var(--heading-paragraph-gap, clamp(1.25rem, 0.93rem + 1.43vw, 2rem));
+		color: var(--c-steel);
+		font-family: var(--font-heading);
 		font-size: clamp(1.05rem, 1.25vw, 1.2rem);
-		line-height: 1.55;
+		line-height: 1.65;
 	}
 
 	.services__controls {
@@ -282,7 +488,7 @@ import { services, servicesContent } from '../data/content';
 		min-width: 4rem;
 		align-items: baseline;
 		gap: 0.4rem;
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: 0.78rem;
 		font-weight: 700;
@@ -301,7 +507,7 @@ import { services, servicesContent } from '../data/content';
 		border: 1px solid rgb(18 59 74 / 28%);
 		border-radius: 50%;
 		background: transparent;
-		color: #123b4a;
+		color: var(--c-petrol);
 		cursor: pointer;
 		transition:
 			background-color 250ms ease,
@@ -321,9 +527,9 @@ import { services, servicesContent } from '../data/content';
 	}
 
 	.services__arrow--next:not(:disabled) {
-		border-color: #123b4a;
-		background: #123b4a;
-		color: #fffdf9;
+		border-color: var(--c-petrol);
+		background: var(--c-petrol);
+		color: var(--c-offwhite);
 	}
 
 	.services__arrow:disabled {
@@ -332,16 +538,18 @@ import { services, servicesContent } from '../data/content';
 	}
 
 	.services__viewport {
-		margin-top: clamp(3.25rem, 5vw, 5rem);
+		width: 100%;
+		margin-top: var(--space-header-content);
 		overflow-x: auto;
 		overflow-y: hidden;
-		overscroll-behavior-inline: contain;
-		scroll-behavior: smooth;
-		scroll-snap-type: x mandatory;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x proximity;
 		scrollbar-width: none;
 		cursor: grab;
 		touch-action: pan-x pan-y;
 		-webkit-overflow-scrolling: touch;
+		scroll-padding-left: var(--container-gutter);
+		scroll-padding-right: var(--container-gutter);
 	}
 
 	.services__viewport::-webkit-scrollbar {
@@ -355,13 +563,20 @@ import { services, servicesContent } from '../data/content';
 		user-select: none;
 	}
 
+	.services__viewport.is-dragging .service-card {
+		pointer-events: none;
+	}
+
 	.services__track {
 		display: flex;
 		gap: clamp(1.5rem, 2.25vw, 2rem);
 		align-items: stretch;
 		width: max-content;
 		min-width: 100%;
-		padding: 0.25rem 0 1.75rem;
+		padding-top: 0.75rem;
+		padding-bottom: 2.25rem;
+		padding-left: var(--container-gutter);
+		padding-right: var(--container-gutter);
 	}
 
 	.service-card {
@@ -371,15 +586,17 @@ import { services, servicesContent } from '../data/content';
 		width: var(--services-card-width);
 		min-width: 0;
 		overflow: hidden;
-		border: 1px solid rgb(18 59 74 / 12%);
+		border: 1px solid rgba(18, 59, 74, 0.08);
 		border-radius: 26px;
-		background: #fffdf9;
-		box-shadow: 0 16px 40px rgb(18 59 74 / 5%);
+		background: var(--c-offwhite);
+		box-shadow:
+			0 1px 3px rgba(18, 59, 74, 0.025),
+			0 6px 16px -2px rgba(18, 59, 74, 0.035),
+			0 16px 32px -6px rgba(18, 59, 74, 0.04);
 		scroll-snap-align: start;
-		scroll-snap-stop: always;
 		transition:
 			transform 380ms cubic-bezier(0.2, 0.7, 0.2, 1),
-			box-shadow 380ms ease;
+			box-shadow 380ms cubic-bezier(0.2, 0.7, 0.2, 1);
 	}
 
 	.service-card__media {
@@ -388,7 +605,7 @@ import { services, servicesContent } from '../data/content';
 		margin: 10px 10px 0;
 		overflow: hidden;
 		border-radius: 19px;
-		background: #f4efe7;
+		background: var(--c-ivory);
 	}
 
 	.service-card__media :global(img) {
@@ -410,7 +627,7 @@ import { services, servicesContent } from '../data/content';
 
 	.service-card__number {
 		margin-bottom: 0.85rem;
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: 0.78rem;
 		font-weight: 700;
@@ -419,7 +636,7 @@ import { services, servicesContent } from '../data/content';
 
 	.service-card h3 {
 		max-width: 20ch;
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-size: clamp(1.4rem, 1.7vw, 1.75rem);
 		font-weight: 650;
 		letter-spacing: -0.035em;
@@ -428,19 +645,22 @@ import { services, servicesContent } from '../data/content';
 	.service-card__description {
 		max-width: 43ch;
 		margin-top: 0.8rem;
-		color: #52798a;
+		color: var(--c-steel);
 		font-size: 1rem;
 		line-height: 1.55;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.service-card:hover {
-			transform: translateY(-4px);
-			box-shadow: 0 20px 48px rgb(18 59 74 / 7%);
+			transform: translateY(-2px);
+			box-shadow:
+				0 2px 6px rgba(18, 59, 74, 0.03),
+				0 8px 20px -3px rgba(18, 59, 74, 0.04),
+				0 18px 36px -8px rgba(18, 59, 74, 0.045);
 		}
 
 		.service-card:hover .service-card__media :global(img) {
-			transform: scale(1.025);
+			transform: scale(1.02);
 		}
 
 		.services__arrow:not(:disabled):hover {
@@ -449,37 +669,19 @@ import { services, servicesContent } from '../data/content';
 	}
 
 	@media (max-width: 74.999rem) {
-		.services__inner {
+		.services {
 			--services-card-width: min(calc(58vw - 3rem), 40rem);
 		}
-
-		.services__header {
-			grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
-			gap: 3rem;
-		}
-
 	}
 
 	@media (max-width: 47.999rem) {
-		.services__inner {
-			--services-card-width: calc(86vw - 2.5rem);
-		}
-
 		.services {
+			--services-card-width: calc(86vw - 2.5rem);
 			padding-block: 4.5rem;
-		}
-
-		.services__header {
-			grid-template-columns: 1fr;
-			gap: 1.5rem;
 		}
 
 		.services__heading h2 {
 			font-size: clamp(2.35rem, 11vw, 3.35rem);
-		}
-
-		.services__aside {
-			gap: 1.35rem;
 		}
 
 		.services__controls {
@@ -497,7 +699,10 @@ import { services, servicesContent } from '../data/content';
 
 		.services__track {
 			gap: 1rem;
-			padding-bottom: 1rem;
+			padding-top: 0.5rem;
+			padding-bottom: 1.75rem;
+			padding-left: var(--container-gutter);
+			padding-right: var(--container-gutter);
 		}
 
 		.service-card {
@@ -520,6 +725,13 @@ import { services, servicesContent } from '../data/content';
 
 		.service-card__description {
 			font-size: 0.98rem;
+		}
+	}
+
+	@media (max-width: 639px) {
+		.services {
+			--container-gutter: max(16px, calc((100vw - var(--container, 1480px)) / 2));
+			--container-gutter: max(16px, calc((100cqw - var(--container, 1480px)) / 2));
 		}
 	}
 

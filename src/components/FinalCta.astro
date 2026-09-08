@@ -28,7 +28,7 @@ import { finalCtaContent } from '../data/content';
 						</linearGradient>
 					</defs>
 					<path
-						d="M 510 100 L 600 100 L 608 90 L 616 100 L 626 100 L 636 116 L 650 22 L 664 144 L 676 100 L 688 100 L 704 76 L 722 100 L 870 100 L 882 92 L 890 100 L 898 100 L 908 112 L 920 38 L 932 132 L 942 100 L 954 100 L 968 82 L 984 100 L 1200 100"
+						d="M 500 100 L 680 100 L 690 20 L 702 165 L 714 65 L 724 130 L 732 100 L 810 100 L 820 35 L 832 155 L 840 100 L 1200 100"
 						stroke="url(#final-cta-ecg-gradient)"
 						stroke-width="2.5"
 						stroke-linecap="round"
@@ -83,9 +83,9 @@ import { finalCtaContent } from '../data/content';
 	.final-cta {
 		position: relative;
 		overflow: visible;
-		background: #fffdf9;
+		background: var(--bg-primary);
 		padding-top: clamp(6.5rem, 9vw, 9rem);
-		padding-bottom: clamp(4.5rem, 6.5vw, 6.5rem);
+		padding-bottom: var(--section-padding-y);
 	}
 
 	.final-cta__card {
@@ -107,7 +107,7 @@ import { finalCtaContent } from '../data/content';
 		inset: 0;
 		border-radius: inherit;
 		overflow: hidden;
-		background: linear-gradient(145deg, #184b5c 0%, #123b4a 52%, #0d2833 100%);
+		background: linear-gradient(145deg, #184b5c 0%, var(--c-petrol) 52%, #0d2833 100%);
 		pointer-events: none;
 		z-index: 1;
 	}
@@ -151,8 +151,8 @@ import { finalCtaContent } from '../data/content';
 	}
 
 	.final-cta__eyebrow {
-		margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
-		color: #d99a3e;
+		margin-bottom: var(--space-label-h2);
+		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: var(--text-small);
 		font-weight: 750;
@@ -161,11 +161,11 @@ import { finalCtaContent } from '../data/content';
 	}
 
 	.final-cta__title {
-		color: #f4efe7;
+		color: var(--c-ivory);
 		font-family: var(--font-heading);
-		font-size: clamp(2.35rem, 3.8vw, 3.45rem);
+		font-size: clamp(2.75rem, 4.25vw, 4.5rem);
 		font-weight: 700;
-		letter-spacing: -0.035em;
+		letter-spacing: -0.045em;
 		line-height: 1.12;
 		text-wrap: balance;
 		margin: 0;
@@ -173,24 +173,33 @@ import { finalCtaContent } from '../data/content';
 
 	.final-cta__title-accent {
 		display: inline-block;
-		color: #d99a3e;
+		color: var(--c-amber);
+		background: var(--gradient-amber);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 		font-family: var(--font-accent);
-		font-size: 1.05em;
+		font-size: 1em;
 		font-style: italic;
-		font-weight: 600;
-		letter-spacing: -0.02em;
+		font-weight: 700;
+		letter-spacing: -0.025em;
+		line-height: 1.15;
 		text-decoration: none;
 		border: none;
 		margin-left: 0.04em;
+		padding-right: 0.08em;
+		padding-bottom: 0.28em;
+		margin-bottom: -0.28em;
+		margin-right: -0.02em;
 	}
 
 	.final-cta__desc {
-		margin-top: clamp(1.25rem, 2vw, 1.6rem);
+		margin-top: var(--heading-paragraph-gap, clamp(1.25rem, 0.93rem + 1.43vw, 2rem));
 		color: rgba(244, 239, 231, 0.82);
 		font-family: var(--font-heading);
 		font-size: clamp(1rem, 1.15vw, 1.125rem);
 		line-height: 1.6;
-		max-width: 38ch;
+		max-width: min(38ch, var(--intro-max-width, 38rem));
 	}
 
 	/* Action Buttons */
@@ -220,13 +229,13 @@ import { finalCtaContent } from '../data/content';
 	}
 
 	.final-cta__btn:focus-visible {
-		outline: 2px solid #d99a3e;
+		outline: 2px solid var(--c-amber);
 		outline-offset: 4px;
 	}
 
 	.final-cta__btn--primary {
-		background: #d99a3e;
-		color: #123b4a;
+		background: var(--c-amber);
+		color: var(--c-petrol);
 		font-weight: 750;
 		padding: 0.9rem 1.65rem;
 		gap: 0.55rem;
@@ -252,7 +261,7 @@ import { finalCtaContent } from '../data/content';
 
 	.final-cta__btn--secondary {
 		background: transparent;
-		color: #f4efe7;
+		color: var(--c-ivory);
 		font-weight: 600;
 		padding: 0.9rem 1.45rem;
 		border: 1px solid rgba(244, 239, 231, 0.28);
@@ -261,7 +270,7 @@ import { finalCtaContent } from '../data/content';
 	.final-cta__btn--secondary:hover {
 		background: rgba(244, 239, 231, 0.08);
 		border-color: rgba(244, 239, 231, 0.5);
-		color: #ffffff;
+		color: var(--color-background);
 		transform: translateY(-2px);
 	}
 
@@ -329,8 +338,7 @@ import { finalCtaContent } from '../data/content';
 		}
 
 		.final-cta__ecg {
-			top: 38%;
-			height: 4.5rem;
+			display: none;
 		}
 
 		.final-cta__content {
@@ -339,7 +347,7 @@ import { finalCtaContent } from '../data/content';
 		}
 
 		.final-cta__title {
-			font-size: clamp(2.05rem, 8vw, 2.65rem);
+			font-size: clamp(2.35rem, 11vw, 3.35rem);
 		}
 
 		.final-cta__desc {

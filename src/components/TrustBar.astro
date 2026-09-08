@@ -1,228 +1,372 @@
 ---
-const trustItems = [
-	'SOINS À DOMICILE',
-	'CABINET SUR RENDEZ-VOUS',
-	'MONTAGNY & ALENTOURS',
-	'ÉCOUTE',
-	'DISPONIBILITÉ',
-	'BIENVEILLANCE',
-];
+const trustPhrases = [
+	'Infirmière à domicile',
+	'Au cabinet sur rendez-vous',
+	'Montagny & 10 km alentours',
+	'10 ans d’expérience',
+] as const;
 
-const trustMessage = `${trustItems.join(' • ')} •`;
+// Répétition de la séquence par groupe pour couvrir largement tous les écrans
+const repetitions = [0, 1, 2];
 ---
 
-<section class="trust-ribbon site-container" aria-label="Repères de confiance">
-	<p class="sr-only">{trustMessage}</p>
+<section class="trust-bar" aria-label="Points clés du cabinet">
+	<!-- Description textuelle accessible pour lecteurs d'écran -->
+	<p class="sr-only">
+		{trustPhrases.join(' · ')}
+	</p>
 
-	<div class="trust-ribbon__ticker" aria-hidden="true">
-		<div class="trust-ribbon__track">
-			{[0, 1].map((groupIndex) => (
-				<div class="trust-ribbon__group" data-copy={groupIndex === 1 ? 'true' : undefined}>
-					{[0, 1].map(() => (
-						<div class="trust-ribbon__message">
-							{trustItems.map((item) => (
-								<>
-									<span class="trust-ribbon__item">{item}</span>
-									<span class="trust-ribbon__dot">•</span>
-								</>
-							))}
-						</div>
-					))}
+	<!-- Double encadrement parfaitement horizontal avec fondu var(--c-ivory) aux deux extrémités -->
+	<div class="trust-bar__frame" aria-hidden="true">
+		<div class="trust-bar__inner">
+			<div class="trust-bar__ticker">
+				<div class="trust-bar__track">
+					<!-- Groupe 1 -->
+					<div class="trust-bar__group">
+						{repetitions.map(() => (
+							<div class="trust-bar__unit">
+								{trustPhrases.map((phrase) => (
+									<span class="trust-bar__item">
+										<span class="trust-bar__text">{phrase}</span>
+										<span class="trust-bar__dot">·</span>
+									</span>
+								))}
+							</div>
+						))}
+					</div>
+
+					<!-- Groupe 2 (clone identique pour boucle infinie parfaite) -->
+					<div class="trust-bar__group" aria-hidden="true">
+						{repetitions.map(() => (
+							<div class="trust-bar__unit">
+								{trustPhrases.map((phrase) => (
+									<span class="trust-bar__item">
+										<span class="trust-bar__text">{phrase}</span>
+										<span class="trust-bar__dot">·</span>
+									</span>
+								))}
+							</div>
+						))}
+					</div>
 				</div>
-			))}
+			</div>
 		</div>
-	</div>
-
-	<div class="trust-ribbon__signal" aria-hidden="true">
-		<svg class="trust-ribbon__pulse" viewBox="0 0 56 18" role="presentation">
-			<path d="M1 10h12l4-7 6 14 7-13 5 6h20" />
-		</svg>
-		<span class="trust-ribbon__rule"></span>
-		<svg class="trust-ribbon__pulse trust-ribbon__pulse--end" viewBox="0 0 56 18" role="presentation">
-			<path d="M1 10h12l4-7 6 14 7-13 5 6h20" />
-		</svg>
 	</div>
 </section>
 
 <style>
-	.trust-ribbon {
+	/* Section parfaitement horizontale, positionnée à moitié à cheval sur le bas de la Hero section */
+	.trust-bar {
 		position: relative;
-		height: 92px;
-		margin-top: 1.25rem;
-		margin-bottom: clamp(3rem, 4vw, 4.75rem);
-		overflow: hidden;
-		border: 1px solid rgb(18 59 74 / 14%);
-		border-radius: 18px;
-		background: #fffdf9;
-		box-shadow: inset 0 1px 0 rgb(255 255 255 / 72%);
+		z-index: 10;
+		width: 100%;
+		overflow: clip;
+		background: transparent;
+		pointer-events: none;
+
+		/* Hauteur globale du ruban (légèrement augmentée pour plus d'ampleur) */
+		--trust-height: clamp(4.75rem, 6.2vw, 5.75rem);
+
+		/* Décalage pour placer le ruban exactement à moitié visible sur la Hero section (50% Hero / 50% Services) */
+		margin-top: calc(-0.5 * var(--trust-height));
+		margin-bottom: calc(-0.5 * var(--trust-height));
 	}
 
-	.trust-ribbon__ticker {
-		position: absolute;
-		inset: 0 0 24px;
-		display: flex;
-		align-items: center;
+	/* Double encadrement : bordure bleu pétrole + filet blanc cassé */
+	.trust-bar__frame {
+		position: relative;
+		width: 100%;
+		border-top: 1.5px solid var(--c-petrol);
+		border-bottom: 1.5px solid var(--c-petrol);
+		border-left: none;
+		border-right: none;
+		background-color: var(--c-ivory);
+		padding-block: 3.5px; /* Fin filet blanc cassé / ivoire */
 		overflow: hidden;
+		box-shadow: 0 4px 18px rgba(18, 59, 74, 0.06);
+
+		/* Mask CSS progressif Shinta-like : le ruban entier (fond pétrole, bordures, texte) se fond sans démarcation */
 		-webkit-mask-image: linear-gradient(
 			to right,
-			transparent 0,
-			#000 7%,
-			#000 93%,
+			transparent 0%,
+			rgba(0, 0, 0, 0.03) 1.5%,
+			rgba(0, 0, 0, 0.08) 3%,
+			rgba(0, 0, 0, 0.16) 4.5%,
+			rgba(0, 0, 0, 0.28) 6%,
+			rgba(0, 0, 0, 0.45) 8%,
+			rgba(0, 0, 0, 0.64) 10%,
+			rgba(0, 0, 0, 0.80) 12%,
+			rgba(0, 0, 0, 0.92) 14%,
+			#000 16%,
+			#000 84%,
+			rgba(0, 0, 0, 0.92) 86%,
+			rgba(0, 0, 0, 0.80) 88%,
+			rgba(0, 0, 0, 0.64) 90%,
+			rgba(0, 0, 0, 0.45) 92%,
+			rgba(0, 0, 0, 0.28) 94%,
+			rgba(0, 0, 0, 0.16) 95.5%,
+			rgba(0, 0, 0, 0.08) 97%,
+			rgba(0, 0, 0, 0.03) 98.5%,
 			transparent 100%
 		);
 		mask-image: linear-gradient(
 			to right,
-			transparent 0,
-			#000 7%,
-			#000 93%,
+			transparent 0%,
+			rgba(0, 0, 0, 0.03) 1.5%,
+			rgba(0, 0, 0, 0.08) 3%,
+			rgba(0, 0, 0, 0.16) 4.5%,
+			rgba(0, 0, 0, 0.28) 6%,
+			rgba(0, 0, 0, 0.45) 8%,
+			rgba(0, 0, 0, 0.64) 10%,
+			rgba(0, 0, 0, 0.80) 12%,
+			rgba(0, 0, 0, 0.92) 14%,
+			#000 16%,
+			#000 84%,
+			rgba(0, 0, 0, 0.92) 86%,
+			rgba(0, 0, 0, 0.80) 88%,
+			rgba(0, 0, 0, 0.64) 90%,
+			rgba(0, 0, 0, 0.45) 92%,
+			rgba(0, 0, 0, 0.28) 94%,
+			rgba(0, 0, 0, 0.16) 95.5%,
+			rgba(0, 0, 0, 0.08) 97%,
+			rgba(0, 0, 0, 0.03) 98.5%,
 			transparent 100%
 		);
+		-webkit-mask-repeat: no-repeat;
+		mask-repeat: no-repeat;
+		-webkit-mask-size: 100% 100%;
+		mask-size: 100% 100%;
 	}
 
-	.trust-ribbon__track {
+	/* Ruban intérieur bleu pétrole */
+	.trust-bar__inner {
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: clamp(4.25rem, 5.6vw, 5.15rem); /* ~68px à ~82px sur grand écran */
+		background: var(--c-petrol);
+		overflow: hidden;
+	}
+
+	/* Wrapper du texte défilant */
+	.trust-bar__ticker {
+		position: relative;
+		display: flex;
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		overflow: hidden;
+		user-select: none;
+	}
+
+	/* Animation fluide continue droite -> gauche sur GPU */
+	.trust-bar__track {
 		display: flex;
 		width: max-content;
 		align-items: center;
-		animation: trust-ribbon-scroll 30s linear infinite;
+		animation: trust-bar-marquee 40s linear infinite;
 		will-change: transform;
 	}
 
-	.trust-ribbon__group,
-	.trust-ribbon__message {
+	.trust-bar__group,
+	.trust-bar__unit {
 		display: flex;
 		flex: none;
 		align-items: center;
 	}
 
-	.trust-ribbon__message {
-		gap: clamp(1rem, 1.65vw, 1.75rem);
-		padding-right: clamp(1rem, 1.65vw, 1.75rem);
-	}
-
-	.trust-ribbon__item {
-		color: #123b4a;
-		font-family: var(--font-heading);
-		font-size: clamp(0.82rem, 0.9vw, 0.94rem);
-		font-weight: 650;
-		letter-spacing: 0.105em;
-		line-height: 1;
-		text-transform: uppercase;
+	.trust-bar__item {
+		display: inline-flex;
+		align-items: center;
 		white-space: nowrap;
 	}
 
-	.trust-ribbon__dot {
-		flex: none;
-		color: #d99a3e;
-		font-size: 0.72rem;
+	/* Typographie ambre rehaussée */
+	.trust-bar__text {
+		color: var(--c-amber);
+		font-family: var(--font-heading);
+		font-size: clamp(1rem, 1.2vw, 1.15rem);
+		font-weight: 650;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
 		line-height: 1;
 	}
 
-	.trust-ribbon__signal {
-		position: absolute;
-		right: clamp(1.25rem, 2.5vw, 2.5rem);
-		bottom: 12px;
-		left: clamp(1.25rem, 2.5vw, 2.5rem);
-		display: grid;
-		grid-template-columns: 56px minmax(0, 1fr) 56px;
-		align-items: center;
-		pointer-events: none;
+	.trust-bar__dot {
+		display: inline-block;
+		margin-inline: clamp(1.4rem, 2.1vw, 2.3rem);
+		color: var(--c-amber);
+		font-size: 1.2em;
+		line-height: 1;
+		opacity: 0.85;
 	}
 
-	.trust-ribbon__pulse {
-		display: block;
-		width: 56px;
-		height: 18px;
-		fill: none;
-		stroke: #d99a3e;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		stroke-width: 1.1;
-		vector-effect: non-scaling-stroke;
-	}
-
-	.trust-ribbon__pulse--end {
-		transform: scaleX(-1);
-	}
-
-	.trust-ribbon__rule {
-		height: 1px;
-		background: rgb(217 154 62 / 34%);
-	}
-
-	.trust-ribbon:hover .trust-ribbon__track {
-		animation-play-state: paused;
-	}
-
-	@keyframes trust-ribbon-scroll {
-		to {
+	@keyframes trust-bar-marquee {
+		0% {
+			transform: translate3d(0, 0, 0);
+		}
+		100% {
 			transform: translate3d(-50%, 0, 0);
 		}
 	}
 
 	@media (max-width: 63.999rem) {
-		.trust-ribbon {
-			height: 86px;
-			border-radius: 16px;
+		.trust-bar {
+			--trust-height: clamp(4.1rem, 5.6vw, 4.75rem);
 		}
 
-		.trust-ribbon__ticker {
-			bottom: 22px;
+		/* Fade progressif tablette (~12%) */
+		.trust-bar__frame {
+			-webkit-mask-image: linear-gradient(
+				to right,
+				transparent 0%,
+				rgba(0, 0, 0, 0.03) 1%,
+				rgba(0, 0, 0, 0.08) 2.2%,
+				rgba(0, 0, 0, 0.16) 3.5%,
+				rgba(0, 0, 0, 0.28) 4.8%,
+				rgba(0, 0, 0, 0.45) 6.2%,
+				rgba(0, 0, 0, 0.64) 7.6%,
+				rgba(0, 0, 0, 0.80) 9%,
+				rgba(0, 0, 0, 0.92) 10.5%,
+				#000 12%,
+				#000 88%,
+				rgba(0, 0, 0, 0.92) 89.5%,
+				rgba(0, 0, 0, 0.80) 91%,
+				rgba(0, 0, 0, 0.64) 92.4%,
+				rgba(0, 0, 0, 0.45) 93.8%,
+				rgba(0, 0, 0, 0.28) 95.2%,
+				rgba(0, 0, 0, 0.16) 96.5%,
+				rgba(0, 0, 0, 0.08) 97.8%,
+				rgba(0, 0, 0, 0.03) 99%,
+				transparent 100%
+			);
+			mask-image: linear-gradient(
+				to right,
+				transparent 0%,
+				rgba(0, 0, 0, 0.03) 1%,
+				rgba(0, 0, 0, 0.08) 2.2%,
+				rgba(0, 0, 0, 0.16) 3.5%,
+				rgba(0, 0, 0, 0.28) 4.8%,
+				rgba(0, 0, 0, 0.45) 6.2%,
+				rgba(0, 0, 0, 0.64) 7.6%,
+				rgba(0, 0, 0, 0.80) 9%,
+				rgba(0, 0, 0, 0.92) 10.5%,
+				#000 12%,
+				#000 88%,
+				rgba(0, 0, 0, 0.92) 89.5%,
+				rgba(0, 0, 0, 0.80) 91%,
+				rgba(0, 0, 0, 0.64) 92.4%,
+				rgba(0, 0, 0, 0.45) 93.8%,
+				rgba(0, 0, 0, 0.28) 95.2%,
+				rgba(0, 0, 0, 0.16) 96.5%,
+				rgba(0, 0, 0, 0.08) 97.8%,
+				rgba(0, 0, 0, 0.03) 99%,
+				transparent 100%
+			);
 		}
 
-		.trust-ribbon__track {
-			animation-duration: 28s;
+		.trust-bar__inner {
+			height: clamp(3.7rem, 5vw, 4.3rem);
+		}
+
+		.trust-bar__text {
+			font-size: 0.95rem;
+			letter-spacing: 0.08em;
+		}
+
+		.trust-bar__dot {
+			margin-inline: 1.35rem;
+		}
+
+		.trust-bar__track {
+			animation-duration: 35s;
 		}
 	}
 
 	@media (max-width: 47.999rem) {
-		.trust-ribbon {
-			height: 78px;
-			margin-top: 1rem;
-			margin-bottom: 3rem;
-			border-radius: 14px;
+		.trust-bar {
+			--trust-height: 3.9rem;
 		}
 
-		.trust-ribbon__ticker {
-			bottom: 19px;
-			-webkit-mask-image: linear-gradient(to right, transparent 0, #000 13%, #000 87%, transparent 100%);
-			mask-image: linear-gradient(to right, transparent 0, #000 13%, #000 87%, transparent 100%);
+		/* Fade progressif mobile (~9%) */
+		.trust-bar__frame {
+			border-top-width: 2px;
+			border-bottom-width: 2px;
+			padding-block: 2.5px;
+			-webkit-mask-image: linear-gradient(
+				to right,
+				transparent 0%,
+				rgba(0, 0, 0, 0.03) 0.8%,
+				rgba(0, 0, 0, 0.08) 1.6%,
+				rgba(0, 0, 0, 0.16) 2.6%,
+				rgba(0, 0, 0, 0.28) 3.6%,
+				rgba(0, 0, 0, 0.45) 4.7%,
+				rgba(0, 0, 0, 0.64) 5.8%,
+				rgba(0, 0, 0, 0.80) 6.8%,
+				rgba(0, 0, 0, 0.92) 7.9%,
+				#000 9%,
+				#000 91%,
+				rgba(0, 0, 0, 0.92) 92.1%,
+				rgba(0, 0, 0, 0.80) 93.2%,
+				rgba(0, 0, 0, 0.64) 94.2%,
+				rgba(0, 0, 0, 0.45) 95.3%,
+				rgba(0, 0, 0, 0.28) 96.4%,
+				rgba(0, 0, 0, 0.16) 97.4%,
+				rgba(0, 0, 0, 0.08) 98.4%,
+				rgba(0, 0, 0, 0.03) 99.2%,
+				transparent 100%
+			);
+			mask-image: linear-gradient(
+				to right,
+				transparent 0%,
+				rgba(0, 0, 0, 0.03) 0.8%,
+				rgba(0, 0, 0, 0.08) 1.6%,
+				rgba(0, 0, 0, 0.16) 2.6%,
+				rgba(0, 0, 0, 0.28) 3.6%,
+				rgba(0, 0, 0, 0.45) 4.7%,
+				rgba(0, 0, 0, 0.64) 5.8%,
+				rgba(0, 0, 0, 0.80) 6.8%,
+				rgba(0, 0, 0, 0.92) 7.9%,
+				#000 9%,
+				#000 91%,
+				rgba(0, 0, 0, 0.92) 92.1%,
+				rgba(0, 0, 0, 0.80) 93.2%,
+				rgba(0, 0, 0, 0.64) 94.2%,
+				rgba(0, 0, 0, 0.45) 95.3%,
+				rgba(0, 0, 0, 0.28) 96.4%,
+				rgba(0, 0, 0, 0.16) 97.4%,
+				rgba(0, 0, 0, 0.08) 98.4%,
+				rgba(0, 0, 0, 0.03) 99.2%,
+				transparent 100%
+			);
 		}
 
-		.trust-ribbon__track {
-			animation-duration: 25s;
+		.trust-bar__inner {
+			height: 3.45rem;
 		}
 
-		.trust-ribbon__message {
-			gap: 0.9rem;
-			padding-right: 0.9rem;
+		.trust-bar__text {
+			font-size: 0.86rem;
+			letter-spacing: 0.07em;
 		}
 
-		.trust-ribbon__item {
-			font-size: 0.75rem;
-			letter-spacing: 0.085em;
+		.trust-bar__dot {
+			margin-inline: 1.05rem;
 		}
 
-		.trust-ribbon__signal {
-			right: 0.9rem;
-			bottom: 9px;
-			left: 0.9rem;
-			grid-template-columns: 42px minmax(0, 1fr) 42px;
-		}
-
-		.trust-ribbon__pulse {
-			width: 42px;
-			height: 14px;
-			stroke-width: 1;
+		.trust-bar__track {
+			animation-duration: 30s;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.trust-ribbon__track {
-			animation: none;
-			transform: none;
+		.trust-bar__track {
+			animation: none !important;
+			transform: none !important;
 		}
 
-		.trust-ribbon__group[data-copy='true'] {
+		.trust-bar__group:nth-child(2) {
 			display: none;
 		}
 	}

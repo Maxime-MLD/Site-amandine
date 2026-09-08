@@ -73,7 +73,11 @@ const getInitialSlot = (index: number) => {
 
 							{/* 5. 5 étoiles ambre */}
 							<div class="review-card__stars" aria-label={`${review.rating} étoiles sur 5`}>
-								<span aria-hidden="true">{'★'.repeat(review.rating)}</span>
+								<span class="review-card__stars-row" aria-hidden="true">
+									{Array.from({ length: review.rating }).map(() => (
+										<span class="review-card__star">★</span>
+									))}
+								</span>
 							</div>
 						</article>
 					);
@@ -246,10 +250,8 @@ const getInitialSlot = (index: number) => {
 		overflow: clip;
 		background:
 			var(--grain-image) 0 0 / 128px repeat,
-			#f4efe7;
-		border-top: 1px solid rgba(18, 59, 74, 0.12);
-		border-bottom: 1px solid rgba(18, 59, 74, 0.12);
-		padding-block: clamp(5.5rem, 8vw, 8rem);
+			var(--bg-primary);
+		padding-block: var(--section-padding-y);
 	}
 
 	.reviews__header {
@@ -259,8 +261,8 @@ const getInitialSlot = (index: number) => {
 	}
 
 	.reviews__eyebrow {
-		margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
-		color: #d99a3e;
+		margin-bottom: var(--space-label-h2);
+		color: var(--c-amber);
 		font-family: var(--font-heading);
 		font-size: var(--text-small);
 		font-weight: 750;
@@ -269,11 +271,11 @@ const getInitialSlot = (index: number) => {
 	}
 
 	.reviews__title {
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
-		font-size: clamp(2.35rem, 4.4vw, 3.85rem);
+		font-size: clamp(2.75rem, 4.25vw, 4.5rem);
 		font-weight: 700;
-		letter-spacing: -0.035em;
+		letter-spacing: -0.045em;
 		line-height: 1.15;
 		text-wrap: balance;
 	}
@@ -285,33 +287,39 @@ const getInitialSlot = (index: number) => {
 	/* "mieux" in Playfair Display Italic without any underline or pseudo-element */
 	.reviews__title-accent {
 		display: inline-block;
-		color: #d99a3e;
+		color: var(--c-amber);
+		background: var(--gradient-amber);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 		font-family: var(--font-accent);
-		font-size: 1.05em;
+		font-size: 1em;
 		font-style: italic;
-		font-weight: 600;
-		letter-spacing: -0.02em;
+		font-weight: 700;
+		letter-spacing: -0.025em;
 		text-decoration: none;
 		border: none;
 		margin-left: 0.04em;
+		padding-right: 0.06em;
+		margin-right: -0.02em;
 	}
 
 	/* Carousel Container & Stage */
 	.reviews__carousel {
-		--slot-offset: clamp(21.5rem, 33vw, 26rem);
+		--slot-offset: clamp(23.5rem, 35vw, 28.5rem);
 		--card-w: clamp(20rem, 31vw, 24rem);
 		--card-h: clamp(23.5rem, 29vw, 25.5rem);
 		position: relative;
 		width: 100%;
 		max-width: 1280px;
 		margin-inline: auto;
-		margin-top: clamp(3.5rem, 5vw, 4.75rem);
+		margin-top: var(--space-header-content);
 	}
 
 	.reviews__stage {
 		position: relative;
 		width: 100%;
-		height: clamp(30.5rem, 37vw, 33rem);
+		height: clamp(32.5rem, 40vw, 35.5rem);
 		overflow: hidden;
 		margin-inline: auto;
 	}
@@ -332,8 +340,8 @@ const getInitialSlot = (index: number) => {
 		flex-direction: column;
 		align-items: center;
 		border-radius: 1.5rem;
-		border: 1px solid rgba(18, 59, 74, 0.09);
-		background: #fffdf9;
+		border: 1px solid rgba(18, 59, 74, 0.08);
+		background: var(--c-offwhite);
 		padding: clamp(1.85rem, 2.5vw, 2.35rem) clamp(1.4rem, 2.1vw, 2.15rem);
 		text-align: center;
 		user-select: none;
@@ -341,46 +349,50 @@ const getInitialSlot = (index: number) => {
 		transition:
 			transform 550ms cubic-bezier(0.22, 1, 0.36, 1),
 			opacity 550ms cubic-bezier(0.22, 1, 0.36, 1),
-			box-shadow 550ms cubic-bezier(0.22, 1, 0.36, 1);
+			box-shadow 550ms cubic-bezier(0.22, 1, 0.36, 1),
+			border-color 550ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	/* Center Active Card: scale 1, opacity 1, refined shadow, higher z-index */
+	/* Center Active Card: scale 1.1 (significantly larger), opacity 1, deep luxurious shadow */
 	.review-card[data-slot="0"] {
-		--quote-opacity: 0.55;
-		transform: translate3d(-50%, -50%, 0) scale(1);
-		opacity: 1;
+		--quote-opacity: 0.65;
+		transform: translate3d(-50%, calc(-50% + var(--card-enter-y, 0px)), 0) scale(1.1);
+		opacity: calc(1 * var(--card-enter-opacity, 1));
 		z-index: 10;
+		border-color: rgba(18, 59, 74, 0.13);
 		box-shadow:
-			0 2px 10px rgba(18, 59, 74, 0.035),
-			0 12px 32px rgba(18, 59, 74, 0.075);
+			0 4px 14px rgba(18, 59, 74, 0.04),
+			0 20px 48px -4px rgba(18, 59, 74, 0.1);
 		cursor: default;
 	}
 
-	/* Right Card: scale 0.92, opacity 0.82 */
+	/* Right Card: scale 0.85, opacity 0.70 (clearly receded and smaller) */
 	.review-card[data-slot="1"] {
-		transform: translate3d(calc(-50% + var(--slot-offset)), -50%, 0) scale(0.92);
-		opacity: 0.82;
+		transform: translate3d(calc(-50% + var(--slot-offset)), calc(-50% + var(--card-enter-y, 0px)), 0) scale(0.85);
+		opacity: calc(0.70 * var(--card-enter-opacity, 1));
 		z-index: 5;
+		border-color: rgba(18, 59, 74, 0.06);
 		box-shadow:
-			0 2px 8px rgba(18, 59, 74, 0.025),
-			0 8px 22px rgba(18, 59, 74, 0.045);
+			0 2px 8px rgba(18, 59, 74, 0.02),
+			0 8px 20px rgba(18, 59, 74, 0.035);
 		cursor: pointer;
 	}
 
-	/* Left Card: scale 0.92, opacity 0.82 */
+	/* Left Card: scale 0.85, opacity 0.70 (clearly receded and smaller) */
 	.review-card[data-slot="-1"] {
-		transform: translate3d(calc(-50% - var(--slot-offset)), -50%, 0) scale(0.92);
-		opacity: 0.82;
+		transform: translate3d(calc(-50% - var(--slot-offset)), calc(-50% + var(--card-enter-y, 0px)), 0) scale(0.85);
+		opacity: calc(0.70 * var(--card-enter-opacity, 1));
 		z-index: 5;
+		border-color: rgba(18, 59, 74, 0.06);
 		box-shadow:
-			0 2px 8px rgba(18, 59, 74, 0.025),
-			0 8px 22px rgba(18, 59, 74, 0.045);
+			0 2px 8px rgba(18, 59, 74, 0.02),
+			0 8px 20px rgba(18, 59, 74, 0.035);
 		cursor: pointer;
 	}
 
 	/* Hidden Right Card (Ready to slide in from right) */
 	.review-card[data-slot="2"] {
-		transform: translate3d(calc(-50% + 1.9 * var(--slot-offset)), -50%, 0) scale(0.84);
+		transform: translate3d(calc(-50% + 1.85 * var(--slot-offset)), -50%, 0) scale(0.72);
 		opacity: 0;
 		z-index: 1;
 		pointer-events: none;
@@ -388,7 +400,7 @@ const getInitialSlot = (index: number) => {
 
 	/* Hidden Left Card (Ready to slide in from left) */
 	.review-card[data-slot="-2"] {
-		transform: translate3d(calc(-50% - 1.9 * var(--slot-offset)), -50%, 0) scale(0.84);
+		transform: translate3d(calc(-50% - 1.85 * var(--slot-offset)), -50%, 0) scale(0.72);
 		opacity: 0;
 		z-index: 1;
 		pointer-events: none;
@@ -396,7 +408,7 @@ const getInitialSlot = (index: number) => {
 
 	/* Hidden Far Cards */
 	.review-card[data-slot="hidden"] {
-		transform: translate3d(-50%, -50%, 0) scale(0.78);
+		transform: translate3d(-50%, -50%, 0) scale(0.68);
 		opacity: 0;
 		z-index: 0;
 		pointer-events: none;
@@ -409,7 +421,7 @@ const getInitialSlot = (index: number) => {
 		border-radius: 50%;
 		overflow: hidden;
 		border: 2px solid rgba(18, 59, 74, 0.1);
-		background: #f4efe7;
+		background: var(--c-ivory);
 		box-shadow: 0 4px 12px rgba(18, 59, 74, 0.05);
 		flex-shrink: 0;
 	}
@@ -424,7 +436,7 @@ const getInitialSlot = (index: number) => {
 	/* 2. Prénom + initiale du nom */
 	.review-card__name {
 		margin-top: clamp(0.6rem, 0.85vw, 0.75rem);
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: 1.05rem;
 		font-weight: 600; /* Manrope SemiBold */
@@ -449,7 +461,7 @@ const getInitialSlot = (index: number) => {
 		display: block;
 		width: 100%;
 		text-align: left;
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-family: var(--font-accent);
 		font-size: var(--quote-size);
 		font-style: italic;
@@ -478,7 +490,7 @@ const getInitialSlot = (index: number) => {
 
 	.review-card__text {
 		margin: 0;
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: var(--text-size);
 		font-weight: 500;
@@ -496,10 +508,19 @@ const getInitialSlot = (index: number) => {
 		display: flex;
 		justify-content: center;
 		gap: 0.25rem;
-		color: #d99a3e;
+		color: var(--c-amber);
 		font-size: 1.15rem;
 		line-height: 1;
 		letter-spacing: 0.14em;
+	}
+
+	.review-card__stars-row {
+		display: inline-flex;
+		gap: 0.25rem;
+	}
+
+	.review-card__star {
+		display: inline-block;
 	}
 
 	/* Navigation Row */
@@ -515,7 +536,7 @@ const getInitialSlot = (index: number) => {
 		display: flex;
 		align-items: baseline;
 		gap: 0.4rem;
-		color: #123b4a;
+		color: var(--c-petrol);
 		font-family: var(--font-heading);
 		font-size: 0.95rem;
 		font-weight: 700;
@@ -528,7 +549,7 @@ const getInitialSlot = (index: number) => {
 	}
 
 	.reviews__counter-total {
-		color: #52798a;
+		color: var(--c-steel);
 	}
 
 	.reviews__arrow {
@@ -538,16 +559,16 @@ const getInitialSlot = (index: number) => {
 		height: 46px;
 		border-radius: 50%;
 		border: 1px solid rgba(18, 59, 74, 0.25);
-		background: #fffdf9;
-		color: #123b4a;
+		background: var(--c-offwhite);
+		color: var(--c-petrol);
 		cursor: pointer;
 		box-shadow: 0 4px 12px rgba(18, 59, 74, 0.04);
 		transition:
-			background-color 220ms ease,
-			border-color 220ms ease,
-			color 220ms ease,
-			transform 220ms ease,
-			box-shadow 220ms ease;
+			background-color 200ms ease,
+			border-color 200ms ease,
+			color 200ms ease,
+			transform 200ms ease,
+			box-shadow 200ms ease;
 	}
 
 	.reviews__arrow svg {
@@ -561,11 +582,18 @@ const getInitialSlot = (index: number) => {
 
 	@media (hover: hover) and (pointer: fine) {
 		.reviews__arrow:hover {
-			background: #123b4a;
-			border-color: #123b4a;
-			color: #fffdf9;
-			transform: translateY(-2px);
+			background: var(--c-petrol);
+			border-color: var(--c-petrol);
+			color: var(--c-offwhite);
 			box-shadow: 0 8px 18px rgba(18, 59, 74, 0.12);
+		}
+
+		.reviews__arrow--prev:hover {
+			transform: translateX(-2.5px);
+		}
+
+		.reviews__arrow--next:hover {
+			transform: translateX(2.5px);
 		}
 
 		.review-card[data-slot="1"]:hover,
@@ -575,20 +603,20 @@ const getInitialSlot = (index: number) => {
 	}
 
 	.reviews__arrow:focus-visible {
-		outline: 2px solid #123b4a;
+		outline: 2px solid var(--c-petrol);
 		outline-offset: 2px;
 	}
 
 	/* Responsive Tablet */
 	@media (max-width: 63.999rem) {
 		.reviews__carousel {
-			--slot-offset: clamp(18.5rem, 44vw, 23rem);
+			--slot-offset: clamp(20rem, 44vw, 24.5rem);
 			--card-w: clamp(18rem, 42vw, 21.5rem);
 			--card-h: clamp(24rem, 36vw, 26rem);
 		}
 
 		.reviews__stage {
-			height: clamp(30.5rem, 45vw, 33rem);
+			height: clamp(32rem, 47vw, 34.5rem);
 		}
 	}
 
@@ -599,7 +627,7 @@ const getInitialSlot = (index: number) => {
 		}
 
 		.reviews__header h2 {
-			font-size: clamp(2.2rem, 8.5vw, 2.9rem);
+			font-size: clamp(2.35rem, 11vw, 3.35rem);
 		}
 
 		.reviews__carousel {

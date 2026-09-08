@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import logoAmandine from '../assets/images/logo-amandine.png';
 import { siteConfig } from '../config/site';
 import { heroContent, navigation } from '../data/content';
 
@@ -9,13 +11,14 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 <header class="site-header" data-site-header>
 	<div class="site-container site-header__inner">
 		<a class="brand" href={homeAnchor('#accueil')} aria-label={`${siteConfig.fullName}, accueil`}>
-			<svg class="brand__mark" viewBox="0 0 48 44" aria-hidden="true">
-				<path d="M3 24h8l4.5-11 6.5 23 7-18 4.5 6H45" />
-			</svg>
-			<span class="brand__copy">
-				<span class="brand__name">{siteConfig.fullName}</span>
-				<span class="brand__profession">{siteConfig.profession}</span>
-			</span>
+			<Image
+				class="brand__logo"
+				src={logoAmandine}
+				alt={`${siteConfig.fullName} — ${siteConfig.profession}`}
+				height={68}
+				loading="eager"
+				fetchpriority="high"
+			/>
 		</a>
 
 		<nav class="desktop-navigation" aria-label="Navigation principale">
@@ -117,7 +120,7 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		top: 0;
 		z-index: 100;
 		height: 96px;
-		background: var(--c-ivory);
+		background: var(--bg-secondary);
 		color: var(--c-petrol);
 		transition: background-color 280ms ease, box-shadow 280ms ease, backdrop-filter 280ms ease;
 	}
@@ -142,59 +145,15 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		display: inline-flex;
 		width: max-content;
 		align-items: center;
-		gap: 0.8rem;
 		text-decoration: none;
 	}
 
-	.brand__mark {
-		width: 44px;
-		height: 44px;
-		flex: none;
-		fill: none;
-		stroke: var(--c-amber);
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		stroke-width: 2.6;
-		transition: width 280ms ease, height 280ms ease, stroke-width 280ms ease;
-	}
-
-	.brand__copy {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.brand__name {
-		font-family: var(--font-heading);
-		font-size: 1.08rem;
-		font-weight: 680;
-		line-height: 1.15;
-		letter-spacing: -0.035em;
-		transition: font-size 280ms ease;
-	}
-
-	.brand__profession {
-		margin-top: 0.22rem;
-		color: var(--c-steel);
-		font-size: 0.72rem;
-		font-weight: 500;
-		line-height: 1.2;
-		letter-spacing: 0.045em;
-		transition: font-size 280ms ease, margin-top 280ms ease;
-	}
-
-	.site-header[data-scrolled] .brand__mark {
-		width: 38px;
-		height: 38px;
-		stroke-width: 2.8;
-	}
-
-	.site-header[data-scrolled] .brand__name {
-		font-size: 1rem;
-	}
-
-	.site-header[data-scrolled] .brand__profession {
-		margin-top: 0.16rem;
-		font-size: 0.68rem;
+	.brand__logo {
+		height: clamp(58px, 4.4vw, 68px);
+		width: auto;
+		max-width: min(320px, 65vw);
+		object-fit: contain;
+		display: block;
 	}
 
 	.desktop-navigation {
@@ -220,7 +179,6 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		letter-spacing: -0.01em;
 		text-decoration: none;
 		white-space: nowrap;
-		transition: color 240ms ease;
 	}
 
 	.desktop-navigation a::after {
@@ -237,10 +195,6 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		transition: transform 240ms ease;
 	}
 
-	.desktop-navigation a:hover {
-		color: color-mix(in srgb, var(--c-petrol) 45%, var(--c-amber));
-	}
-
 	.desktop-navigation a:hover::after,
 	.desktop-navigation a[aria-current='page']::after {
 		transform: scaleX(1);
@@ -250,10 +204,10 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 	.navbar-cta,
 	.mobile-menu__cta {
 		display: inline-flex;
-		min-height: 50px;
+		min-height: 52px;
 		align-items: center;
 		justify-content: center;
-		border-radius: 15px;
+		border-radius: var(--radius-btn, 14px);
 		background: var(--c-amber);
 		color: var(--c-petrol);
 		padding: 0.82rem 1.35rem;
@@ -317,10 +271,8 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 			display: none;
 		}
 
-		.brand__mark,
-		.site-header[data-scrolled] .brand__mark {
-			width: 38px;
-			height: 38px;
+		.brand__logo {
+			height: 54px;
 		}
 
 		.menu-toggle {
@@ -366,7 +318,7 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 			display: block;
 			overflow-y: auto;
 			border-top: 1px solid rgb(18 59 74 / 9%);
-			background: var(--c-ivory);
+			background: var(--bg-secondary);
 		}
 
 		.mobile-menu nav {
@@ -423,25 +375,15 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		}
 	}
 
+	@media (max-width: 47.999rem) {
+		.brand__logo {
+			height: 48px;
+		}
+	}
+
 	@media (max-width: 27rem) {
-		.brand {
-			gap: 0.6rem;
-		}
-
-		.brand__mark,
-		.site-header[data-scrolled] .brand__mark {
-			width: 34px;
-			height: 34px;
-		}
-
-		.brand__name,
-		.site-header[data-scrolled] .brand__name {
-			font-size: 0.96rem;
-		}
-
-		.brand__profession,
-		.site-header[data-scrolled] .brand__profession {
-			font-size: 0.65rem;
+		.brand__logo {
+			height: 40px;
 		}
 	}
 
