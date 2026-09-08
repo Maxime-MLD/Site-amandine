@@ -870,39 +870,23 @@ function initMethodeAnimation() {
 			);
 		}
 
-		// Distance exacte de masquage sous l'écran sur mobile
-		const getTravelYMob = () => {
-			const deck = section.querySelector<HTMLElement>('[data-methode-deck]');
-			const tab = section.querySelector<HTMLElement>('.methode-card__tab');
-			const tabH = tab ? tab.offsetHeight : 36;
-			const padTop = 104;
-			const padBottom = 20;
-			const availH = window.innerHeight - padTop - padBottom;
-			const deckH = deck ? deck.offsetHeight : 360;
-			const deckTop = padTop + Math.max(0, (availH - deckH) / 2);
-			return Math.round(window.innerHeight - deckTop + tabH);
-		};
-
-		const travelY = getTravelYMob();
-
-		const tab1 = first.querySelector<HTMLElement>('.methode-card__tab');
-		const tab2 = second.querySelector<HTMLElement>('.methode-card__tab');
-		const tab3 = third.querySelector<HTMLElement>('.methode-card__tab');
-		const allTabs = [tab1, tab2, tab3].filter(Boolean) as HTMLElement[];
+		// Initial position via pure yPercent (GPU translate3d(0, %, 0))
+		// Pré-calculé une seule fois à l'initialisation : zéro mesure pendant le scroll
+		const deck = section.querySelector<HTMLElement>('[data-methode-deck]');
+		const deckH = deck ? deck.offsetHeight : 360;
+		const padTop = 104;
+		const deckTop = padTop + Math.max(0, (window.innerHeight - padTop - 20 - deckH) / 2);
+		const travelPercent = Math.ceil(((window.innerHeight - deckTop + 40) / deckH) * 100);
 
 		// Position initiale : Card 1 en place dans le deck, Card 2 et 3 juste sous le bas de l'écran
-		gsap.set(first, { y: 0, force3D: true });
-		gsap.set([second, third], { y: travelY, force3D: true });
-
-		if (tab1 && tab2 && tab3) {
-			gsap.set(tab1, { opacity: 1 });
-			gsap.set([tab2, tab3], { opacity: 0.68 });
-		}
+		gsap.set(first, { yPercent: 0, force3D: true });
+		gsap.set([second, third], { yPercent: travelPercent, force3D: true });
 
 		// Distance mobile calibrée : 400px par carte = 1 swipe naturel au pouce
 		const SCROLL_PER_CARD_MOB = 400;
 		const TOTAL_SCROLL_MOB = SCROLL_PER_CARD_MOB * 2;
 
+		// 1 SEUL SCROLLTRIGGER PINNED + 1 SEULE MASTER TIMELINE
 		const timelineMob = gsap.timeline({
 			defaults: { ease: 'none' },
 			scrollTrigger: {
@@ -912,26 +896,15 @@ function initMethodeAnimation() {
 				end: () => `+=${TOTAL_SCROLL_MOB}`,
 				pin: true,
 				pinSpacing: true,
-				scrub: 0.35, // Lissage de 0.35s pour absorber les micro-saccades tactiles de Safari iOS
-				anticipatePin: 0, // Zéro à-coup à l'entrée
-				invalidateOnRefresh: true,
-				onRefresh: () => {
-					const freshY = getTravelYMob();
-					gsap.set([second, third], { y: freshY, force3D: true });
-				},
+				scrub: 0.25, // Réactivité immédiate au doigt + lissage des micro-saccades tactiles
+				anticipatePin: 0, // Zéro pré-calcul saccadé à l'entrée
+				invalidateOnRefresh: false, // Immunisé contre les variations de hauteur de la barre Safari
 			},
 		});
 
-		timelineMob.to(second, { y: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, 0);
-		timelineMob.to(third, { y: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, SCROLL_PER_CARD_MOB);
-
-		if (tab1 && tab2 && tab3) {
-			timelineMob
-				.to(tab1, { opacity: 0.68, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, 0)
-				.to(tab2, { opacity: 1, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, 0)
-				.to(tab2, { opacity: 0.68, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, SCROLL_PER_CARD_MOB)
-				.to(tab3, { opacity: 1, duration: SCROLL_PER_CARD_MOB, ease: 'none' }, SCROLL_PER_CARD_MOB);
-		}
+		// ANIMATION PURE TRANSFORM UNIQUEMENT (yPercent) : zéro opacity, zéro scale, zéro recalcul
+		timelineMob.to(second, { yPercent: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, 0);
+		timelineMob.to(third, { yPercent: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, SCROLL_PER_CARD_MOB);
 
 		return () => {
 			ScrollTrigger.getById('methode-eyebrow-reveal-mob')?.kill();
@@ -940,7 +913,8 @@ function initMethodeAnimation() {
 			timelineMob.scrollTrigger?.kill();
 			timelineMob.kill();
 			gsap.set(cards, { clearProps: 'all' });
-			if (allTabs.length > 0) gsap.set(allTabs, { clearProps: 'all' });
+			const tabs = section.querySelectorAll<HTMLElement>('.methode-card__tab');
+			if (tabs.length > 0) gsap.set(tabs, { clearProps: 'all' });
 			if (eyebrow) gsap.set(eyebrow, { clearProps: 'all' });
 			if (title) gsap.set(title, { clearProps: 'all' });
 			if (intro) gsap.set(intro, { clearProps: 'all' });
