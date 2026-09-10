@@ -440,13 +440,13 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 
 	@media (max-width: 47.999rem) {
 		.brand__logo {
-			height: 48px;
+			height: clamp(56px, 15vw, 64px);
 		}
 	}
 
 	@media (max-width: 27rem) {
 		.brand__logo {
-			height: 40px;
+			height: clamp(48px, 13.5vw, 54px);
 		}
 	}
 
