@@ -130,9 +130,12 @@ const footerNavigation = [
 		const length = Math.ceil(path.getTotalLength()) || 2200;
 		path.style.strokeDasharray = `${length}`;
 
-		// Instant full line if user prefers reduced motion
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		// Instant full line without animation on mobile or reduced motion
+		const isMobile = window.matchMedia('(max-width: 47.999rem)').matches;
+		if (isMobile || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 			path.style.strokeDashoffset = '0';
+			path.style.strokeDasharray = 'none';
+			path.style.transition = 'none';
 			return;
 		}
 
@@ -454,6 +457,9 @@ const footerNavigation = [
 		.footer-monumental-ecg__path {
 			stroke-width: 34;
 			opacity: 0.09;
+			stroke-dashoffset: 0 !important;
+			stroke-dasharray: none !important;
+			transition: none !important;
 		}
 
 		.site-footer__bottom {

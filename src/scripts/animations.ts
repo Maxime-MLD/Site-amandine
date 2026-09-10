@@ -873,7 +873,7 @@ function initMethodeAnimation() {
 		// Initial position via pure yPercent (GPU translate3d(0, %, 0))
 		// Pré-calculé une seule fois à l'initialisation : zéro mesure pendant le scroll
 		const deck = section.querySelector<HTMLElement>('[data-methode-deck]');
-		const deckH = deck ? deck.offsetHeight : 360;
+		const deckH = deck ? deck.offsetHeight : 480;
 		const padTop = 104;
 		const deckTop = padTop + Math.max(0, (window.innerHeight - padTop - 20 - deckH) / 2);
 		const travelPercent = Math.ceil(((window.innerHeight - deckTop + 40) / deckH) * 100);
@@ -1601,22 +1601,26 @@ function initFooterAnimation() {
 		},
 	});
 
-	// 1. Gros cardiogramme monumental en arrière-plan (se dessine de gauche à droite)
+	// 1. Gros cardiogramme monumental en arrière-plan (se dessine sur desktop uniquement)
 	if (footerEcgPath) {
-		const totalLength = footerEcgPath.getTotalLength();
-		gsap.set(footerEcgPath, { strokeDasharray: totalLength, strokeDashoffset: totalLength });
-		tl.to(
-			footerEcgPath,
-			{
-				strokeDashoffset: 0,
-				duration: 2.1,
-				ease: 'power2.inOut',
-			},
-			0
-		);
+		if (!isMobile) {
+			const totalLength = footerEcgPath.getTotalLength();
+			gsap.set(footerEcgPath, { strokeDasharray: totalLength, strokeDashoffset: totalLength });
+			tl.to(
+				footerEcgPath,
+				{
+					strokeDashoffset: 0,
+					duration: 2.1,
+					ease: 'power2.inOut',
+				},
+				0
+			);
+		} else {
+			gsap.set(footerEcgPath, { strokeDashoffset: 0, clearProps: 'strokeDasharray,strokeDashoffset' });
+		}
 	}
 
-	// 2. Colonnes de contenu : démarre 150ms après l'amorce du tracé
+	// 2. Colonnes de contenu : démarre immédiatement sur mobile, 150ms après l'amorce sur desktop
 	if (footerCols.length > 0) {
 		tl.fromTo(
 			footerCols,
@@ -1628,7 +1632,7 @@ function initFooterAnimation() {
 				stagger: 0.08,
 				clearProps: 'transform,opacity',
 			},
-			0.15
+			isMobile ? 0 : 0.15
 		);
 	}
 

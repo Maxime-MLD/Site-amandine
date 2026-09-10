@@ -74,8 +74,54 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 	const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
 	const controller = new AbortController();
 
+	let lastScrollY = window.scrollY;
+	let isHidden = false;
+	const SCROLL_THRESHOLD = 64;
+	const DELTA_THRESHOLD = 8;
+
 	const updateHeader = () => {
-		siteHeader?.toggleAttribute('data-scrolled', window.scrollY > 24);
+		const currentScrollY = window.scrollY;
+
+		siteHeader?.toggleAttribute('data-scrolled', currentScrollY > 24);
+
+		const isMobile = window.innerWidth < 1024;
+		const isMenuOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
+
+		if (!isMobile || isMenuOpen) {
+			if (isHidden) {
+				siteHeader?.removeAttribute('data-hidden');
+				isHidden = false;
+			}
+			lastScrollY = currentScrollY;
+			return;
+		}
+
+		if (currentScrollY <= SCROLL_THRESHOLD) {
+			if (isHidden) {
+				siteHeader?.removeAttribute('data-hidden');
+				isHidden = false;
+			}
+			lastScrollY = currentScrollY;
+			return;
+		}
+
+		const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+		if (currentScrollY < 0 || currentScrollY > maxScroll) {
+			return;
+		}
+
+		const diff = currentScrollY - lastScrollY;
+
+		if (Math.abs(diff) >= DELTA_THRESHOLD) {
+			if (diff > 0 && !isHidden) {
+				siteHeader?.setAttribute('data-hidden', '');
+				isHidden = true;
+			} else if (diff < 0 && isHidden) {
+				siteHeader?.removeAttribute('data-hidden');
+				isHidden = false;
+			}
+			lastScrollY = currentScrollY;
+		}
 	};
 
 	updateHeader();
@@ -83,6 +129,10 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 
 	if (menuToggle && mobileMenu) {
 		const setMenuState = (isOpen: boolean) => {
+			if (isOpen && isHidden) {
+				siteHeader?.removeAttribute('data-hidden');
+				isHidden = false;
+			}
 			menuToggle.setAttribute('aria-expanded', String(isOpen));
 			menuToggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
 			mobileMenu.hidden = !isOpen;
@@ -256,6 +306,19 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 	}
 
 	@media (max-width: 63.999rem) {
+		.site-header {
+			transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+				background-color 280ms ease,
+				box-shadow 280ms ease,
+				backdrop-filter 280ms ease;
+			will-change: transform;
+		}
+
+		.site-header[data-hidden] {
+			transform: translateY(-100%);
+			pointer-events: none;
+		}
+
 		.site-header,
 		.site-header__inner {
 			height: 84px;
