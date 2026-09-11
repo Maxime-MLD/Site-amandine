@@ -5,7 +5,9 @@ import { siteConfig } from '../config/site';
 import { heroContent, navigation } from '../data/content';
 
 const isHomePage = Astro.url.pathname === '/';
-const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
+const homeAnchor = (hash: string) => (isHomePage ? hash : `/${hash}`);
+const hasPhone = Boolean(siteConfig.phone && !siteConfig.phone.startsWith('TODO_'));
+const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : '#';
 ---
 
 <header class="site-header" data-site-header>
@@ -33,9 +35,22 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 			</ul>
 		</nav>
 
-		<a class="navbar-cta" href={homeAnchor(heroContent.actions.primary.href)}>
-			{heroContent.actions.primary.label}
-		</a>
+		<div class="navbar-actions">
+			{hasPhone && (
+				<a class="navbar-phone" href={phoneHref} aria-label={`Appeler le ${siteConfig.phone}`}>
+					<span class="navbar-phone__icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+						</svg>
+					</span>
+					<span class="navbar-phone__number">{siteConfig.phone}</span>
+				</a>
+			)}
+
+			<a class="navbar-cta" href={homeAnchor(heroContent.actions.primary.href)}>
+				{heroContent.actions.primary.label}
+			</a>
+		</div>
 
 		<button
 			class="menu-toggle"
@@ -57,9 +72,21 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 					<li><a href={homeAnchor(item.href)}>{item.label}</a></li>
 				))}
 			</ul>
-			<a class="mobile-menu__cta" href={homeAnchor(heroContent.actions.primary.href)}>
-				{heroContent.actions.primary.label}
-			</a>
+			<div class="mobile-menu__actions">
+				{hasPhone && (
+					<a class="mobile-menu__phone" href={phoneHref} aria-label={`Appeler le ${siteConfig.phone}`}>
+						<span class="mobile-menu__phone-icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+							</svg>
+						</span>
+						<span>{siteConfig.phone}</span>
+					</a>
+				)}
+				<a class="mobile-menu__cta" href={homeAnchor(heroContent.actions.primary.href)}>
+					{heroContent.actions.primary.label}
+				</a>
+			</div>
 			<p class="mobile-menu__meta">
 				<span>Montagny (42)</span>
 				<span>Soins à domicile &amp; au cabinet</span>
@@ -251,6 +278,68 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		transform-origin: left;
 	}
 
+	.navbar-actions {
+		justify-self: end;
+		display: flex;
+		align-items: center;
+		gap: clamp(0.85rem, 1.4vw, 1.5rem);
+	}
+
+	.navbar-phone {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		padding: 0.5rem 0.75rem;
+		border-radius: var(--radius-btn, 14px);
+		color: var(--c-petrol);
+		font-family: var(--font-heading);
+		font-size: 0.92rem;
+		font-weight: 650;
+		letter-spacing: -0.01em;
+		text-decoration: none;
+		white-space: nowrap;
+		transition: color 240ms ease, background-color 240ms ease, transform 240ms ease;
+	}
+
+	.navbar-phone:hover {
+		color: var(--c-amber);
+		background: rgb(217 154 62 / 9%);
+		transform: translateY(-2px);
+	}
+
+	.navbar-phone:focus-visible {
+		outline: 2px solid var(--c-amber);
+		outline-offset: 2px;
+	}
+
+	.navbar-phone__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: rgb(217 154 62 / 14%);
+		color: var(--c-amber);
+		flex-shrink: 0;
+		transition: background-color 240ms ease, color 240ms ease, transform 240ms ease;
+	}
+
+	.navbar-phone__icon svg {
+		width: 15px;
+		height: 15px;
+	}
+
+	.navbar-phone:hover .navbar-phone__icon {
+		background: var(--c-amber);
+		color: var(--c-petrol);
+		transform: rotate(-12deg) scale(1.08);
+	}
+
+	.navbar-phone__number {
+		display: inline-block;
+	}
+
 	.navbar-cta,
 	.mobile-menu__cta {
 		display: inline-flex;
@@ -267,10 +356,6 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		text-decoration: none;
 		transition: background-color 240ms ease, transform 240ms ease;
 		white-space: nowrap;
-	}
-
-	.navbar-cta {
-		justify-self: end;
 	}
 
 	.navbar-cta:hover,
@@ -296,12 +381,42 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 
 	@media (max-width: 75rem) {
 		.site-header__inner {
-			grid-template-columns: minmax(210px, 1fr) auto minmax(210px, 1fr);
-			gap: 1.6rem;
+			grid-template-columns: auto 1fr auto;
+			gap: 1.25rem;
 		}
 
 		.desktop-navigation ul {
-			gap: 1.35rem;
+			gap: 1.15rem;
+		}
+
+		.desktop-navigation a {
+			font-size: 0.86rem;
+		}
+
+		.navbar-actions {
+			gap: 0.65rem;
+		}
+
+		.navbar-phone {
+			padding: 0.45rem 0.6rem;
+			font-size: 0.86rem;
+			gap: 0.45rem;
+		}
+
+		.navbar-phone__icon {
+			width: 28px;
+			height: 28px;
+		}
+
+		.navbar-phone__icon svg {
+			width: 13px;
+			height: 13px;
+		}
+
+		.navbar-cta {
+			padding: 0.72rem 1.1rem;
+			min-height: 48px;
+			font-size: 0.88rem;
 		}
 	}
 
@@ -330,7 +445,7 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		}
 
 		.desktop-navigation,
-		.navbar-cta {
+		.navbar-actions {
 			display: none;
 		}
 
@@ -422,10 +537,57 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 			text-decoration: none;
 		}
 
+		.mobile-menu__actions {
+			display: flex;
+			flex-direction: column;
+			gap: 0.85rem;
+			margin-top: auto;
+			width: 100%;
+		}
+
+		.mobile-menu__phone {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.75rem;
+			min-height: 52px;
+			padding: 0.8rem 1.25rem;
+			border: 1px solid rgb(18 59 74 / 16%);
+			border-radius: var(--radius-btn, 14px);
+			background: var(--c-offwhite);
+			color: var(--c-petrol);
+			font-family: var(--font-heading);
+			font-size: 1.05rem;
+			font-weight: 680;
+			text-decoration: none;
+			transition: background-color 240ms ease, border-color 240ms ease, transform 240ms ease;
+		}
+
+		.mobile-menu__phone:active {
+			background: rgb(18 59 74 / 6%);
+			transform: scale(0.99);
+		}
+
+		.mobile-menu__phone-icon {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			background: rgb(217 154 62 / 16%);
+			color: var(--c-amber);
+		}
+
+		.mobile-menu__phone-icon svg {
+			width: 15px;
+			height: 15px;
+		}
+
 		.mobile-menu__cta {
 			width: 100%;
 			min-height: 56px;
-			margin-top: auto;
+			margin-top: 0;
 		}
 
 		.mobile-menu__meta {
@@ -468,7 +630,10 @@ const homeAnchor = (href: string) => isHomePage ? href : `/${href}`;
 		.brand__profession,
 		.desktop-navigation a,
 		.desktop-navigation a::after,
+		.navbar-phone,
+		.navbar-phone__icon,
 		.navbar-cta,
+		.mobile-menu__phone,
 		.mobile-menu__cta,
 		.menu-toggle span {
 			transition: none;

@@ -315,6 +315,11 @@ const emailHref = hasEmail ? `mailto:${siteConfig.email}` : '#';
 		border: 1px solid rgba(18, 59, 74, 0.09);
 		box-shadow: 0 10px 30px rgba(18, 59, 74, 0.06);
 		background-color: var(--c-ivory);
+		transform: translateZ(0);
+		-webkit-transform: translateZ(0);
+		-webkit-mask-image: -webkit-radial-gradient(white, black);
+		mask-image: radial-gradient(white, black);
+		isolation: isolate;
 	}
 
 	.contact__visual-reveal {
@@ -324,11 +329,21 @@ const emailHref = hasEmail ? `mailto:${siteConfig.email}` : '#';
 	}
 
 	.contact__visual-img {
-		width: 100%;
-		height: 100%;
+		width: calc(100% + 2px);
+		height: calc(100% + 2px);
+		margin: -1px;
 		object-fit: cover;
 		object-position: center;
 		display: block;
+		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
+		transform: translateZ(0);
+		will-change: transform;
+		transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.contact__visual:hover .contact__visual-img {
+		transform: scale(1.025) translateZ(0);
 	}
 
 	/* Practical Details / Coordinates (2-column compact grid on desktop) */

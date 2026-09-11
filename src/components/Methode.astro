@@ -1,8 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import contactImage from '../assets/images/methode/contact.webp';
-import organisationImage from '../assets/images/methode/organisation-rendez-vous.webp';
-import soinImage from '../assets/images/methode/votre-soin.webp';
+import organisationImage from '../assets/images/methode/rendez-vous.webp';
+import soinImage from '../assets/images/methode/soin.webp';
 import { methodeContent, methodeSteps } from '../data/content';
 
 const themes = ['ivory', 'offwhite', 'sand'] as const;
@@ -51,9 +51,9 @@ const cards = methodeSteps.map((step, index) => ({
 						<div class="methode-card__media" aria-hidden="true">
 							<Image
 								src={card.image}
-								width={1200}
-								height={800}
-								sizes="(max-width: 767px) calc(100vw - 64px), (max-width: 1023px) 42vw, 540px"
+								width={card.image.width}
+								height={card.image.height}
+								sizes="(max-width: 767px) calc(100vw - 64px), (max-width: 1023px) 44vw, 560px"
 								alt=""
 								loading="eager"
 								decoding="async"
@@ -273,12 +273,16 @@ const cards = methodeSteps.map((step, index) => ({
 	}
 
 	.methode-card__media {
-		height: clamp(18rem, 29vw, 24.5rem);
+		position: relative;
+		width: 100%;
+		max-width: 100%;
+		aspect-ratio: 1374 / 1145;
 		overflow: hidden;
 		border-radius: clamp(0.85rem, 1.1vw, 1.05rem);
-		border: 1px solid rgba(18, 59, 74, 0.07);
-		background: rgb(255 255 255 / 40%);
+		border: 1px solid rgba(18, 59, 74, 0.08);
+		background: transparent;
 		box-shadow: 0 12px 32px rgba(18, 59, 74, 0.08);
+		justify-self: end;
 	}
 
 	.methode-card__media :global(img) {
@@ -366,7 +370,7 @@ const cards = methodeSteps.map((step, index) => ({
 		}
 
 		.methode-card__media {
-			height: clamp(13rem, 23vw, 17rem);
+			justify-self: center;
 		}
 
 		.methode-card__desc {
@@ -439,10 +443,9 @@ const cards = methodeSteps.map((step, index) => ({
 		.methode-card__media {
 			width: 100%;
 			height: auto;
-			aspect-ratio: 3 / 2;
-			min-height: 13.5rem;
-			max-height: clamp(14.5rem, 46vw, 18.5rem);
+			aspect-ratio: 1374 / 1145;
 			border-radius: 1.05rem;
+			margin-inline: auto;
 		}
 
 		.methode-card__title {

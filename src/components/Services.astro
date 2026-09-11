@@ -60,7 +60,7 @@ import { services, servicesContent } from '../data/content';
 	<div class="site-container">
 		<div class="services__controls">
 			<span class="services__position" aria-hidden="true">
-				<span data-carousel-current>03</span>
+				<span data-carousel-current>01</span>
 				<span class="services__position-separator">/</span>
 				<span>06</span>
 			</span>
@@ -87,9 +87,24 @@ import { services, servicesContent } from '../data/content';
 						<path d="m7.25 4.5 5.5 5.5-5.5 5.5M12.5 10h-8" />
 					</svg>
 				</button>
-				<span class="sr-only" aria-live="polite" data-carousel-status>Soin 3 sur 6</span>
+				<span class="sr-only" aria-live="polite" data-carousel-status>Soin 1 sur 6</span>
 			</div>
 		</div>
+		<script is:inline>
+			(() => {
+				const ua = navigator.userAgent;
+				const isIPad = /iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+				const isCoarse = window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0;
+				const isDesktop = window.innerWidth >= 1200 && !isIPad && !(isCoarse && window.innerWidth < 1280);
+
+				if (isDesktop) {
+					const cur = document.querySelector('[data-carousel-current]');
+					if (cur) cur.textContent = '03';
+					const stat = document.querySelector('[data-carousel-status]');
+					if (stat) stat.textContent = 'Soin 3 sur 6';
+				}
+			})();
+		</script>
 	</div>
 </section>
 
@@ -132,28 +147,34 @@ import { services, servicesContent } from '../data/content';
 			return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
 		};
 
-		const getVisibleCount = () => {
+		const checkIsDesktop = () => {
+			const ua = navigator.userAgent;
+			const isIPad = /iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+			const isCoarse = window.matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0;
+			return window.innerWidth >= 1200 && !isIPad && !(isCoarse && window.innerWidth < 1280);
+		};
+
+		const getCounterValue = () => {
 			const maxScroll = getMaxScroll();
 			const currentScroll = viewport.scrollLeft;
+			const isDesktop = checkIsDesktop();
+			const base = isDesktop ? 3 : 1;
+
+			if (currentScroll <= 4) {
+				return base;
+			}
 
 			if (currentScroll >= maxScroll - 4) {
 				return cards.length;
 			}
 
-			const viewportRight = viewport.getBoundingClientRect().right;
-			let count = 0;
-			for (const card of cards) {
-				if (card.getBoundingClientRect().left < viewportRight - 35) {
-					count += 1;
-				}
-			}
+			const step = getStep();
+			if (step <= 0) return base;
 
-			const isDesktop = window.matchMedia('(min-width: 64rem)').matches;
-			if (isDesktop && currentScroll <= 4) {
-				return Math.max(3, count);
-			}
+			const scrolledSteps = Math.round(currentScroll / step);
+			const count = base + scrolledSteps;
 
-			return Math.min(cards.length, Math.max(1, count));
+			return Math.min(cards.length, Math.max(base, count));
 		};
 
 		const updateNavigation = () => {
@@ -165,11 +186,11 @@ import { services, servicesContent } from '../data/content';
 			next.disabled = currentScroll >= maxScroll - 4;
 
 			// Update counter and accessible aria-live status
-			const visibleCount = getVisibleCount();
-			current.textContent = String(visibleCount).padStart(2, '0');
-			const activeIndex = Math.min(cards.length - 1, Math.max(0, visibleCount - 1));
+			const count = getCounterValue();
+			current.textContent = String(count).padStart(2, '0');
+			const activeIndex = Math.min(cards.length - 1, Math.max(0, count - 1));
 			const cardTitle = cards[activeIndex]?.querySelector('h3')?.textContent ?? '';
-			status.textContent = `Soin ${visibleCount} sur ${cards.length} : ${cardTitle}`;
+			status.textContent = `Soin ${count} sur ${cards.length} : ${cardTitle}`;
 		};
 
 		const onScroll = () => {
@@ -236,7 +257,11 @@ import { services, servicesContent } from '../data/content';
 
 			if (activeTween && activeTween.isActive() && pendingTarget !== null) {
 				// Consecutive clicks: advance fluidly from the pending target
-				target = pendingTarget + direction * step;
+				if (direction < 0 && pendingTarget >= maxScroll - 4) {
+					target = Math.floor((maxScroll - 4) / step) * step;
+				} else {
+					target = pendingTarget + direction * step;
+				}
 			} else {
 				// Free-scroll alignment: advance from current position towards next/previous card
 				const currentScroll = viewport.scrollLeft;
@@ -402,6 +427,10 @@ import { services, servicesContent } from '../data/content';
 		new ResizeObserver(() => {
 			updateNavigation();
 		}).observe(viewport);
+
+		window.addEventListener('resize', () => {
+			updateNavigation();
+		}, { passive: true });
 
 		updateNavigation();
 	});

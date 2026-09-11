@@ -23,7 +23,7 @@ function initHeroOpeningAnimation() {
 
 	const brand = header?.querySelector<HTMLElement>('.brand');
 	const nav = header?.querySelector<HTMLElement>('.desktop-navigation');
-	const cta = header?.querySelector<HTMLElement>('.navbar-cta');
+	const cta = header?.querySelector<HTMLElement>('.navbar-actions') || header?.querySelector<HTMLElement>('.navbar-cta');
 	const menuToggle = header?.querySelector<HTMLElement>('.menu-toggle');
 
 	const eyebrow = hero.querySelector<HTMLElement>('.hero__eyebrow');
@@ -751,9 +751,10 @@ function initMethodeAnimation() {
 			}
 		);
 
-		// Pinned timeline desktop
-		const SCROLL_PER_CARD = 1200;
-		const TOTAL_SCROLL = SCROLL_PER_CARD * 2;
+		// Pinned timeline desktop : 2 montées de cartes + 1 palier de repos final
+		const SCROLL_PER_CARD = 1100;
+		const HOLD_SCROLL = 700;
+		const TOTAL_SCROLL = SCROLL_PER_CARD * 2 + HOLD_SCROLL;
 
 		const timeline = gsap.timeline({
 			defaults: { ease: 'none' },
@@ -784,6 +785,10 @@ function initMethodeAnimation() {
 				.to(tab2, { opacity: 0.68, duration: SCROLL_PER_CARD, ease: 'none' }, SCROLL_PER_CARD)
 				.to(tab3, { opacity: 1, duration: SCROLL_PER_CARD, ease: 'none' }, SCROLL_PER_CARD);
 		}
+
+		// Palier de maintien final : Card 3 reste parfaitement collée et verrouillée en haut sur Card 1 & 2
+		// sans que le paquet de cartes ne commence à remonter pendant ce dernier scroll.
+		timeline.to({}, { duration: HOLD_SCROLL }, SCROLL_PER_CARD * 2);
 
 		return () => {
 			ScrollTrigger.getById('methode-eyebrow-reveal')?.kill();
@@ -882,9 +887,10 @@ function initMethodeAnimation() {
 		gsap.set(first, { yPercent: 0, force3D: true });
 		gsap.set([second, third], { yPercent: travelPercent, force3D: true });
 
-		// Distance mobile calibrée : 400px par carte = 1 swipe naturel au pouce
+		// Distance mobile calibrée : 400px par carte + palier de repos final
 		const SCROLL_PER_CARD_MOB = 400;
-		const TOTAL_SCROLL_MOB = SCROLL_PER_CARD_MOB * 2;
+		const HOLD_SCROLL_MOB = 350;
+		const TOTAL_SCROLL_MOB = SCROLL_PER_CARD_MOB * 2 + HOLD_SCROLL_MOB;
 
 		// 1 SEUL SCROLLTRIGGER PINNED + 1 SEULE MASTER TIMELINE
 		const timelineMob = gsap.timeline({
@@ -905,6 +911,8 @@ function initMethodeAnimation() {
 		// ANIMATION PURE TRANSFORM UNIQUEMENT (yPercent) : zéro opacity, zéro scale, zéro recalcul
 		timelineMob.to(second, { yPercent: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, 0);
 		timelineMob.to(third, { yPercent: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, SCROLL_PER_CARD_MOB);
+		// Palier de maintien final : Card 3 se colle tout en haut sans que le deck ne commence à remonter
+		timelineMob.to({}, { duration: HOLD_SCROLL_MOB }, SCROLL_PER_CARD_MOB * 2);
 
 		return () => {
 			ScrollTrigger.getById('methode-eyebrow-reveal-mob')?.kill();
@@ -941,33 +949,24 @@ function initMethodeAnimation() {
 initMethodeAnimation();
 
 /**
- * 6. REVIEWS SECTION — Calm, Human & Reassuring Entrance
+ * 6. PRISE EN CHARGE SECTION — Calm, Open & Editorial Entrance
  */
-function initAvisAnimation() {
-	const section = document.querySelector<HTMLElement>('#avis-patients');
+function initPriseEnChargeAnimation() {
+	const section = document.querySelector<HTMLElement>('#prise-en-charge');
 	if (!section) return;
 
-	const header = section.querySelector<HTMLElement>('.reviews__header');
-	const eyebrow = section.querySelector<HTMLElement>('.reviews__eyebrow');
-	const title = section.querySelector<HTMLElement>('.reviews__title');
-	const navigation = section.querySelector<HTMLElement>('.reviews__navigation');
+	const eyebrow = section.querySelector<HTMLElement>('.prise-en-charge__eyebrow');
+	const title = section.querySelector<HTMLElement>('.prise-en-charge__title');
+	const intro = section.querySelector<HTMLElement>('.prise-en-charge__intro');
+	const pillars = gsap.utils.toArray<HTMLElement>('.prise-en-charge__pillar', section);
 
-	// Initial visible cards: slot 0 (center), slot 1 (right), slot -1 (left)
-	const centerCard = section.querySelector<HTMLElement>('.review-card[data-slot="0"]');
-	const sideCards = gsap.utils.toArray<HTMLElement>('.review-card[data-slot="1"], .review-card[data-slot="-1"]', section);
-	const visibleCards = [centerCard, ...sideCards].filter(Boolean) as HTMLElement[];
-	const visibleStars = gsap.utils.toArray<HTMLElement>(
-		'.review-card[data-slot="0"] .review-card__star, .review-card[data-slot="1"] .review-card__star, .review-card[data-slot="-1"] .review-card__star',
-		section
-	);
-
-	ScrollTrigger.getById('avis-reveal')?.kill();
+	ScrollTrigger.getById('prise-en-charge-reveal')?.kill();
 
 	const isMobile = window.matchMedia('(max-width: 47.999rem)').matches;
 
 	const tl = gsap.timeline({
 		scrollTrigger: {
-			id: 'avis-reveal',
+			id: 'prise-en-charge-reveal',
 			trigger: section,
 			start: 'top 82%',
 			once: true,
@@ -975,17 +974,9 @@ function initAvisAnimation() {
 		defaults: {
 			ease: 'power3.out',
 		},
-		onStart: () => {
-			// Disable CSS transitions during entry animation to avoid fighting GSAP
-			gsap.set(visibleCards, { transition: 'none' });
-		},
-		onComplete: () => {
-			// Restore native CSS transitions and clear inline custom properties
-			gsap.set(visibleCards, { clearProps: 'transition,--card-enter-y,--card-enter-opacity' });
-		},
 	});
 
-	// 1. Label : opacity: 0 -> 1, y: 10px -> 0, duration: 0.6s
+	// 1. Label : opacity 0 -> 1, y 10px -> 0, duration 0.6s
 	if (eyebrow) {
 		tl.fromTo(
 			eyebrow,
@@ -1000,7 +991,7 @@ function initAvisAnimation() {
 		);
 	}
 
-	// 2. H2 : opacity: 0 -> 1, y: 22px (mobile 16px) -> 0, duration: 0.8s
+	// 2. H2 : opacity 0 -> 1, y 22px (mobile 16px) -> 0, duration 0.8s
 	if (title) {
 		tl.fromTo(
 			title,
@@ -1015,67 +1006,34 @@ function initAvisAnimation() {
 		);
 	}
 
-	// 3. Side cards (slot -1, slot 1) : opacity: 0 -> 1, y: 20px (mobile 14px) -> 0, duration: 0.75s
-	const cardEnterY = isMobile ? '14px' : '20px';
-
-	if (sideCards.length > 0) {
+	// 3. Paragraphe : opacity 0 -> 1, y 14px -> 0, duration 0.7s
+	if (intro) {
 		tl.fromTo(
-			sideCards,
-			{ '--card-enter-y': cardEnterY, '--card-enter-opacity': 0 },
-			{
-				'--card-enter-y': '0px',
-				'--card-enter-opacity': 1,
-				duration: 0.75,
-				stagger: 0.08,
-				clearProps: '--card-enter-y,--card-enter-opacity',
-			},
-			0.18
-		);
-	}
-
-	// 4. Center card (slot 0) : arrives 60ms after side cards
-	if (centerCard) {
-		tl.fromTo(
-			centerCard,
-			{ '--card-enter-y': cardEnterY, '--card-enter-opacity': 0 },
-			{
-				'--card-enter-y': '0px',
-				'--card-enter-opacity': 1,
-				duration: 0.75,
-				clearProps: '--card-enter-y,--card-enter-opacity',
-			},
-			0.24
-		);
-	}
-
-	// 5. Stars : subtle reveal opacity 0 -> 1 with light stagger (0.03s)
-	if (visibleStars.length > 0) {
-		tl.fromTo(
-			visibleStars,
-			{ opacity: 0 },
-			{
-				opacity: 1,
-				duration: 0.35,
-				stagger: 0.03,
-				ease: 'power2.out',
-				clearProps: 'opacity',
-			},
-			0.38
-		);
-	}
-
-	// 6. Navigation controls
-	if (navigation) {
-		tl.fromTo(
-			navigation,
-			{ opacity: 0, y: 10 },
+			intro,
+			{ opacity: 0, y: 14 },
 			{
 				opacity: 1,
 				y: 0,
-				duration: 0.6,
+				duration: 0.7,
 				clearProps: 'transform,opacity',
 			},
-			0.32
+			0.16
+		);
+	}
+
+	// 4. Trois piliers : opacity 0 -> 1, y 18px -> 0, duration 0.8s, stagger 0.09s
+	if (pillars.length > 0) {
+		tl.fromTo(
+			pillars,
+			{ opacity: 0, y: 18 },
+			{
+				opacity: 1,
+				y: 0,
+				duration: 0.8,
+				stagger: 0.09,
+				clearProps: 'transform,opacity',
+			},
+			0.26
 		);
 	}
 
@@ -1460,15 +1418,19 @@ function initContactAnimation() {
 	const eyebrow = section.querySelector<HTMLElement>('.contact__eyebrow');
 	const title = section.querySelector<HTMLElement>('.contact__title');
 	const lead = section.querySelector<HTMLElement>('.contact__lead');
+	const visual = section.querySelector<HTMLElement>('.contact__visual');
 	const visualReveal = section.querySelector<HTMLElement>('.contact__visual-reveal');
 	const visualImg = section.querySelector<HTMLElement>('.contact__visual-img');
 	const details = gsap.utils.toArray<HTMLElement>('.contact__detail-item', section);
 	const formCard = section.querySelector<HTMLElement>('[data-contact-form-card]');
 
 	ScrollTrigger.getById('contact-reveal')?.kill();
+	ScrollTrigger.getById('contact-visual-reveal')?.kill();
+	ScrollTrigger.getById('contact-form-reveal')?.kill();
 
 	const isMobile = window.matchMedia('(max-width: 47.999rem)').matches;
 
+	// 1. Header text reveal (top 82% of #contact)
 	const tl = gsap.timeline({
 		scrollTrigger: {
 			id: 'contact-reveal',
@@ -1481,7 +1443,6 @@ function initContactAnimation() {
 		},
 	});
 
-	// Left Column: Header text
 	if (eyebrow) {
 		tl.fromTo(
 			eyebrow,
@@ -1509,63 +1470,85 @@ function initContactAnimation() {
 		);
 	}
 
-	// Image 16/9 : clip-path reveal de haut en bas in 0.95s, power4.out
-	if (visualReveal) {
-		tl.fromTo(
-			visualReveal,
-			{ clipPath: 'inset(0 0 100% 0)' },
-			{
-				clipPath: 'inset(0 0 0 0)',
-				duration: 0.95,
-				ease: 'power4.out',
-				clearProps: 'clipPath',
+	// 2. Photo Reveal & Practical Details — Exact same reveal parameters and scroll timing as PourQui
+	if (visual || visualReveal) {
+		const visualTl = gsap.timeline({
+			scrollTrigger: {
+				id: 'contact-visual-reveal',
+				trigger: visual || section,
+				start: 'top 85%',
+				once: true,
 			},
-			0.20
-		);
+			defaults: {
+				ease: 'power3.out',
+			},
+		});
+
+		// Vertical clip-path reveal: inset(0 0 100% 0) -> inset(0 0 0% 0), duration: 1.05s, ease: power4.out
+		if (visualReveal) {
+			visualTl.fromTo(
+				visualReveal,
+				{ clipPath: 'inset(0 0 100% 0)' },
+				{
+					clipPath: 'inset(0 0 0% 0)',
+					duration: 1.05,
+					ease: 'power4.out',
+					clearProps: 'clipPath',
+				},
+				0.06
+			);
+		}
+
+		// Inner photo subtle un-zoom: scale 1.025 -> 1
+		if (visualImg) {
+			visualTl.fromTo(
+				visualImg,
+				{ scale: 1.025 },
+				{
+					scale: 1,
+					duration: 1.05,
+					ease: 'power4.out',
+					clearProps: 'transform',
+				},
+				0.06
+			);
+		}
+
+		// Contact detail rows
+		if (details.length > 0) {
+			visualTl.fromTo(
+				details,
+				{ opacity: 0, y: 8 },
+				{
+					opacity: 1,
+					y: 0,
+					duration: 0.55,
+					stagger: 0.06,
+					clearProps: 'transform,opacity',
+				},
+				0.28
+			);
+		}
 	}
 
-	if (visualImg) {
-		tl.fromTo(
-			visualImg,
-			{ scale: 1.025 },
-			{
-				scale: 1,
-				duration: 0.95,
-				ease: 'power4.out',
-				clearProps: 'transform',
-			},
-			0.20
-		);
-	}
-
-	// Contact detail rows
-	if (details.length > 0) {
-		tl.fromTo(
-			details,
-			{ opacity: 0, y: 8 },
-			{
-				opacity: 1,
-				y: 0,
-				duration: 0.55,
-				stagger: 0.06,
-				clearProps: 'transform,opacity',
-			},
-			0.28
-		);
-	}
-
-	// Right Column : Single unified form card block
+	// 3. Form Card Reveal — Separate ScrollTrigger when form card enters view
 	if (formCard) {
-		tl.fromTo(
+		gsap.fromTo(
 			formCard,
 			{ opacity: 0, y: isMobile ? 14 : 20 },
 			{
 				opacity: 1,
 				y: 0,
 				duration: 0.8,
+				ease: 'power3.out',
 				clearProps: 'transform,opacity',
-			},
-			0.24
+				scrollTrigger: {
+					id: 'contact-form-reveal',
+					trigger: formCard,
+					start: 'top 85%',
+					once: true,
+				},
+			}
 		);
 	}
 
@@ -1647,7 +1630,7 @@ masterMedia.add('(prefers-reduced-motion: no-preference)', () => {
 	initServicesAnimation();
 	initAboutAnimation();
 	initPourQuiAnimation();
-	initAvisAnimation();
+	initPriseEnChargeAnimation();
 	initBentoAnimation();
 	initFaqAnimation();
 	initFinalCtaAnimation();
@@ -1663,11 +1646,13 @@ masterMedia.add('(prefers-reduced-motion: no-preference)', () => {
 		for (let i = 0; i < 4; i++) {
 			ScrollTrigger.getById(`pour-qui-item-${i}`)?.kill();
 		}
-		ScrollTrigger.getById('avis-reveal')?.kill();
+		ScrollTrigger.getById('prise-en-charge-reveal')?.kill();
 		ScrollTrigger.getById('bento-reveal')?.kill();
 		ScrollTrigger.getById('faq-reveal')?.kill();
 		ScrollTrigger.getById('final-cta-reveal')?.kill();
 		ScrollTrigger.getById('contact-reveal')?.kill();
+		ScrollTrigger.getById('contact-visual-reveal')?.kill();
+		ScrollTrigger.getById('contact-form-reveal')?.kill();
 		ScrollTrigger.getById('footer-reveal')?.kill();
 	};
 });
@@ -1683,6 +1668,8 @@ masterMedia.add('(prefers-reduced-motion: reduce)', () => {
 	gsap.set([
 		'[data-site-header] .brand',
 		'[data-site-header] .desktop-navigation',
+		'[data-site-header] .navbar-actions',
+		'[data-site-header] .navbar-phone',
 		'[data-site-header] .navbar-cta',
 		'[data-site-header] .menu-toggle',
 		'.hero__eyebrow',
@@ -1721,11 +1708,10 @@ masterMedia.add('(prefers-reduced-motion: reduce)', () => {
 		'.methode-card__title',
 		'.methode-card__desc',
 		'.methode-card__media img',
-		'.reviews__eyebrow',
-		'.reviews__title',
-		'.review-card',
-		'.review-card__star',
-		'.reviews__navigation',
+		'.prise-en-charge__eyebrow',
+		'.prise-en-charge__title',
+		'.prise-en-charge__intro',
+		'.prise-en-charge__pillar',
 		'.practical__eyebrow',
 		'.practical__title',
 		'.bento-card',

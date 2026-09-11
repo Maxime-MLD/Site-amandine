@@ -6,12 +6,7 @@ import serviceInjections from "../assets/images/services/injections.webp";
 import serviceDiabete from "../assets/images/services/diabete.webp";
 import servicePilulier from "../assets/images/services/pilulie.webp";
 import servicePerfusions from "../assets/images/services/perfusions.webp";
-import patientAvatar1 from "../assets/images/reviews/patient-1.svg";
-import patientAvatar2 from "../assets/images/reviews/patient-2.svg";
-import patientAvatar3 from "../assets/images/reviews/patient-3.svg";
-import patientAvatar4 from "../assets/images/reviews/patient-4.svg";
-import patientAvatar5 from "../assets/images/reviews/patient-5.svg";
-import patientAvatar6 from "../assets/images/reviews/patient-6.svg";
+
 import situationPersonnesAgees from "../assets/images/pour qui/perosnne-age.webp";
 import situationHopital from "../assets/images/pour qui/hopital.webp";
 import situationDiabete from "../assets/images/pour qui/diabete-qui.webp";
@@ -260,61 +255,35 @@ export const methodeSteps = [
   },
 ] as const;
 
-export const reviewsContent = {
-  eyebrow: "Avis patients",
+export const priseEnChargeContent = {
+  eyebrow: "Votre prise en charge",
   title: {
-    line1: "Ce sont eux qui en parlent",
-    line2Lead: "le",
-    accent: "mieux",
+    lead: "Des soins organisés avec clarté et",
+    accent: "confiance",
   },
-  rating: {
-    value: "4,9",
-    scale: "/ 5",
-    stars: 5,
-    label: "Avis patients",
-    caption:
-      "Des soins réalisés avec attention, disponibilité et bienveillance.",
-  },
+  intro:
+    "Chaque situation est différente. L’organisation des soins s’adapte à votre prescription, à vos besoins et aux conditions de votre prise en charge.",
+  pillars: [
+    {
+      number: "01",
+      title: "Un suivi adapté",
+      description:
+        "Les soins sont organisés selon votre prescription, votre situation et le rythme nécessaire à votre prise en charge.",
+    },
+    {
+      number: "02",
+      title: "Une coordination si nécessaire",
+      description:
+        "Lorsque la situation le nécessite, les échanges peuvent se faire avec les professionnels qui participent à votre suivi : médecin, pharmacie, laboratoire ou autres intervenants.",
+    },
+    {
+      number: "03",
+      title: "Confidentialité & respect",
+      description:
+        "Chaque soin est réalisé dans le respect du secret professionnel, de votre intimité et des règles déontologiques de la profession.",
+    },
+  ],
 } as const;
-
-export const patientReviews = [
-  {
-    name: "Jacques L.",
-    rating: 5,
-    avatar: patientAvatar1,
-    text: "Toujours ponctuelle, très douce et attentive. Des soins expliqués avec calme qui mettent immédiatement en confiance.",
-  },
-  {
-    name: "Sophie M.",
-    rating: 5,
-    avatar: patientAvatar2,
-    text: "Une présence rassurante et beaucoup de professionnalisme. L’organisation des soins est simple et très fiable.",
-  },
-  {
-    name: "Thomas B.",
-    rating: 5,
-    avatar: patientAvatar3,
-    text: "Disponible et à l’écoute, avec des gestes précis et délicats. Je me suis senti accompagné dès le premier passage.",
-  },
-  {
-    name: "Camille R.",
-    rating: 5,
-    avatar: patientAvatar4,
-    text: "Des soins réalisés avec sérieux et douceur. La communication est claire et les horaires sont toujours respectés.",
-  },
-  {
-    name: "Marie D.",
-    rating: 5,
-    avatar: patientAvatar5,
-    text: "Très patiente avec ma mère âgée, rassurante et bienveillante. Toute la famille apprécie sa grande disponibilité.",
-  },
-  {
-    name: "Pierre G.",
-    rating: 5,
-    avatar: patientAvatar6,
-    text: "Professionnelle, efficace et toujours agréable. La qualité des soins à domicile est constante et irréprochable.",
-  },
-] as const;
 
 export const practicalContent = {
   eyebrow: "Infos pratiques",

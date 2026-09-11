@@ -7,7 +7,7 @@ export const siteConfig = {
   profession: "Infirmière à domicile",
   city: "Montagny",
   country: "France",
-  phone: "06.98.52.13.59",
+  phone: "06.77.53.58.79",
   email: "contact@amandine.fr",
   address: "TODO_ADDRESS",
   postalCode: "TODO_POSTAL_CODE",
@@ -17,7 +17,8 @@ export const siteConfig = {
   serviceArea: ["TODO_SERVICE_AREA"],
   siteUrl: "TODO_SITE_URL",
   googleBusinessUrl: "TODO_GOOGLE_BUSINESS_URL",
-  googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Montagny%2C+42840",
+  googleMapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=Montagny%2C+42840",
   professionalTitle: "TODO_PROFESSIONAL_TITLE",
   host: {
     name: "TODO_HOST_NAME",
@@ -26,7 +27,7 @@ export const siteConfig = {
   },
   locale: "fr-FR",
   language: "fr",
-  themeColor: "#8BE0B0",
+  themeColor: "#123b4a",
 } as const;
 
 export function resolveSiteUrl(value: string): string {

@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import heroPortrait from '../assets/images/cta/infirmiere.png';
+import heroPortrait from '../assets/images/hero/hero-amandine.webp';
 import { heroContent } from '../data/content';
 ---
 
@@ -17,7 +17,9 @@ import { heroContent } from '../data/content';
 				<span class="hero__place">{heroContent.title.accent}</span>
 			</h1>
 
-			<p class="hero__lead">{heroContent.subtitle}</p>
+			<p class="hero__lead">
+				Soins à <strong class="hero__lead-highlight">domicile</strong> dans un rayon d’environ <strong class="hero__lead-highlight">10 km</strong> autours de <strong class="hero__lead-highlight">Montagny</strong>, et soins au cabinet <strong class="hero__lead-highlight">uniquement</strong> sur <strong class="hero__lead-highlight">rendez-vous</strong>.
+			</p>
 
 			<div class="hero__actions">
 				<a class="hero-button hero-button--primary" href={heroContent.actions.primary.href}>
@@ -129,10 +131,16 @@ import { heroContent } from '../data/content';
 	.hero__lead {
 		max-width: var(--intro-max-width, 38rem);
 		margin-top: var(--heading-paragraph-gap, clamp(1.25rem, 0.93rem + 1.43vw, 2rem));
-		color: color-mix(in srgb, var(--c-petrol) 76%, var(--c-offwhite));
+		color: color-mix(in srgb, var(--c-petrol) 65%, var(--c-offwhite));
 		font-size: clamp(1.15rem, 1.45vw, 1.35rem);
 		line-height: 1.55;
 		text-wrap: balance;
+	}
+
+	.hero__lead-highlight,
+	.hero__lead strong {
+		color: var(--c-petrol);
+		font-weight: 650;
 	}
 
 	.hero__actions {
