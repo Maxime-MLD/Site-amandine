@@ -881,16 +881,30 @@ function initMethodeAnimation() {
 		const deckH = deck ? deck.offsetHeight : 480;
 		const padTop = 104;
 		const deckTop = padTop + Math.max(0, (window.innerHeight - padTop - 20 - deckH) / 2);
-		const travelPercent = Math.ceil(((window.innerHeight - deckTop + 40) / deckH) * 100);
+		const travelPercent = Math.max(105, Math.ceil(((window.innerHeight - deckTop + 40) / deckH) * 100));
 
 		// Position initiale : Card 1 en place dans le deck, Card 2 et 3 juste sous le bas de l'écran
 		gsap.set(first, { yPercent: 0, force3D: true });
 		gsap.set([second, third], { yPercent: travelPercent, force3D: true });
 
-		// Distance mobile calibrée : 400px par carte + palier de repos final
-		const SCROLL_PER_CARD_MOB = 400;
-		const HOLD_SCROLL_MOB = 350;
-		const TOTAL_SCROLL_MOB = SCROLL_PER_CARD_MOB * 2 + HOLD_SCROLL_MOB;
+		// Distance mobile fortement augmentée : ~360vh (3.6 x hauteur d'écran)
+		// pour absorber l'inertie tactile d'iOS et empêcher un simple swipe de traverser les cartes
+		const getScrollDistanceMob = () => Math.round((window.innerHeight || 800) * 3.6);
+
+		// Pacing de la master timeline (Total = 2.8 unités) :
+		// 1. Montée progressive de Card 2 : 1.0 unité
+		// 2. Palier de lecture Card 2 (stationnaire) : 0.35 unité
+		// 3. Montée progressive de Card 3 : 1.0 unité
+		// 4. Respiration finale Card 3 (stationnaire) : 0.45 unité
+		const DURATION_CARD_2 = 1.0;
+		const PAUSE_CARD_2 = 0.35;
+		const DURATION_CARD_3 = 1.0;
+		const PAUSE_CARD_3 = 0.45;
+
+		const START_CARD_2 = 0;
+		const START_PAUSE_2 = START_CARD_2 + DURATION_CARD_2; // 1.0
+		const START_CARD_3 = START_PAUSE_2 + PAUSE_CARD_2;   // 1.35
+		const START_PAUSE_3 = START_CARD_3 + DURATION_CARD_3; // 2.35
 
 		// 1 SEUL SCROLLTRIGGER PINNED + 1 SEULE MASTER TIMELINE
 		const timelineMob = gsap.timeline({
@@ -899,20 +913,35 @@ function initMethodeAnimation() {
 				id: 'methode-pin-mob',
 				trigger: pin,
 				start: 'top top',
-				end: () => `+=${TOTAL_SCROLL_MOB}`,
+				end: () => `+=${getScrollDistanceMob()}`,
 				pin: true,
 				pinSpacing: true,
-				scrub: 0.25, // Réactivité immédiate au doigt + lissage des micro-saccades tactiles
-				anticipatePin: 0, // Zéro pré-calcul saccadé à l'entrée
-				invalidateOnRefresh: false, // Immunisé contre les variations de hauteur de la barre Safari
+				scrub: 0.5, // Réactivité tactile immédiate + lissage naturel sans inertie excessive
+				anticipatePin: 1, // Stabilisation douce de l'entrée dans le pin
+				invalidateOnRefresh: true, // Recalcul propre lors des rotations d'écran
+				onRefresh: () => {
+					const freshDeck = section.querySelector<HTMLElement>('[data-methode-deck]');
+					const freshDeckH = freshDeck ? freshDeck.offsetHeight : 480;
+					const freshDeckTop = padTop + Math.max(0, (window.innerHeight - padTop - 20 - freshDeckH) / 2);
+					const freshPercent = Math.max(105, Math.ceil(((window.innerHeight - freshDeckTop + 40) / freshDeckH) * 100));
+					if (timelineMob.progress() === 0) {
+						gsap.set([second, third], { yPercent: freshPercent, force3D: true });
+					}
+				},
 			},
 		});
 
-		// ANIMATION PURE TRANSFORM UNIQUEMENT (yPercent) : zéro opacity, zéro scale, zéro recalcul
-		timelineMob.to(second, { yPercent: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, 0);
-		timelineMob.to(third, { yPercent: 0, duration: SCROLL_PER_CARD_MOB, ease: 'none', force3D: true }, SCROLL_PER_CARD_MOB);
-		// Palier de maintien final : Card 3 se colle tout en haut sans que le deck ne commence à remonter
-		timelineMob.to({}, { duration: HOLD_SCROLL_MOB }, SCROLL_PER_CARD_MOB * 2);
+		// 1. Card 2 monte progressivement (pure GPU transform, zéro lag)
+		timelineMob.to(second, { yPercent: 0, duration: DURATION_CARD_2, ease: 'none', force3D: true }, START_CARD_2);
+
+		// 2. Temps de lecture Card 2 : Palier stationnaire sans déplacement
+		timelineMob.to({}, { duration: PAUSE_CARD_2 }, START_PAUSE_2);
+
+		// 3. Card 3 monte ensuite progressivement sur Card 2
+		timelineMob.to(third, { yPercent: 0, duration: DURATION_CARD_3, ease: 'none', force3D: true }, START_CARD_3);
+
+		// 4. Respiration finale : Card 3 reste lisible et en place avant la sortie du pin
+		timelineMob.to({}, { duration: PAUSE_CARD_3 }, START_PAUSE_3);
 
 		return () => {
 			ScrollTrigger.getById('methode-eyebrow-reveal-mob')?.kill();
