@@ -887,24 +887,22 @@ function initMethodeAnimation() {
 		gsap.set(first, { yPercent: 0, force3D: true });
 		gsap.set([second, third], { yPercent: travelPercent, force3D: true });
 
-		// Distance mobile fortement augmentée : ~360vh (3.6 x hauteur d'écran)
-		// pour absorber l'inertie tactile d'iOS et empêcher un simple swipe de traverser les cartes
-		const getScrollDistanceMob = () => Math.round((window.innerHeight || 800) * 3.6);
+		// Distance mobile calibrée : ~300vh pour absorber l'inertie tactile iOS
+		// tout en libérant le défilement dès l'arrivée de la 3e carte
+		const getScrollDistanceMob = () => Math.round((window.innerHeight || 800) * 3.0);
 
-		// Pacing de la master timeline (Total = 2.8 unités) :
+		// Pacing de la master timeline (Total = 2.35 unités) :
 		// 1. Montée progressive de Card 2 : 1.0 unité
 		// 2. Palier de lecture Card 2 (stationnaire) : 0.35 unité
 		// 3. Montée progressive de Card 3 : 1.0 unité
-		// 4. Respiration finale Card 3 (stationnaire) : 0.45 unité
+		// Zéro blocage final sur Card 3 : défilement fluide direct vers la section suivante
 		const DURATION_CARD_2 = 1.0;
 		const PAUSE_CARD_2 = 0.35;
 		const DURATION_CARD_3 = 1.0;
-		const PAUSE_CARD_3 = 0.45;
 
 		const START_CARD_2 = 0;
 		const START_PAUSE_2 = START_CARD_2 + DURATION_CARD_2; // 1.0
 		const START_CARD_3 = START_PAUSE_2 + PAUSE_CARD_2;   // 1.35
-		const START_PAUSE_3 = START_CARD_3 + DURATION_CARD_3; // 2.35
 
 		// 1 SEUL SCROLLTRIGGER PINNED + 1 SEULE MASTER TIMELINE
 		const timelineMob = gsap.timeline({
@@ -937,11 +935,8 @@ function initMethodeAnimation() {
 		// 2. Temps de lecture Card 2 : Palier stationnaire sans déplacement
 		timelineMob.to({}, { duration: PAUSE_CARD_2 }, START_PAUSE_2);
 
-		// 3. Card 3 monte ensuite progressivement sur Card 2
+		// 3. Card 3 monte ensuite progressivement sur Card 2 (libération immédiate du pin à l'arrivée)
 		timelineMob.to(third, { yPercent: 0, duration: DURATION_CARD_3, ease: 'none', force3D: true }, START_CARD_3);
-
-		// 4. Respiration finale : Card 3 reste lisible et en place avant la sortie du pin
-		timelineMob.to({}, { duration: PAUSE_CARD_3 }, START_PAUSE_3);
 
 		return () => {
 			ScrollTrigger.getById('methode-eyebrow-reveal-mob')?.kill();

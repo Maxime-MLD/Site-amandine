@@ -64,42 +64,41 @@ const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : 
 			<span aria-hidden="true"></span>
 		</button>
 	</div>
-
-	<div class="mobile-menu" id="mobile-navigation" data-mobile-menu hidden>
-		<nav class="site-container" aria-label="Navigation mobile">
-			<ul>
-				{navigation.map((item) => (
-					<li><a href={homeAnchor(item.href)}>{item.label}</a></li>
-				))}
-			</ul>
-			<div class="mobile-menu__actions">
-				{hasPhone && (
-					<a class="mobile-menu__phone" href={phoneHref} aria-label={`Appeler le ${siteConfig.phone}`}>
-						<span class="mobile-menu__phone-icon" aria-hidden="true">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-							</svg>
-						</span>
-						<span>{siteConfig.phone}</span>
-					</a>
-				)}
-				<a class="mobile-menu__cta" href={homeAnchor(heroContent.actions.primary.href)}>
-					{heroContent.actions.primary.label}
-				</a>
-			</div>
-			<p class="mobile-menu__meta">
-				<span>Montagny (42)</span>
-				<span>Soins à domicile &amp; au cabinet</span>
-			</p>
-		</nav>
-	</div>
 </header>
+
+<div class="mobile-menu" id="mobile-navigation" data-mobile-menu hidden>
+	<nav class="site-container" aria-label="Navigation mobile">
+		<ul>
+			{navigation.map((item) => (
+				<li><a href={homeAnchor(item.href)}>{item.label}</a></li>
+			))}
+		</ul>
+		<div class="mobile-menu__actions">
+			{hasPhone && (
+				<a class="mobile-menu__phone" href={phoneHref} aria-label={`Appeler le ${siteConfig.phone}`}>
+					<span class="mobile-menu__phone-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+						</svg>
+					</span>
+					<span>{siteConfig.phone}</span>
+				</a>
+			)}
+			<a class="mobile-menu__cta" href={homeAnchor(heroContent.actions.primary.href)}>
+				{heroContent.actions.primary.label}
+			</a>
+		</div>
+		<p class="mobile-menu__meta">
+			<span>Montagny (42)</span>
+			<span>Soins à domicile &amp; au cabinet</span>
+		</p>
+	</nav>
+</div>
 
 <script>
 	const siteHeader = document.querySelector<HTMLElement>('[data-site-header]');
 	const menuToggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
 	const mobileMenu = document.querySelector<HTMLElement>('[data-mobile-menu]');
-	const controller = new AbortController();
 
 	let lastScrollY = window.scrollY;
 	let isHidden = false;
@@ -152,7 +151,7 @@ const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : 
 	};
 
 	updateHeader();
-	window.addEventListener('scroll', updateHeader, { passive: true, signal: controller.signal });
+	window.addEventListener('scroll', updateHeader, { passive: true });
 
 	if (menuToggle && mobileMenu) {
 		const setMenuState = (isOpen: boolean) => {
@@ -163,15 +162,18 @@ const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : 
 			menuToggle.setAttribute('aria-expanded', String(isOpen));
 			menuToggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
 			mobileMenu.hidden = !isOpen;
+			mobileMenu.classList.toggle('is-open', isOpen);
 			document.body.classList.toggle('menu-is-open', isOpen);
 		};
 
-		menuToggle.addEventListener('click', () => {
-			setMenuState(menuToggle.getAttribute('aria-expanded') !== 'true');
-		}, { signal: controller.signal });
+		menuToggle.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
+			setMenuState(!isOpen);
+		});
 
 		mobileMenu.querySelectorAll<HTMLAnchorElement>('a').forEach((link) => {
-			link.addEventListener('click', () => setMenuState(false), { signal: controller.signal });
+			link.addEventListener('click', () => setMenuState(false));
 		});
 
 		document.addEventListener('keydown', (event) => {
@@ -179,15 +181,11 @@ const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : 
 				setMenuState(false);
 				menuToggle.focus();
 			}
-		}, { signal: controller.signal });
+		});
 
 		window.matchMedia('(min-width: 64rem)').addEventListener('change', (event) => {
 			if (event.matches) setMenuState(false);
-		}, { signal: controller.signal });
-	}
-
-	if (import.meta.hot) {
-		import.meta.hot.dispose(() => controller.abort());
+		});
 	}
 </script>
 
@@ -456,7 +454,7 @@ const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : 
 		.menu-toggle {
 			display: inline-flex;
 			position: relative;
-			z-index: 2;
+			z-index: 101;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
@@ -467,9 +465,11 @@ const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : 
 			background: var(--c-offwhite);
 			cursor: pointer;
 			gap: 7px;
+			pointer-events: auto;
 		}
 
 		.menu-toggle span {
+			pointer-events: none;
 			display: block;
 			width: 20px;
 			height: 2px;
@@ -486,15 +486,19 @@ const phoneHref = hasPhone ? `tel:${siteConfig.phone.replace(/[\s.-]/g, '')}` : 
 			transform: translateY(-4.5px) rotate(-45deg);
 		}
 
+		.mobile-menu.is-open,
 		.mobile-menu:not([hidden]) {
 			position: fixed;
-			z-index: 1;
+			z-index: 99;
 			top: 84px;
 			right: 0;
 			bottom: 0;
 			left: 0;
-			display: block;
+			height: calc(100vh - 84px);
+			height: calc(100dvh - 84px);
+			display: block !important;
 			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
 			border-top: 1px solid rgb(18 59 74 / 9%);
 			background: var(--bg-secondary);
 		}
