@@ -159,7 +159,7 @@ import { aboutContent } from '../data/content';
 	.about__text {
 		max-width: var(--intro-max-width, 38rem);
 		margin-top: var(--heading-paragraph-gap, clamp(1.25rem, 0.93rem + 1.43vw, 2rem));
-		color: color-mix(in srgb, var(--c-steel) 90%, var(--c-petrol));
+		color: color-mix(in srgb, var(--c-petrol) 65%, var(--c-offwhite));
 		font-size: clamp(1.08rem, 1.25vw, 1.22rem);
 		line-height: 1.8;
 	}
@@ -167,6 +167,7 @@ import { aboutContent } from '../data/content';
 	.about__text strong {
 		color: var(--c-petrol);
 		font-weight: 600;
+		opacity: 0.88;
 	}
 
 	@media (max-width: 63.999rem) {

@@ -286,3 +286,8 @@ html.js-reveal .trust-bar {
   opacity: 0;
 }
 
+/* Hide Astro Dev Toolbar */
+astro-dev-toolbar {
+  display: none !important;
+}
+

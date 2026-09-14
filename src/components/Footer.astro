@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import logoAmandine from '../assets/images/logo-amandine.png';
+import logoAmandineFooter from '../assets/images/logo-amandine-footer.png';
 import { siteConfig } from '../config/site';
 
 const currentYear = new Date().getFullYear();
@@ -55,9 +55,9 @@ const footerNavigation = [
 				<a class="site-footer__brand" href="/#accueil" aria-label={`${siteConfig.fullName}, retour à l’accueil`}>
 					<Image
 						class="site-footer__brand-logo"
-						src={logoAmandine}
+						src={logoAmandineFooter}
 						alt={`${siteConfig.fullName} — Infirmière à domicile`}
-						height={84}
+						width={250}
 						loading="lazy"
 						decoding="async"
 					/>
@@ -68,9 +68,9 @@ const footerNavigation = [
 				</p>
 				<div class="site-footer__availability">
 					<p class="site-footer__heading">Disponibilités</p>
-					<p class="site-footer__availability-time">
-						Du lundi au samedi<br />
-						7h00 — 19h00
+					<p class="site-footer__availability-time">24h/24 · 7j/7</p>
+					<p class="site-footer__availability-sub">
+						Continuité des soins selon prescription et organisation de la prise en charge.
 					</p>
 				</div>
 			</div>
@@ -101,21 +101,27 @@ const footerNavigation = [
 						<dt>Secteur</dt>
 						<dd>Montagny et alentours</dd>
 					</div>
+					<div>
+						<dt>Cabinet</dt>
+						<dd>39, rue de la République<br />42840 Montagny</dd>
+					</div>
 				</dl>
 			</div>
 		</div>
 
 		<!-- Bottom Copyright & Legal Links -->
 		<div class="site-footer__bottom">
-			<p>© {currentYear} {siteConfig.fullName} — Tous droits réservés.</p>
-			<p class="site-footer__credit">
-				Site réalisé par
-				<a href="https://www.mld-studio.fr" target="_blank" rel="noopener noreferrer">MLD.studio</a>
-			</p>
-			<nav aria-label="Informations légales">
-				<a href="/mentions-legales/">Mentions légales</a>
-				<a href="/politique-de-confidentialite/">Politique de confidentialité</a>
-			</nav>
+			<p class="site-footer__copyright">© {currentYear} {siteConfig.fullName} — Tous droits réservés.</p>
+			<div class="site-footer__bottom-links">
+				<p class="site-footer__credit">
+					Site réalisé par
+					<a class="site-footer__credit-link" href="https://www.mld-studio.fr" target="_blank" rel="noopener noreferrer">MLD.studio</a>
+				</p>
+				<nav class="site-footer__legal-nav" aria-label="Informations légales">
+					<a href="/mentions-legales/">Mentions légales</a>
+					<a href="/politique-de-confidentialite/">Politique de confidentialité</a>
+				</nav>
+			</div>
 		</div>
 	</div>
 </footer>
@@ -185,6 +191,7 @@ const footerNavigation = [
 		background-repeat: repeat;
 		opacity: 0.028;
 		pointer-events: none;
+		z-index: 0;
 	}
 
 	.site-footer__inner {
@@ -192,15 +199,18 @@ const footerNavigation = [
 		z-index: 1;
 	}
 
+	/* 3-column balanced grid with ~20% reduced vertical padding */
 	.site-footer__main {
 		display: grid;
-		grid-template-columns: minmax(0, 1.25fr) minmax(11rem, 0.72fr) minmax(16rem, 1fr);
-		gap: clamp(3.5rem, 7.5vw, 7.5rem);
-		padding-block: clamp(5.5rem, 8vw, 9.5rem) clamp(4rem, 5.5vw, 6.5rem);
+		grid-template-columns: 1.3fr 0.8fr 1fr;
+		align-items: start;
+		gap: clamp(3rem, 5.5vw, 6rem);
+		padding-block: clamp(4.25rem, 5.5vw, 6.25rem) clamp(2.75rem, 3.5vw, 4rem);
 	}
 
+	/* Identity / Brand Column */
 	.site-footer__identity {
-		max-width: 28rem;
+		max-width: 29rem;
 	}
 
 	.site-footer__brand,
@@ -212,140 +222,153 @@ const footerNavigation = [
 		transform: none;
 	}
 
+	/* Logo sizing: calibrated between 240px and 260px on desktop */
 	.site-footer__brand-logo {
-		height: clamp(68px, 5.2vw, 84px);
-		width: auto;
-		max-width: min(380px, 85vw);
+		width: clamp(235px, 17vw, 260px);
+		height: auto;
+		max-width: 100%;
 		object-fit: contain;
 		display: block;
 	}
 
+	/* Location text with amber dot */
 	.site-footer__place {
-		margin-top: 1.6rem;
-		color: rgba(244, 239, 231, 0.92);
+		display: flex;
+		align-items: center;
+		margin-top: 1.85rem;
+		color: var(--c-ivory);
 		font-family: var(--font-heading);
-		font-size: 1rem;
-		font-weight: 700;
+		font-size: 0.98rem;
+		font-weight: 650;
+		letter-spacing: -0.01em;
 	}
 
 	.site-footer__place::before {
 		display: inline-block;
-		width: 0.5rem;
-		height: 0.5rem;
+		width: 0.45rem;
+		height: 0.45rem;
 		margin-right: 0.6rem;
 		border-radius: 50%;
 		background: var(--c-amber);
 		content: '';
-		vertical-align: 0.08em;
+		flex-shrink: 0;
 	}
 
+	/* Description promise */
 	.site-footer__promise {
-		max-width: 35ch;
+		max-width: 33ch;
 		margin-top: 1.15rem;
-		color: rgba(244, 239, 231, 0.72);
-		font-size: 1rem;
-		line-height: 1.7;
+		color: rgba(244, 239, 231, 0.76);
+		font-size: 0.96rem;
+		font-weight: 400;
+		line-height: 1.65;
 	}
 
+	/* Availability: harmonized with 24h/24 · 7j/7 */
 	.site-footer__availability {
-		margin-top: 1.85rem;
+		margin-top: 2rem;
 	}
 
 	.site-footer__availability-time {
-		margin: 0.35rem 0 0;
+		margin: 0.45rem 0 0;
 		color: var(--c-ivory);
-		font-size: 1rem;
-		font-weight: 600;
-		line-height: 1.45;
+		font-size: 1.15rem;
+		font-weight: 650;
+		line-height: 1.35;
 	}
 
+	.site-footer__availability-sub {
+		margin: 0.35rem 0 0;
+		color: rgba(244, 239, 231, 0.68);
+		font-size: 0.85rem;
+		font-weight: 450;
+		line-height: 1.45;
+		max-width: 32ch;
+	}
+
+	/* Uniform amber headings */
 	.site-footer__heading,
 	.site-footer dt {
+		margin: 0;
 		color: var(--c-amber);
 		font-family: var(--font-heading);
-		font-size: 0.76rem;
+		font-size: 0.75rem;
 		font-weight: 750;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 	}
 
+	/* Navigation Column */
 	.site-footer__navigation ul {
 		display: grid;
-		gap: 0.75rem;
-		margin: 1.6rem 0 0;
+		gap: 0.85rem;
+		margin: 1.45rem 0 0;
 		padding: 0;
 		list-style: none;
 	}
 
 	.site-footer a:not(.site-footer__brand) {
-		position: relative;
-		color: rgba(244, 239, 231, 0.82);
+		color: rgba(244, 239, 231, 0.88);
 		text-decoration: none;
-		transition: color 180ms ease;
-	}
-
-	.site-footer a:not(.site-footer__brand)::after {
-		position: absolute;
-		inset: auto 0 -0.2rem;
-		height: 1px;
-		background: var(--c-amber);
-		content: '';
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform 180ms ease;
+		font-size: 0.96rem;
+		line-height: 1.4;
+		transition: color 200ms ease;
 	}
 
 	.site-footer a:not(.site-footer__brand):hover {
-		color: var(--color-background);
+		color: var(--c-amber);
 	}
 
-	.site-footer a:not(.site-footer__brand):hover::after,
-	.site-footer a:not(.site-footer__brand):focus-visible::after {
-		transform: scaleX(1);
-		transform-origin: left;
+	.site-footer a:not(.site-footer__brand):focus-visible {
+		outline: 2px solid var(--c-amber);
+		outline-offset: 3px;
+		border-radius: 2px;
 	}
 
+	/* Contact Column */
 	.site-footer__contact dl {
 		display: grid;
-		gap: 1.5rem;
-		margin: 1.6rem 0 0;
+		gap: 1.35rem;
+		margin: 1.45rem 0 0;
 	}
 
 	.site-footer dd {
 		margin: 0.35rem 0 0;
-		color: var(--c-ivory);
-		font-size: 1rem;
-		font-weight: 600;
+		color: rgba(244, 239, 231, 0.92);
+		font-size: 0.98rem;
+		font-weight: 550;
 		line-height: 1.45;
 		overflow-wrap: anywhere;
 	}
 
 	.site-footer__phone dd {
 		font-family: var(--font-heading);
-		font-size: clamp(1.25rem, 2vw, 1.55rem);
-		font-weight: 720;
-		letter-spacing: -0.03em;
+		font-size: clamp(1.2rem, 1.45vw, 1.4rem);
+		font-weight: 700;
+		letter-spacing: -0.02em;
 	}
 
 	.site-footer__phone a {
 		color: var(--c-ivory) !important;
+		text-decoration: none;
+		transition: color 200ms ease;
 	}
 
 	.site-footer__phone a:hover {
 		color: var(--c-amber) !important;
 	}
 
-	/* Monumental Background Cardiogram (Design Statement) */
+	/* Monumental Background Cardiogram: subtle, lower, opacity 0.075 */
 	.site-footer__ecg-bg {
 		position: absolute;
 		inset-inline: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		height: clamp(20rem, 40vw, 30rem);
+		top: 54%;
+		transform: translateY(-50%) translateX(2%);
+		height: clamp(22rem, 42vw, 32rem);
 		pointer-events: none;
 		z-index: 0;
-		-webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 8%, black 18%, black 82%, rgba(0, 0, 0, 0.45) 92%, transparent 100%);
-		mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 8%, black 18%, black 82%, rgba(0, 0, 0, 0.45) 92%, transparent 100%);
+		-webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.3) 6%, black 16%, black 84%, rgba(0, 0, 0, 0.3) 94%, transparent 100%);
+		mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.3) 6%, black 16%, black 84%, rgba(0, 0, 0, 0.3) 94%, transparent 100%);
 	}
 
 	.site-footer__monumental-ecg {
@@ -356,95 +379,114 @@ const footerNavigation = [
 	}
 
 	.footer-monumental-ecg__path {
-		opacity: 0.11;
-		filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.22));
+		opacity: 0.075;
 	}
 
+	/* Bottom Bar & Subtle Separator */
 	.site-footer__bottom {
-		border-top: 1px solid rgba(244, 239, 231, 0.1);
-		display: grid;
-		grid-template-columns: 1fr auto auto;
+		border-top: 1px solid rgba(244, 239, 231, 0.08);
+		display: flex;
 		align-items: center;
-		gap: 1.75rem 2.5rem;
-		padding-block: clamp(2rem, 2.8vw, 2.75rem) clamp(2.5rem, 3.8vw, 3.75rem);
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1.25rem 2.5rem;
+		padding-block: clamp(1.5rem, 2vw, 2.25rem) clamp(1.75rem, 2.5vw, 2.5rem);
 		color: rgba(244, 239, 231, 0.65);
 		font-size: 0.875rem;
 		line-height: 1.45;
 	}
 
-	.site-footer__credit a {
+	.site-footer__copyright {
+		margin: 0;
+	}
+
+	.site-footer__bottom-links {
+		display: flex;
+		align-items: center;
+		gap: 1.75rem;
+		flex-wrap: wrap;
+	}
+
+	.site-footer__credit {
+		margin: 0;
+	}
+
+	.site-footer__credit-link {
 		margin-left: 0.25rem;
-		color: rgba(244, 239, 231, 0.88);
+		color: rgba(244, 239, 231, 0.9);
 		font-weight: 700;
 	}
 
-	.site-footer__bottom nav {
+	.site-footer__legal-nav {
 		display: flex;
 		align-items: center;
 		gap: 1.5rem;
 	}
 
+	/* Tablet responsive */
 	@media (max-width: 63.999rem) {
 		.site-footer__main {
-			grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.9fr);
-			gap: 4rem 5rem;
+			grid-template-columns: 1fr 1fr;
+			gap: 3.5rem 4rem;
+			padding-block: clamp(3.75rem, 6.5vw, 5.25rem) clamp(2.5rem, 4vw, 3.25rem);
 		}
 
 		.site-footer__identity {
 			grid-column: 1 / -1;
+			max-width: 32rem;
+		}
+
+		.site-footer__brand-logo {
+			width: clamp(210px, 26vw, 240px);
 		}
 
 		.site-footer__bottom {
-			grid-template-columns: 1fr auto;
-		}
-
-		.site-footer__credit {
-			grid-column: 1;
-			grid-row: 2;
-		}
-
-		.site-footer__bottom nav {
-			grid-column: 2;
-			grid-row: 1 / span 2;
-			align-items: flex-end;
 			flex-direction: column;
-			gap: 0.75rem;
+			align-items: flex-start;
+			gap: 1.25rem;
+		}
+
+		.site-footer__bottom-links {
+			width: 100%;
+			justify-content: space-between;
 		}
 	}
 
+	/* Mobile responsive: clean vertical stack in recommended order */
 	@media (max-width: 47.999rem) {
 		.site-footer__main {
 			display: flex;
-			gap: 0;
 			flex-direction: column;
-			padding-block: clamp(4.75rem, 11vw, 6.75rem) clamp(3.25rem, 7vw, 4.75rem);
+			gap: 0;
+			padding-block: clamp(3.25rem, 8.5vw, 4.5rem) clamp(2.25rem, 5vw, 3rem);
 		}
 
 		.site-footer__identity {
 			order: 1;
+			max-width: none;
 		}
 
 		.site-footer__brand-logo {
-			height: clamp(72px, 18vw, 92px);
-		}
-
-		.site-footer__contact {
-			order: 2;
-			margin-top: clamp(3.25rem, 7.5vw, 4.25rem);
+			width: clamp(200px, 58vw, 235px);
 		}
 
 		.site-footer__navigation {
-			order: 3;
-			margin-top: clamp(3rem, 7vw, 3.75rem);
+			order: 2;
+			margin-top: clamp(2.75rem, 6.5vw, 3.5rem);
 		}
 
-		.site-footer__contact dl {
-			gap: 1.35rem;
+		.site-footer__contact {
+			order: 3;
+			margin-top: clamp(2.75rem, 6.5vw, 3.5rem);
 		}
 
 		.site-footer__navigation ul {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 0.85rem 1.25rem;
+		}
+
+		.site-footer__contact dl {
+			gap: 1.25rem;
 		}
 
 		.site-footer__ecg-bg {
@@ -453,20 +495,22 @@ const footerNavigation = [
 
 		.site-footer__bottom {
 			display: flex;
+			flex-direction: column;
 			align-items: flex-start;
 			gap: 1rem;
-			flex-direction: column;
-			padding-block: 1.75rem clamp(2.25rem, 6vw, 3.25rem);
+			padding-block: 1.5rem clamp(2rem, 5vw, 2.75rem);
 		}
 
-		.site-footer__credit,
-		.site-footer__bottom nav {
-			display: flex;
-			grid-column: auto;
-			grid-row: auto;
+		.site-footer__bottom-links {
+			flex-direction: column;
 			align-items: flex-start;
 			gap: 0.75rem;
+		}
+
+		.site-footer__legal-nav {
 			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.6rem;
 		}
 	}
 

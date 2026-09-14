@@ -136,11 +136,15 @@ export const aboutContent = {
     { text: "soins à domicile", strong: true },
     { text: " dans un rayon d’environ " },
     { text: "10 km", strong: true },
-    { text: ", ainsi qu’au cabinet uniquement " },
+    { text: ", ainsi qu’au cabinet " },
     { text: "sur rendez-vous", strong: true },
-    { text: ". J’accorde une attention particulière à l’" },
+    { text: ". Chaque prise en charge est pensée avec attention, dans l’" },
     { text: "écoute", strong: true },
-    { text: ", à la douceur et à la qualité de chaque prise en charge." },
+    { text: ", la " },
+    { text: "douceur", strong: true },
+    { text: " et le " },
+    { text: "respect", strong: true },
+    { text: " de vos besoins." },
   ],
   imageAlt:
     "Amandine Gauthier, infirmière à domicile à Montagny, en tenue professionnelle",
@@ -272,15 +276,15 @@ export const priseEnChargeContent = {
     },
     {
       number: "02",
-      title: "Une coordination si nécessaire",
+      title: "Une organisation claire",
       description:
-        "Lorsque la situation le nécessite, les échanges peuvent se faire avec les professionnels qui participent à votre suivi : médecin, pharmacie, laboratoire ou autres intervenants.",
+        "Horaires, matériel à prévoir et modalités de passage sont définis avec vous afin que chaque soin soit simple à organiser au quotidien.",
     },
     {
       number: "03",
-      title: "Confidentialité & respect",
+      title: "Une relation de confiance",
       description:
-        "Chaque soin est réalisé dans le respect du secret professionnel, de votre intimité et des règles déontologiques de la profession.",
+        "Écoute, discrétion et respect de votre intimité accompagnent chaque soin, dans le respect du secret professionnel.",
     },
   ],
 } as const;
@@ -315,7 +319,7 @@ export const practicalContent = {
     label: "Au cabinet",
     headline: "Sur rendez-vous uniquement.",
     description: "Un espace adapté et calme pour vos soins programmés.",
-    locationText: "Cabinet situé à Montagny (42)",
+    locationText: "39, rue de la République, 42840 Montagny",
   },
   cta: {
     title: "Une question avant votre soin ?",

@@ -9,8 +9,8 @@ export const siteConfig = {
   country: "France",
   phone: "06.77.53.58.79",
   email: "contact@amandine.fr",
-  address: "TODO_ADDRESS",
-  postalCode: "TODO_POSTAL_CODE",
+  address: "39, rue de la République",
+  postalCode: "42840",
   hours: "TODO_HOURS",
   siret: "TODO_SIRET",
   rpps: "TODO_RPPS",
@@ -18,7 +18,7 @@ export const siteConfig = {
   siteUrl: "TODO_SITE_URL",
   googleBusinessUrl: "TODO_GOOGLE_BUSINESS_URL",
   googleMapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=Montagny%2C+42840",
+    "https://www.google.com/maps/search/?api=1&query=39+rue+de+la+Republique+42840+Montagny",
   professionalTitle: "TODO_PROFESSIONAL_TITLE",
   host: {
     name: "TODO_HOST_NAME",

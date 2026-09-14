@@ -68,12 +68,15 @@ const emailHref = hasEmail ? `mailto:${siteConfig.email}` : '#';
 
 					<div class="contact__detail-item">
 						<dt>Secteur</dt>
-						<dd>Montagny et environ 10 km</dd>
+						<dd>Montagny et environ 10 km aux alentours</dd>
 					</div>
 
 					<div class="contact__detail-item">
 						<dt>Cabinet</dt>
-						<dd>Uniquement sur rendez-vous</dd>
+						<dd>
+							<span class="contact__cabinet-main">39, rue de la République<br />42840 Montagny</span>
+							<span class="contact__cabinet-sub">Uniquement sur rendez-vous</span>
+						</dd>
 					</div>
 
 					<div class="contact__detail-item contact__detail-item--wide">
@@ -389,11 +392,13 @@ const emailHref = hasEmail ? `mailto:${siteConfig.email}` : '#';
 		line-height: 1.4;
 	}
 
-	.contact__availability-main {
+	.contact__availability-main,
+	.contact__cabinet-main {
 		display: block;
 	}
 
-	.contact__availability-sub {
+	.contact__availability-sub,
+	.contact__cabinet-sub {
 		display: block;
 		margin-top: 0.18rem;
 		font-size: 0.88rem;
