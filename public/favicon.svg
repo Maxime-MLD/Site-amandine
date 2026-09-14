@@ -1,5 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title id="title">Amandine Gauthier</title>
-  <rect width="64" height="64" rx="16" fill="#8be0b0"/>
-  <path d="M19 45 29.2 18h5.6L45 45h-6.2l-2.1-6.1H27.2L25.1 45H19Zm10-11.5h5.9L32 24.8l-3 8.7Z" fill="#171717"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#123b4a"/>
+  <path d="M120 520
+           H315
+           L425 290
+           L530 690
+           L665 405
+           L745 520
+           H904"
+        fill="none"
+        stroke="#d99a3e"
+        stroke-width="86"
+        stroke-linecap="butt"
+        stroke-linejoin="miter"/>
 </svg>
